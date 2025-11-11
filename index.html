@@ -26,7 +26,6 @@ body{
 .btn-secondary{background:#444;color:white}
 .home-image{width:100%;border-radius:12px;margin-bottom:14px;opacity:0;animation:fadeIn 1s forwards}
 @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-
 .team-item{background:rgba(0,0,0,0.45);padding:12px;border-radius:10px;margin:8px 0;border:1px solid rgba(255,255,255,0.06)}
 .metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
 .metric-box{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.05)}
@@ -46,7 +45,7 @@ body{
   <div class="top-row">
     <div class="header">
       <h1>Bluff Masters</h1>
-      <div style="color:#cdd8e2;font-size:0.95rem">Track wins, series & stats (shared online)</div>
+      <div style="color:#cdd8e2;font-size:0.95rem">Track wins, series & shared stats</div>
     </div>
     <button id="homeBtn" class="btn btn-secondary" style="display:none" onclick="goHome()">🏠 Home</button>
   </div>
@@ -61,7 +60,7 @@ body{
     </div>
   </div>
 
-  <!-- Game selection -->
+  <!-- GAME TYPE -->
   <div id="gameTypeScreen" class="screen" style="display:none">
     <div class="card">
       <h2>Select Series</h2>
@@ -71,7 +70,7 @@ body{
     </div>
   </div>
 
-  <!-- Winner -->
+  <!-- WINNER -->
   <div id="winnerScreen" class="screen" style="display:none">
     <div class="card">
       <h2>Who Won?</h2>
@@ -85,7 +84,7 @@ body{
     </div>
   </div>
 
-  <!-- Loser -->
+  <!-- LOSER -->
   <div id="loserScreen" class="screen" style="display:none">
     <div class="card">
       <h2>Who Lost?</h2>
@@ -99,25 +98,21 @@ body{
     </div>
   </div>
 
-  <!-- Stats -->
+  <!-- STATS -->
   <div id="statsScreen" class="screen" style="display:none">
     <div class="card">
-      <h2>Shared Statistics (Live)</h2>
-
+      <h2>Overall Statistics (Shared)</h2>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px">
         <div style="background:linear-gradient(135deg,#3affd0,#20a56e);padding:12px;border-radius:8px;text-align:center;font-weight:700;color:#07130f">
           <div>Total Games</div><div id="totalGames">0</div>
         </div>
         <div style="background:linear-gradient(135deg,#6ec0ff,#4a7bd6);padding:12px;border-radius:8px;text-align:center;font-weight:700;color:#07130f">
-          <div>Total Series</div><div id="totalSeries">0</div>
+          <div>Total Teams</div><div id="totalSeries">0</div>
         </div>
       </div>
-
       <div id="teamStats" style="margin-top:12px"></div>
-
       <h3 style="margin-top:14px">Game History</h3>
       <div id="gameHistory"></div>
-
       <div style="margin-top:12px">
         <button class="btn btn-secondary" onclick="goHome()">← Back</button>
       </div>
@@ -140,12 +135,16 @@ body{
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  console.log("🔥 Firebase live sync enabled.");
+  console.log("🔥 Firebase live sync enabled (resilient mode).");
 
   let gameData = { games: [], teamStats: {} };
   const STORAGE_KEY = 'bluff_tracker_v1';
 
-  // Live sync from Firebase
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) gameData = JSON.parse(raw);
+  } catch (e) { console.warn("No local data yet"); }
+
   const gamesRef = collection(db, "games");
   onSnapshot(gamesRef, snapshot => {
     const docs = snapshot.docs.map(d => d.data());
@@ -157,31 +156,32 @@ body{
       gameData.teamStats[g.winner].wins++;
       gameData.teamStats[g.loser].losses++;
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(gameData));
     updateStatsUI();
-  });
+  }, err=>console.warn("onSnapshot error:", err));
 
-  // Functions for UI
-  window.startNewGame = ()=>{window.currentGame={};showScreen('gameTypeScreen');};
+  window.startNewGame=()=>{window.currentGame={};showScreen('gameTypeScreen');};
   window.selectGameType=t=>{window.currentGame.gameType=t;showScreen('winnerScreen');};
+
   window.selectTeam=async(role,team)=>{
-    if(role==='winner'){window.currentGame.winner=team;showScreen('loserScreen');}
-    else{
-      if(!window.currentGame.winner)return alert('Pick winner first');
-      if(team===window.currentGame.winner)return alert('Winner and loser cannot be same');
-      window.currentGame.loser=team;
-      await addDoc(gamesRef, {
-        winner: window.currentGame.winner,
-        loser: window.currentGame.loser,
-        series: window.currentGame.gameType,
-        time: new Date().toISOString()
-      });
-      alert(`✅ ${window.currentGame.winner} beat ${window.currentGame.loser}`);
-      showStats();
+    if(role==='winner'){window.currentGame.winner=team;showScreen('loserScreen');return;}
+    if(!window.currentGame.winner){alert('Pick winner first');return;}
+    if(team===window.currentGame.winner){alert('Winner and loser cannot be same');return;}
+    window.currentGame.loser=team;
+
+    const record={winner:window.currentGame.winner,loser:window.currentGame.loser,series:window.currentGame.gameType,time:new Date().toISOString()};
+    optimisticLocalSave(record);
+    try{
+      await addDoc(gamesRef,record);
+      console.log("☁️ Game uploaded:",record);
+    }catch(e){
+      console.warn("⚠️ Cloud upload failed, kept locally:",e);
     }
+    alert(`✅ ${record.winner} beat ${record.loser}`);
+    showStats();
   };
 
-  window.showStats = ()=>{showScreen('statsScreen'); updateStatsUI();};
+  window.showStats=()=>{showScreen('statsScreen');updateStatsUI();};
   function showScreen(id){
     document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
     document.getElementById(id).style.display='block';
@@ -189,11 +189,21 @@ body{
   }
   window.goHome=()=>showScreen('homeScreen');
 
+  function optimisticLocalSave(record){
+    gameData.games.unshift(record);
+    if(!gameData.teamStats[record.winner]) gameData.teamStats[record.winner]={wins:0,losses:0};
+    if(!gameData.teamStats[record.loser]) gameData.teamStats[record.loser]={wins:0,losses:0};
+    gameData.teamStats[record.winner].wins++;
+    gameData.teamStats[record.loser].losses++;
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(gameData));
+    updateStatsUI();
+  }
+
   function updateStatsUI(){
-    const totalGames = gameData.games.length;
-    document.getElementById('totalGames').textContent=totalGames;
+    const total=gameData.games.length;
+    document.getElementById('totalGames').textContent=total;
     document.getElementById('totalSeries').textContent=Object.keys(gameData.teamStats).length;
-    const t = Object.keys(gameData.teamStats).sort((a,b)=>(gameData.teamStats[b].wins||0)-(gameData.teamStats[a].wins||0));
+    const t=Object.keys(gameData.teamStats).sort((a,b)=>(gameData.teamStats[b].wins||0)-(gameData.teamStats[a].wins||0));
     let html='';
     t.forEach((team,i)=>{
       const s=gameData.teamStats[team],w=s.wins||0,l=s.losses||0,total=w+l,wp=total?Math.round((w/total)*100):0,lp=100-wp;
@@ -208,15 +218,11 @@ body{
       </div>`;
     });
     document.getElementById('teamStats').innerHTML=html||'<div style="color:#ccc">No teams yet</div>';
-    const hist = gameData.games.map(g=>{
-      const d=new Date(g.time).toLocaleString();
-      return `<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
-        <small>${d}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b>
-      </div>`;
-    }).join('');
+    const hist=gameData.games.map(g=>`<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
+      <small>${new Date(g.time).toLocaleString()}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b>
+    </div>`).join('');
     document.getElementById('gameHistory').innerHTML=hist||'<div style="color:#ccc">No games yet</div>';
   }
-
 </script>
 </body>
 </html>
