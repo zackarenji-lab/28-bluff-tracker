@@ -4,7 +4,6 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Bluff Masters</title>
-
 <style>
 :root{
   --color-primary:#2ecc71;
@@ -35,6 +34,13 @@ body{
 .champion-team{border:2px solid gold;animation:glow 2.2s infinite;position:relative}
 .champion-team::before{content:"👑";position:absolute;top:-10px;right:-10px;font-size:1.4rem}
 @keyframes glow{0%{box-shadow:0 0 6px gold}50%{box-shadow:0 0 20px gold}100%{box-shadow:0 0 6px gold}}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999}
+.confirm-box{background:#0f1720;padding:30px;border-radius:12px;color:#ddd;max-width:540px;text-align:center}
+.confirm-title{font-size:1.4rem;margin-bottom:6px}
+.confirm-message{font-size:1rem;margin-bottom:12px}
+.small-muted{font-size:0.8rem;color:#9aa6ad;margin-top:10px}
+.fireworks-canvas{position:fixed;inset:0;pointer-events:none;z-index:99999}
+.kicker{font-weight:700;color:var(--color-primary);margin-top:8px}
 </style>
 </head>
 <body>
@@ -57,17 +63,17 @@ body{
     </div>
   </div>
 
-  <!-- GAME TYPE -->
+  <!-- Game Type -->
   <div id="gameTypeScreen" class="screen" style="display:none">
     <div class="card">
-      <h2>Select Series</h2>
-      <button class="btn btn-primary" onclick="selectGameType(5)">5 Game Series</button>
-      <button class="btn btn-primary" onclick="selectGameType(10)">10 Game Series</button>
+      <h2>Select Series (first to N wins)</h2>
+      <button class="btn btn-primary" onclick="selectGameType(5)">First to 5 wins</button>
+      <button class="btn btn-primary" onclick="selectGameType(10)">First to 10 wins</button>
       <button class="btn btn-secondary" onclick="goHome()">← Back</button>
     </div>
   </div>
 
-  <!-- WINNER -->
+  <!-- Winner -->
   <div id="winnerScreen" class="screen" style="display:none">
     <div class="card">
       <h2>Who Won?</h2>
@@ -81,7 +87,7 @@ body{
     </div>
   </div>
 
-  <!-- LOSER -->
+  <!-- Loser -->
   <div id="loserScreen" class="screen" style="display:none">
     <div class="card">
       <h2>Who Lost?</h2>
@@ -95,144 +101,537 @@ body{
     </div>
   </div>
 
-  <!-- STATS -->
+  <!-- Stats -->
   <div id="statsScreen" class="screen" style="display:none">
     <div class="card">
-      <h2>Overall Statistics</h2>
+      <h2>Overall Statistics (Shared)</h2>
+
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px">
         <div style="background:linear-gradient(135deg,#3affd0,#20a56e);padding:12px;border-radius:8px;text-align:center;font-weight:700;color:#07130f">
           <div>Total Games</div><div id="totalGames">0</div>
         </div>
         <div style="background:linear-gradient(135deg,#6ec0ff,#4a7bd6);padding:12px;border-radius:8px;text-align:center;font-weight:700;color:#07130f">
-          <div>Total Teams</div><div id="totalSeries">0</div>
+          <div>Total Series Won</div><div id="totalSeries">0</div>
         </div>
       </div>
+
       <div id="teamStats" style="margin-top:12px"></div>
+
       <h3 style="margin-top:14px">Game History</h3>
       <div id="gameHistory"></div>
-      <div style="margin-top:12px">
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="exportJSON()">⬇️ Export JSON</button>
+        <button class="btn btn-secondary" onclick="importJSONPrompt()">⬆️ Import JSON</button>
         <button class="btn btn-secondary" onclick="goHome()">← Back</button>
+      </div>
+
+      <div style="margin-top:10px;text-align:center">
+        <span style="font-size:0.85rem;opacity:0.8;cursor:pointer;text-decoration:underline" onclick="deleteLastGame()">Delete last game</span>
+        &nbsp;•&nbsp;
+        <span style="font-size:0.85rem;opacity:0.8;cursor:pointer;text-decoration:underline" onclick="resetStats()">Reset all statistics</span>
       </div>
     </div>
   </div>
 </div>
 
+<!-- confirmation modal placeholder -->
+<div id="modalContainer"></div>
+
+<!-- fireworks canvas -->
+<canvas id="fireworks" class="fireworks-canvas" style="display:none"></canvas>
+
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+/* =========================
+   Firebase setup (non-blocking)
+   ========================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc",
-    authDomain: "bluff-tracker-7542e.firebaseapp.com",
-    projectId: "bluff-tracker-7542e",
-    storageBucket: "bluff-tracker-7542e.firebasestorage.app",
-    messagingSenderId: "280965687037",
-    appId: "1:280965687037:web:be0b05da36ef653ab68094"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc",
+  authDomain: "bluff-tracker-7542e.firebaseapp.com",
+  projectId: "bluff-tracker-7542e",
+  storageBucket: "bluff-tracker-7542e.firebasestorage.app",
+  messagingSenderId: "280965687037",
+  appId: "1:280965687037:web:be0b05da36ef653ab68094"
+};
 
+let db = null;
+let gamesRef = null;
+try {
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const gamesRef = collection(db, "games");
+  db = getFirestore(app);
+  gamesRef = collection(db, "games");
+  console.log("🔥 Firebase initialized (attempt).");
+} catch (e) {
+  console.warn("Firebase init failed:", e);
+}
 
-  console.log("🔥 Firebase initialized");
+/* =========================
+   Local model & persistence
+   ========================= */
+let gameData = { games: [], teamStats: {}, seriesCount: 0 };
+const STORAGE_KEY = 'bluff_tracker_v1';
+(function loadBackup(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) gameData = JSON.parse(raw);
+  }catch(e){ console.warn("local load failed", e); }
+})();
 
-  let gameData = { games: [], teamStats: {} };
-  const STORAGE_KEY = 'bluff_tracker_v1';
-
-  window.startNewGame = () => { window.currentGame = {}; showScreen('gameTypeScreen'); };
-  window.selectGameType = t => { window.currentGame.gameType = t; showScreen('winnerScreen'); };
-
-  window.selectTeam = async (role, team) => {
-    if (role === 'winner') {
-      window.currentGame.winner = team;
-      showScreen('loserScreen');
-      return;
+/* rebuild stats and current series from game history */
+function rebuildFromGames(){
+  // reset
+  gameData.teamStats = {};
+  gameData.seriesCount = 0;
+  // We will compute series by grouping by seriesId
+  const seriesMap = {}; // seriesId => {target, games:[], wins:{} , finished, winner}
+  (gameData.games || []).forEach(g=>{
+    const sid = g.seriesId || 'series_'+(g.seriesStartedAt||g.time);
+    if(!seriesMap[sid]) seriesMap[sid] = {target: g.seriesTarget || g.series, games: [], wins:{}, finished:false, winner:null, id:sid, startedAt: g.seriesStartedAt || g.time};
+    seriesMap[sid].games.push(g);
+    seriesMap[sid].wins[g.winner] = (seriesMap[sid].wins[g.winner]||0) + 1;
+    // check finished
+    if(seriesMap[sid].wins[g.winner] >= (seriesMap[sid].target||5) && !seriesMap[sid].finished){
+      seriesMap[sid].finished = true;
+      seriesMap[sid].winner = g.winner;
     }
-
-    if (!window.currentGame.winner) return alert('Pick winner first');
-    if (team === window.currentGame.winner) return alert('Winner and loser cannot be same');
-
-    window.currentGame.loser = team;
-    const record = {
-      winner: window.currentGame.winner,
-      loser: window.currentGame.loser,
-      series: window.currentGame.gameType,
-      time: new Date().toISOString()
-    };
-
-    // Save locally first
-    optimisticLocalSave(record);
-
-    // Try Firebase, but never hang
-    try {
-      await Promise.race([
-        addDoc(gamesRef, record),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000))
-      ]);
-      console.log("☁️ Uploaded to Firestore:", record);
-    } catch (err) {
-      console.warn("⚠️ Firebase save failed or timed out:", err);
+  });
+  // rebuild teamStats and consecutive series
+  const teamSeriesStreak = {}; // used to compute consecutive wins
+  Object.values(seriesMap).sort((a,b)=>new Date(a.startedAt)-new Date(b.startedAt)).forEach(s=>{
+    if(s.finished){
+      gameData.seriesCount = (gameData.seriesCount||0) + 1;
+      // increment seriesWon for winner
+      if(!gameData.teamStats[s.winner]) gameData.teamStats[s.winner] = {wins:0, losses:0, seriesWon:0, consecutiveSeries:0};
+      gameData.teamStats[s.winner].seriesWon = (gameData.teamStats[s.winner].seriesWon||0) + 1;
+      // update streaks
+      teamSeriesStreak[s.winner] = (teamSeriesStreak[s.winner]||0) + 1;
+      // reset streaks for others
+      Object.keys(teamSeriesStreak).forEach(t=>{ if(t!==s.winner) teamSeriesStreak[t]=0; });
+      gameData.teamStats[s.winner].consecutiveSeries = teamSeriesStreak[s.winner];
+      // ensure losers exist in teamStats
+      const losers = new Set();
+      s.games.forEach(g=>{ if(g.loser) losers.add(g.loser); });
+      losers.forEach(l=>{
+        if(!gameData.teamStats[l]) gameData.teamStats[l] = {wins:0, losses:0, seriesWon:0, consecutiveSeries:0};
+      });
+    } else {
+      // ongoing series: we still want the wins/losses included in team counts
+      s.games.forEach(g=>{
+        if(!gameData.teamStats[g.winner]) gameData.teamStats[g.winner] = {wins:0, losses:0, seriesWon:0, consecutiveSeries:0};
+        if(!gameData.teamStats[g.loser]) gameData.teamStats[g.loser] = {wins:0, losses:0, seriesWon:0, consecutiveSeries:0};
+        gameData.teamStats[g.winner].wins = (gameData.teamStats[g.winner].wins||0) + 1;
+        gameData.teamStats[g.loser].losses = (gameData.teamStats[g.loser].losses||0) + 1;
+      });
     }
-
-    alert(`✅ ${record.winner} beat ${record.loser}`);
-    showStats();
-  };
-
-  function optimisticLocalSave(r) {
-    gameData.games.unshift(r);
-    if (!gameData.teamStats[r.winner]) gameData.teamStats[r.winner] = { wins: 0, losses: 0 };
-    if (!gameData.teamStats[r.loser]) gameData.teamStats[r.loser] = { wins: 0, losses: 0 };
-    gameData.teamStats[r.winner].wins++;
-    gameData.teamStats[r.loser].losses++;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
-    updateStatsUI();
-  }
-
-  onSnapshot(gamesRef, snapshot => {
-    const docs = snapshot.docs.map(d => d.data());
-    gameData.games = docs.sort((a, b) => new Date(b.time) - new Date(a.time));
-    gameData.teamStats = {};
-    docs.forEach(g => {
-      if (!gameData.teamStats[g.winner]) gameData.teamStats[g.winner] = { wins: 0, losses: 0 };
-      if (!gameData.teamStats[g.loser]) gameData.teamStats[g.loser] = { wins: 0, losses: 0 };
-      gameData.teamStats[g.winner].wins++;
-      gameData.teamStats[g.loser].losses++;
-    });
-    updateStatsUI();
   });
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
-    document.getElementById('homeBtn').style.display = (id === 'homeScreen') ? 'none' : 'inline-block';
-  }
-  window.goHome = () => showScreen('homeScreen');
-  window.showStats = () => { showScreen('statsScreen'); updateStatsUI(); };
-
-  function updateStatsUI() {
-    const total = gameData.games.length;
-    document.getElementById('totalGames').textContent = total;
-    document.getElementById('totalSeries').textContent = Object.keys(gameData.teamStats).length;
-    const t = Object.keys(gameData.teamStats).sort((a, b) => (gameData.teamStats[b].wins || 0) - (gameData.teamStats[a].wins || 0));
-    let html = '';
-    t.forEach((team, i) => {
-      const s = gameData.teamStats[team], w = s.wins || 0, l = s.losses || 0, total = w + l, wp = total ? Math.round((w / total) * 100) : 0, lp = 100 - wp;
-      html += `<div class="team-item ${i === 0 ? 'champion-team' : ''}">
-        <div class="team-name">${team}</div>
-        <div class="metric-row">
-          <div class="metric-box">Wins<br>${w}</div>
-          <div class="metric-box">Losses<br>${l}</div>
-          <div class="metric-box">Win %<br>${wp}</div>
-        </div>
-        <div class="bar-graph"><div class="bar-wins" style="width:${wp}%"></div><div class="bar-losses" style="width:${lp}%"></div></div>
-      </div>`;
+  // if no series finished, but games exist, still accumulate wins/losses
+  if(Object.keys(seriesMap).length===0){
+    (gameData.games||[]).forEach(g=>{
+      if(!gameData.teamStats[g.winner]) gameData.teamStats[g.winner] = {wins:0,losses:0,seriesWon:0,consecutiveSeries:0};
+      if(!gameData.teamStats[g.loser]) gameData.teamStats[g.loser] = {wins:0,losses:0,seriesWon:0,consecutiveSeries:0};
+      gameData.teamStats[g.winner].wins = (gameData.teamStats[g.winner].wins||0) + 1;
+      gameData.teamStats[g.loser].losses = (gameData.teamStats[g.loser].losses||0) + 1;
     });
-    document.getElementById('teamStats').innerHTML = html || '<div style="color:#ccc">No teams yet</div>';
-    const hist = gameData.games.map(g => `<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
-      <small>${new Date(g.time).toLocaleString()}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b>
-    </div>`).join('');
-    document.getElementById('gameHistory').innerHTML = hist || '<div style="color:#ccc">No games yet</div>';
   }
+
+  // Save backup
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData)); }catch(e){console.warn("save backup failed",e);}
+}
+
+/* initial rebuild */
+rebuildFromGames();
+
+/* =========================
+   UI helpers & flow
+   ========================= */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  const el = document.getElementById(id);
+  if(el) el.style.display='block';
+  document.getElementById('homeBtn').style.display=(id==='homeScreen')?'none':'inline-block';
+}
+window.goHome = ()=> showScreen('homeScreen');
+
+window.startNewGame = () => {
+  // start a new series context
+  window.currentSeries = {
+    seriesId: 'series_' + Date.now(),
+    seriesTarget: null,
+    startedAt: new Date().toISOString(),
+    wins: {}
+  };
+  window.currentGame = {};
+  showScreen('gameTypeScreen');
+};
+
+window.selectGameType = t => {
+  if(!window.currentSeries) window.startNewGame();
+  window.currentSeries.seriesTarget = t;
+  showScreen('winnerScreen');
+};
+
+window.selectTeam = async (role, team) => {
+  if(role === 'winner'){
+    window.currentGame = window.currentGame || {};
+    window.currentGame.winner = team;
+    showScreen('loserScreen');
+    return;
+  }
+  // loser branch
+  if(!window.currentGame || !window.currentGame.winner){
+    alert('Pick winner first'); return;
+  }
+  if(team === window.currentGame.winner){
+    alert('Winner and loser cannot be same'); return;
+  }
+
+  window.currentGame.loser = team;
+
+  // build record including series metadata
+  const rec = {
+    winner: window.currentGame.winner,
+    loser: window.currentGame.loser,
+    seriesTarget: window.currentSeries.seriesTarget || 5,
+    seriesId: window.currentSeries.seriesId,
+    seriesStartedAt: window.currentSeries.startedAt,
+    time: new Date().toISOString()
+  };
+
+  // local optimistic push
+  gameData.games.push(rec);
+  // recalc stats from history (safe)
+  rebuildFromGames();
+  // show immediate confirmation modal with series progress message (non-blocking)
+  const msg = buildSeriesProgressMessage(rec);
+  showConfirmationLarge("✅ Game Saved", msg, ()=>{ /* on ok: show stats */ showStats(); });
+
+  // play confetti/fireworks based on punchy outcomes
+  maybeShowGraphics(rec);
+
+  // persist local backup
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData)); }catch(e){console.warn("backup save failed", e);}
+
+  // non-blocking cloud write with timeout
+  if(gamesRef){
+    try {
+      await Promise.race([
+        addDoc(gamesRef, rec),
+        new Promise((_, reject) => setTimeout(()=>reject(new Error('FirebaseTimeout')), 2000))
+      ]);
+      console.log('☁️ Game saved to Firestore', rec);
+      // if series finished, also write series result collection
+      if(checkSeriesFinishedInRecord(rec)){
+        // write seriesResult doc (best-effort)
+        try{
+          const seriesCollection = collection(db, 'seriesResults');
+          await Promise.race([
+            addDoc(seriesCollection, {
+              seriesId: rec.seriesId,
+              winner: rec.winner,
+              target: rec.seriesTarget,
+              finishedAt: new Date().toISOString()
+            }),
+            new Promise((_, reject) => setTimeout(()=>reject(new Error('FirebaseTimeout')),2000))
+          ]);
+        }catch(e){ console.warn('Could not write series result', e); }
+      }
+    } catch (err) {
+      console.warn('⚠️ Firebase save failed or timed out:', err);
+    }
+  } else {
+    console.log('No Firebase configured — operating locally only.');
+  }
+
+  // if series finished, reset currentSeries (start fresh next time)
+  if(checkSeriesFinishedInRecord(rec)){
+    // update team stats seriesWon already handled in rebuildFromGames()
+    // prepare for next series automatically
+    window.currentSeries = null;
+  } else {
+    // update currentSeries wins
+    window.currentSeries.wins[rec.winner] = (window.currentSeries.wins[rec.winner]||0) + 1;
+  }
+
+  // clear currentGame for next selection
+  window.currentGame = {};
+};
+
+/* helper: check series finished from entire history for this record's seriesId */
+function checkSeriesFinishedInRecord(rec){
+  const sid = rec.seriesId;
+  const target = rec.seriesTarget;
+  let wins = {};
+  gameData.games.forEach(g=>{
+    if(g.seriesId===sid){
+      wins[g.winner] = (wins[g.winner]||0) + 1;
+      if(wins[g.winner] >= target) return;
+    }
+  });
+  return Object.values(wins).some(c=>c>=target);
+}
+
+/* build the big confirmation message including "X more wins to reach series" or series victory */
+function buildSeriesProgressMessage(rec){
+  // find current wins in that series
+  const sid = rec.seriesId;
+  const target = rec.seriesTarget;
+  const wins = {};
+  (gameData.games||[]).forEach(g=>{ if(g.seriesId===sid) wins[g.winner] = (wins[g.winner]||0) + 1; });
+  const winnerWins = wins[rec.winner]||0;
+  const loserWins = wins[rec.loser]||0;
+  const remaining = Math.max(0, target - winnerWins);
+  // if series finished
+  if(winnerWins >= target){
+    // determine margin
+    const scoreLine = `${winnerWins}-${loserWins}`;
+    // check perfect sweep
+    if(loserWins===0){
+      return `<div class="confirm-message"><b>FLAWLESS VICTORY! ${scoreLine}!</b><br>${rec.winner} sweeps the series!</div><div class="kicker">🔥 Epic! Fireworks incoming!</div>`;
+    } else {
+      // check consecutive series streak message
+      const s = (gameData.teamStats[rec.winner] && gameData.teamStats[rec.winner].consecutiveSeries) || 1;
+      if(s>=2){
+        return `<div class="confirm-message"><b>🏆 Series Won — ${scoreLine}</b><br>Yaay.. Another fabulous series — ${rec.winner} beat ${rec.loser}. You Won ${s} Series against them! All the best for a Hat-Trick!</div>`;
+      }
+      return `<div class="confirm-message"><b>🏆 Series Won — ${scoreLine}</b><br>${rec.winner} wins this series! Great work.</div>`;
+    }
+  } else {
+    return `<div class="confirm-message"><b>${rec.winner} beat ${rec.loser}</b><br>${rec.winner} needs <b>${remaining}</b> more win${remaining===1?'':'s'} to reach ${target} wins in this series.</div>`;
+  }
+}
+
+/* show confirmation modal (large) */
+function showConfirmationLarge(title, htmlMessage, onOk){
+  closeModal();
+  const overlay = document.createElement('div'); overlay.className='overlay';
+  const box = document.createElement('div'); box.className='confirm-box';
+  box.innerHTML = `<div class="confirm-title">${title}</div>${htmlMessage}`;
+  const btn = document.createElement('button'); btn.className='btn btn-primary'; btn.innerText='OK';
+  btn.onclick = function(){ closeModal(); if(onOk) onOk(); };
+  box.appendChild(btn);
+  box.appendChild(Object.assign(document.createElement('div'), {className:'small-muted', innerText:'Saved locally and syncing to cloud (if available).'}));
+  overlay.appendChild(box);
+  document.getElementById('modalContainer').appendChild(overlay);
+}
+
+/* generic close */
+function closeModal(){ const c=document.getElementById('modalContainer'); c.innerHTML=''; }
+
+/* show regular stats screen */
+window.showStats = ()=>{ showScreen('statsScreen'); updateStatsUI(); };
+
+/* graphics: confetti and fireworks */
+function simpleConfetti(){
+  // small confetti at center
+  const canvas = document.createElement('canvas');
+  canvas.style.position='fixed'; canvas.style.left=0; canvas.style.top=0;
+  canvas.style.width='100%'; canvas.style.height='100%'; canvas.style.zIndex=99998; canvas.style.pointerEvents='none';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const colors=['#ffdd57','#ff6b6b','#44ff8a','#6ec0ff','#ff9ce3'];
+  const p=[];
+  for(let i=0;i<80;i++){
+    p.push({x:Math.random()*canvas.width,y:-Math.random()*canvas.height,w:6+Math.random()*10,h:6+Math.random()*10,vx:-2+Math.random()*4,vy:2+Math.random()*4,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*360,vr:-5+Math.random()*10});
+  }
+  let last = performance.now();
+  function frame(t){
+    const dt = (t-last)/16.67; last=t;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    p.forEach(a=>{
+      a.x += a.vx*dt; a.y += a.vy*dt; a.vy += 0.05*dt; a.rot += a.vr*dt;
+      ctx.save(); ctx.translate(a.x,a.y); ctx.rotate(a.rot*Math.PI/180);
+      ctx.fillStyle = a.color; ctx.fillRect(-a.w/2,-a.h/2,a.w,a.h); ctx.restore();
+    });
+    if(p.every(a=>a.y>canvas.height+50)){ window.removeEventListener('resize', resize); canvas.remove(); return; }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function startFireworks(duration = 2500){
+  const canvas = document.getElementById('fireworks');
+  if(!canvas) return;
+  canvas.style.display='block';
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const fireworks = [];
+  function spawn(){
+    const x = Math.random()*canvas.width;
+    const y = Math.random()*canvas.height*0.6;
+    const count = 30 + Math.round(Math.random()*40);
+    const hue = Math.round(Math.random()*360);
+    for(let i=0;i<count;i++){
+      const speed = Math.random()*4 + 1;
+      const angle = Math.random()*Math.PI*2;
+      fireworks.push({
+        x,y,
+        vx:Math.cos(angle)*speed,
+        vy:Math.sin(angle)*speed,
+        life: 60 + Math.round(Math.random()*40),
+        color: `hsl(${hue} ${60+Math.round(Math.random()*40)}% ${40+Math.round(Math.random()*40)}%)`
+      });
+    }
+  }
+  let last = performance.now();
+  function frame(t){
+    const dt = (t-last)/16.67; last=t;
+    ctx.fillStyle = 'rgba(0,0,0,0.15)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+    for(let i=fireworks.length-1;i>=0;i--){
+      const p = fireworks[i];
+      p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 0.06*dt;
+      p.life--;
+      ctx.beginPath(); ctx.fillStyle = p.color; ctx.arc(p.x,p.y, Math.max(0, Math.min(3, p.life/10)), 0, Math.PI*2); ctx.fill();
+      if(p.life<=0) fireworks.splice(i,1);
+    }
+    requestAnimationFrame(frame);
+  }
+  const spawnInt = setInterval(spawn, 250);
+  requestAnimationFrame(frame);
+  setTimeout(()=>{ clearInterval(spawnInt); setTimeout(()=>{ canvas.style.display='none'; }, 1200); }, duration);
+}
+
+/* choose which graphic to show */
+function maybeShowGraphics(rec){
+  // if series finished and sweep
+  const sid = rec.seriesId; const target = rec.seriesTarget;
+  let wins = {};
+  gameData.games.forEach(g=>{ if(g.seriesId===sid) wins[g.winner] = (wins[g.winner]||0) + 1; });
+  const winnerWins = wins[rec.winner]||0;
+  const loserWins = wins[rec.loser]||0;
+  if(winnerWins >= target && loserWins === 0){
+    // sweep
+    startFireworks(3000);
+  } else {
+    // always show confetti for game saved
+    simpleConfetti();
+  }
+}
+
+/* =========================
+   Delete / Reset (password protected)
+   ========================= */
+function deleteLastGame(){
+  if(!(gameData.games && gameData.games.length)) { alert("No games to delete."); return; }
+  const pw = prompt("Enter password to delete last game:");
+  if(pw !== "zachariahrenji"){ alert("❌ Incorrect password"); return; }
+  if(!confirm("Delete the most recent game permanently?")) return;
+  gameData.games.pop();
+  rebuildFromGames();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+  showConfirmationLarge("✅ Last Game Deleted", `<div class="confirm-message">Last game removed from history.</div>`, ()=> showStats());
+}
+
+function resetStats(){
+  const pw = prompt("Enter password to reset all data:");
+  if(pw !== "zachariahrenji"){ alert("❌ Incorrect password"); return; }
+  if(!confirm("⚠️ This will permanently delete ALL stats. Continue?")) return;
+  gameData = { games: [], teamStats: {}, seriesCount: 0 };
+  localStorage.removeItem(STORAGE_KEY);
+  // Optionally: try deleting from Firestore? not performed here (requires admin)
+  showConfirmationLarge("✅ Reset Complete", `<div class="confirm-message">All statistics erased locally. Cloud data unchanged.</div>`, ()=> showStats());
+}
+
+/* =========================
+   Import / Export JSON (simple)
+   ========================= */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(gameData, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bluff-tracker-backup.json'; a.click();
+}
+function importJSONPrompt(){
+  const input = document.createElement('input'); input.type='file'; input.accept='application/json';
+  input.onchange = (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ()=> {
+      try {
+        const parsed = JSON.parse(r.result);
+        if(parsed && Array.isArray(parsed.games)){
+          if(confirm('Importing will replace local history. Continue?')){
+            gameData = parsed;
+            rebuildFromGames();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+            alert('Import complete.');
+            showStats();
+          }
+        } else alert('Invalid file format.');
+      } catch(ex){ alert('Failed to parse file.'); }
+    };
+    r.readAsText(f);
+  };
+  input.click();
+}
+
+/* =========================
+   Live Firestore sync (listens for changes and replaces local canonical data)
+   ========================= */
+if(gamesRef){
+  try{
+    onSnapshot(gamesRef, snapshot=>{
+      // snapshot may contain many docs; convert to array
+      const docs = snapshot.docs.map(d => d.data());
+      // sort chronologically
+      docs.sort((a,b)=> new Date(a.time) - new Date(b.time));
+      // replace local gameData.games with cloud canonical list BUT keep local-only games if any (we won't merge to avoid duplicates)
+      // For simplicity: we'll set local history to cloud docs
+      gameData.games = docs;
+      rebuildFromGames();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+      console.log('🔁 Synced games from Firestore. Total:', gameData.games.length);
+    }, err=>{
+      console.warn('Firestore snapshot error:', err);
+    });
+  } catch(e){ console.warn('onSnapshot failed:', e); }
+}
+
+/* =========================
+   UI: update stats panel from gameData
+   ========================= */
+function updateStatsUI(){
+  document.getElementById('totalGames').textContent = (gameData.games||[]).length;
+  document.getElementById('totalSeries').textContent = (gameData.seriesCount||0);
+  const teams = Object.keys(gameData.teamStats||{}).sort((a,b)=> (gameData.teamStats[b].wins||0)-(gameData.teamStats[a].wins||0));
+  let html = '';
+  teams.forEach((team, idx)=>{
+    const s = gameData.teamStats[team];
+    const w = s.wins||0, l = s.losses||0, sw = s.seriesWon||0, cs = s.consecutiveSeries||0;
+    const total = w + l; const wp = total?Math.round((w/total)*100):0; const lp = 100-wp;
+    html += `<div class="team-item ${idx===0?'champion-team':''}">
+      <div class="team-name">${team}</div>
+      <div class="metric-row">
+        <div class="metric-box"><div class="metric-label">Wins</div><div class="metric-value">${w}</div></div>
+        <div class="metric-box"><div class="metric-label">Losses</div><div class="metric-value">${l}</div></div>
+        <div class="metric-box"><div class="metric-label">Series</div><div class="metric-value">${sw||0}${cs>0?` <small>(${cs} streak)</small>`:''}</div></div>
+        <div class="metric-box"><div class="metric-label">Win %</div><div class="metric-value">${wp}%</div></div>
+      </div>
+      <div class="bar-graph"><div class="bar-wins" style="width:${wp}%"></div><div class="bar-losses" style="width:${lp}%"></div></div>
+    </div>`;
+  });
+  document.getElementById('teamStats').innerHTML = html || '<div style="color:#cfd8e3">No teams yet</div>';
+
+  const hist = (gameData.games||[]).slice().reverse().map(g=>{
+    return `<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
+      <small>${new Date(g.time).toLocaleString()}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b> <small style="opacity:0.7">[series target:${g.seriesTarget || g.series}]</small>
+    </div>`;
+  }).join('');
+  document.getElementById('gameHistory').innerHTML = hist || '<div style="color:#cfd8e3">No games yet</div>';
+}
+
+/* expose updateStatsUI globally for convenience */
+window.updateStatsUI = updateStatsUI;
+
+/* initial UI populate */
+updateStatsUI();
+
+console.log("✅ Bluff Masters loaded. Local backup present. Firebase (if configured) will sync in background.");
+
 </script>
 </body>
 </html>
