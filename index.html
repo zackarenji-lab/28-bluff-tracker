@@ -33,11 +33,9 @@ body{
 .bar-graph{height:8px;width:100%;background:#111;border-radius:6px;overflow:hidden;display:flex;margin-top:8px}
 .bar-wins{background:#2ecc71;transition:width 1s ease}
 .bar-losses{background:#e74c3c;transition:width 1s ease}
-
 .champion-team{border:2px solid gold;animation:glow 2.2s infinite;position:relative}
 .champion-team::before{content:"👑";position:absolute;top:-10px;right:-10px;font-size:1.4rem}
 @keyframes glow{0%{box-shadow:0 0 6px gold}50%{box-shadow:0 0 20px gold}100%{box-shadow:0 0 6px gold}}
-
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999}
 .confirm-box{background:#0f1720;padding:30px;border-radius:12px;color:#ddd;max-width:420px;text-align:center}
 .small-muted{font-size:0.8rem;color:#9aa6ad;margin-top:10px}
@@ -48,7 +46,7 @@ body{
   <div class="top-row">
     <div class="header">
       <h1>Bluff Masters</h1>
-      <div style="color:#cdd8e2;font-size:0.95rem">Track wins, series & stats</div>
+      <div style="color:#cdd8e2;font-size:0.95rem">Track wins, series & stats (shared online)</div>
     </div>
     <button id="homeBtn" class="btn btn-secondary" style="display:none" onclick="goHome()">🏠 Home</button>
   </div>
@@ -56,14 +54,14 @@ body{
   <!-- HOME -->
   <div id="homeScreen" class="screen active">
     <div class="card" style="text-align:center">
-      <img src="bluffmasters.png" class="home-image" onerror="console.warn('Image not found: bluffmasters.png')" />
+      <img src="bluffmasters.png" class="home-image" />
       <h2 style="margin:10px 0 12px 0">Welcome</h2>
       <button class="btn btn-primary" onclick="startNewGame()">➕ New Game</button>
       <button class="btn btn-secondary" onclick="showStats()">📊 View Statistics</button>
     </div>
   </div>
 
-  <!-- Game Type -->
+  <!-- Game selection -->
   <div id="gameTypeScreen" class="screen" style="display:none">
     <div class="card">
       <h2>Select Series</h2>
@@ -104,7 +102,7 @@ body{
   <!-- Stats -->
   <div id="statsScreen" class="screen" style="display:none">
     <div class="card">
-      <h2>Overall Statistics</h2>
+      <h2>Shared Statistics (Live)</h2>
 
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px">
         <div style="background:linear-gradient(135deg,#3affd0,#20a56e);padding:12px;border-radius:8px;text-align:center;font-weight:700;color:#07130f">
@@ -121,215 +119,104 @@ body{
       <div id="gameHistory"></div>
 
       <div style="margin-top:12px">
-        <button class="btn btn-primary" onclick="shareToWhatsApp()">📤 Share</button>
         <button class="btn btn-secondary" onclick="goHome()">← Back</button>
-      </div>
-
-      <!-- small delete-last-game link -->
-      <div style="text-align:center; margin-top:10px;">
-        <span style="font-size:0.75rem; opacity:0.7; cursor:pointer; text-decoration:underline;"
-              onclick="deleteLastGame()">
-          Delete last game
-        </span>
-      </div>
-
-      <!-- small reset-all link -->
-      <div style="text-align:center; margin-top:6px;">
-        <span style="font-size:0.7rem; opacity:0.7; cursor:pointer; text-decoration:underline;"
-              onclick="resetStats()">
-          Reset all statistics
-        </span>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-let currentGame={};
-let gameData={games:[],teamStats:{}};
-const STORAGE_KEY='bluff_tracker_v1';
-const sound=new Audio('ding.mp3');
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-(function init(){
-  const raw=localStorage.getItem(STORAGE_KEY);
-  if(raw) gameData=JSON.parse(raw);
-})();
+  const firebaseConfig = {
+    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc",
+    authDomain: "bluff-tracker-7542e.firebaseapp.com",
+    projectId: "bluff-tracker-7542e",
+    storageBucket: "bluff-tracker-7542e.firebasestorage.app",
+    messagingSenderId: "280965687037",
+    appId: "1:280965687037:web:be0b05da36ef653ab68094"
+  };
 
-function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(gameData));}
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
-  document.getElementById(id).style.display='block';
-  document.getElementById('homeBtn').style.display=(id==='homeScreen')?'none':'inline-block';
-}
-function goHome(){showScreen('homeScreen');}
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  console.log("🔥 Firebase live sync enabled.");
 
-function startNewGame(){currentGame={};showScreen('gameTypeScreen');}
-function selectGameType(t){currentGame.gameType=t;showScreen('winnerScreen');}
+  let gameData = { games: [], teamStats: {} };
+  const STORAGE_KEY = 'bluff_tracker_v1';
 
-function selectTeam(role,team){
-  if(role==='winner'){currentGame.winner=team;showScreen('loserScreen');}
-  else{
-    if(!currentGame.winner){alert('Pick winner first');return;}
-    if(team===currentGame.winner){alert('Winner and loser cannot be same');return;}
-    currentGame.loser=team;saveGame();
-  }
-}
-
-function saveGame(){
-  currentGame.date=new Date().toISOString();
-  gameData.games.push({...currentGame});
-
-  if(!gameData.teamStats[currentGame.winner]) gameData.teamStats[currentGame.winner]={wins:0,losses:0,seriesWon:0};
-  if(!gameData.teamStats[currentGame.loser]) gameData.teamStats[currentGame.loser]={wins:0,losses:0,seriesWon:0};
-
-  gameData.teamStats[currentGame.winner].wins++;
-  gameData.teamStats[currentGame.loser].losses++;
-
-  try{sound.currentTime=0;sound.play();}catch(e){}
-
-  saveData();
-  showConfirmation("✅ Game Saved",`${currentGame.winner} beat ${currentGame.loser}`,()=>{
-    simpleConfetti();
-    showStats();
-  });
-  currentGame={};
-}
-
-/* simple confetti */
-function simpleConfetti(){
-  const canvas=document.createElement('canvas');
-  canvas.style.position='fixed';canvas.style.left=0;canvas.style.top=0;
-  canvas.style.width='100%';canvas.style.height='100%';
-  canvas.style.zIndex=99998;canvas.style.pointerEvents='none';
-  document.body.appendChild(canvas);
-  const ctx=canvas.getContext('2d');
-  function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
-  resize();window.addEventListener('resize',resize);
-  const colors=['#ffdd57','#ff6b6b','#44ff8a','#6ec0ff','#ff9ce3'];
-  const p=[];
-  for(let i=0;i<70;i++){
-    p.push({x:Math.random()*canvas.width,y:-Math.random()*canvas.height,
-    w:6+Math.random()*10,h:6+Math.random()*10,
-    vx:-2+Math.random()*4,vy:2+Math.random()*4,
-    color:colors[Math.floor(Math.random()*colors.length)],
-    rot:Math.random()*360,vr:-5+Math.random()*10});
-  }
-  let last=performance.now();
-  function frame(t){
-    const dt=(t-last)/16.67;last=t;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    p.forEach(a=>{
-      a.x+=a.vx*dt;a.y+=a.vy*dt;a.vy+=0.05*dt;a.rot+=a.vr*dt;
-      ctx.save();ctx.translate(a.x,a.y);ctx.rotate(a.rot*Math.PI/180);
-      ctx.fillStyle=a.color;ctx.fillRect(-a.w/2,-a.h/2,a.w,a.h);ctx.restore();
+  // Live sync from Firebase
+  const gamesRef = collection(db, "games");
+  onSnapshot(gamesRef, snapshot => {
+    const docs = snapshot.docs.map(d => d.data());
+    gameData.games = docs.sort((a,b)=>new Date(b.time)-new Date(a.time));
+    gameData.teamStats = {};
+    docs.forEach(g=>{
+      if(!gameData.teamStats[g.winner]) gameData.teamStats[g.winner]={wins:0,losses:0};
+      if(!gameData.teamStats[g.loser]) gameData.teamStats[g.loser]={wins:0,losses:0};
+      gameData.teamStats[g.winner].wins++;
+      gameData.teamStats[g.loser].losses++;
     });
-    if(p.every(a=>a.y>canvas.height+50)){
-      window.removeEventListener('resize',resize);
-      canvas.remove();return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
+    updateStatsUI();
+  });
+
+  // Functions for UI
+  window.startNewGame = ()=>{window.currentGame={};showScreen('gameTypeScreen');};
+  window.selectGameType=t=>{window.currentGame.gameType=t;showScreen('winnerScreen');};
+  window.selectTeam=async(role,team)=>{
+    if(role==='winner'){window.currentGame.winner=team;showScreen('loserScreen');}
+    else{
+      if(!window.currentGame.winner)return alert('Pick winner first');
+      if(team===window.currentGame.winner)return alert('Winner and loser cannot be same');
+      window.currentGame.loser=team;
+      await addDoc(gamesRef, {
+        winner: window.currentGame.winner,
+        loser: window.currentGame.loser,
+        series: window.currentGame.gameType,
+        time: new Date().toISOString()
+      });
+      alert(`✅ ${window.currentGame.winner} beat ${window.currentGame.loser}`);
+      showStats();
     }
-    requestAnimationFrame(frame);
+  };
+
+  window.showStats = ()=>{showScreen('statsScreen'); updateStatsUI();};
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+    document.getElementById(id).style.display='block';
+    document.getElementById('homeBtn').style.display=(id==='homeScreen')?'none':'inline-block';
   }
-  requestAnimationFrame(frame);
-}
+  window.goHome=()=>showScreen('homeScreen');
 
-/* confirmation popup */
-let modalRef=null;
-function showConfirmation(title,msg,onOk){
-  closeModal();
-  const overlay=document.createElement('div');overlay.className='overlay';
-  const box=document.createElement('div');box.className='confirm-box';
-  box.innerHTML=`<h2>${title}</h2><div style="margin-bottom:12px">${msg}</div>`;
-  const btn=document.createElement('button');btn.className='btn btn-primary';
-  btn.innerText='OK';btn.onclick=function(){closeModal();if(onOk)onOk();};
-  box.appendChild(btn);
-  box.appendChild(Object.assign(document.createElement('div'),{className:'small-muted',innerText:'Saved in browser storage.'}));
-  overlay.appendChild(box);document.body.appendChild(overlay);modalRef=overlay;
-}
-function closeModal(){if(modalRef){modalRef.remove();modalRef=null;}}
+  function updateStatsUI(){
+    const totalGames = gameData.games.length;
+    document.getElementById('totalGames').textContent=totalGames;
+    document.getElementById('totalSeries').textContent=Object.keys(gameData.teamStats).length;
+    const t = Object.keys(gameData.teamStats).sort((a,b)=>(gameData.teamStats[b].wins||0)-(gameData.teamStats[a].wins||0));
+    let html='';
+    t.forEach((team,i)=>{
+      const s=gameData.teamStats[team],w=s.wins||0,l=s.losses||0,total=w+l,wp=total?Math.round((w/total)*100):0,lp=100-wp;
+      html+=`<div class="team-item ${i===0?'champion-team':''}">
+        <div class="team-name">${team}</div>
+        <div class="metric-row">
+          <div class="metric-box">Wins<br>${w}</div>
+          <div class="metric-box">Losses<br>${l}</div>
+          <div class="metric-box">Win %<br>${wp}</div>
+        </div>
+        <div class="bar-graph"><div class="bar-wins" style="width:${wp}%"></div><div class="bar-losses" style="width:${lp}%"></div></div>
+      </div>`;
+    });
+    document.getElementById('teamStats').innerHTML=html||'<div style="color:#ccc">No teams yet</div>';
+    const hist = gameData.games.map(g=>{
+      const d=new Date(g.time).toLocaleString();
+      return `<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
+        <small>${d}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b>
+      </div>`;
+    }).join('');
+    document.getElementById('gameHistory').innerHTML=hist||'<div style="color:#ccc">No games yet</div>';
+  }
 
-/* stats screen */
-function showStats(){
-  document.getElementById('totalGames').textContent=gameData.games.length;
-  document.getElementById('totalSeries').textContent=Object.values(gameData.teamStats).reduce((a,b)=>a+(b.seriesWon||0),0);
-
-  const t=Object.keys(gameData.teamStats).sort((a,b)=>(gameData.teamStats[b].wins||0)-(gameData.teamStats[a].wins||0));
-  let html='';
-  t.forEach((team,i)=>{
-    const s=gameData.teamStats[team],w=s.wins||0,l=s.losses||0,total=w+l,wp=total?Math.round((w/total)*100):0,lp=100-wp;
-    html+=`
-    <div class="team-item ${i===0?'champion-team':''}">
-      <div class="team-name">${team}</div>
-      <div class="metric-row">
-        <div class="metric-box"><div class="metric-label">Wins</div><div class="metric-value">${w}</div></div>
-        <div class="metric-box"><div class="metric-label">Losses</div><div class="metric-value">${l}</div></div>
-        <div class="metric-box"><div class="metric-label">Series</div><div class="metric-value">${s.seriesWon||0}</div></div>
-        <div class="metric-box"><div class="metric-label">Win %</div><div class="metric-value">${wp}</div></div>
-      </div>
-      <div class="bar-graph"><div class="bar-wins" style="width:${wp}%"></div><div class="bar-losses" style="width:${lp}%"></div></div>
-    </div>`;
-  });
-  document.getElementById('teamStats').innerHTML=html||'<div style="color:#cfd8e3">No teams yet</div>';
-
-  const hist=gameData.games.slice().reverse().map(g=>{
-    const d=new Date(g.date).toLocaleString();
-    return `
-    <div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
-      <small>${d}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b>
-    </div>`;
-  }).join('');
-  document.getElementById('gameHistory').innerHTML=hist||'<div style="color:#cfd8e3">No games yet</div>';
-
-  showScreen('statsScreen');
-}
-
-/* delete only the last game */
-function deleteLastGame(){
-  if(gameData.games.length===0){alert("No games to delete.");return;}
-
-  const pw=prompt("Enter password to delete last game:");
-  if(pw!=="zachariahrenji"){alert("❌ Incorrect password");return;}
-
-  if(!confirm("Delete the most recent game permanently?"))return;
-
-  const g=gameData.games[gameData.games.length-1];
-  if(gameData.teamStats[g.winner] && gameData.teamStats[g.winner].wins>0) gameData.teamStats[g.winner].wins--;
-  if(gameData.teamStats[g.loser] && gameData.teamStats[g.loser].losses>0) gameData.teamStats[g.loser].losses--;
-
-  gameData.games.pop();
-
-  Object.keys(gameData.teamStats).forEach(t=>{
-    const s=gameData.teamStats[t];
-    if((s.wins||0)+(s.losses||0)+(s.seriesWon||0)===0) delete gameData.teamStats[t];
-  });
-
-  saveData();
-  showConfirmation("✅ Last Game Deleted","Statistics updated.",()=>showStats());
-}
-
-/* reset all stats */
-function resetStats(){
-  const pw=prompt("Enter password to reset all data:");
-  if(pw!=="zachariahrenji"){alert("❌ Incorrect password");return;}
-
-  if(!confirm("⚠️ This will permanently delete ALL stats. Continue?"))return;
-
-  localStorage.removeItem(STORAGE_KEY);
-  gameData={games:[],teamStats:{}};
-  showConfirmation("✅ Reset Complete","All statistics erased.",()=>showStats());
-}
-
-/* WhatsApp share */
-function shareToWhatsApp(){
-  let msg=`🎴 Bluff Masters — Stats\nTotal Games: ${gameData.games.length}\n\n`;
-  Object.keys(gameData.teamStats).forEach(t=>{
-    const s=gameData.teamStats[t];
-    msg+=`${t} — W:${s.wins||0} L:${s.losses||0} S:${s.seriesWon||0}\n`;
-  });
-  const url='https://api.whatsapp.com/send?text='+encodeURIComponent(msg);
-  window.open(url,'_blank');
-}
-
-console.log("✅ Bluff Masters loaded. Make sure bluffmasters.png and ding.mp3 are uploaded.");
 </script>
 </body>
 </html>
