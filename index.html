@@ -35,9 +35,6 @@ body{
 .champion-team{border:2px solid gold;animation:glow 2.2s infinite;position:relative}
 .champion-team::before{content:"👑";position:absolute;top:-10px;right:-10px;font-size:1.4rem}
 @keyframes glow{0%{box-shadow:0 0 6px gold}50%{box-shadow:0 0 20px gold}100%{box-shadow:0 0 6px gold}}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999}
-.confirm-box{background:#0f1720;padding:30px;border-radius:12px;color:#ddd;max-width:420px;text-align:center}
-.small-muted{font-size:0.8rem;color:#9aa6ad;margin-top:10px}
 </style>
 </head>
 <body>
@@ -101,7 +98,7 @@ body{
   <!-- STATS -->
   <div id="statsScreen" class="screen" style="display:none">
     <div class="card">
-      <h2>Overall Statistics (Shared)</h2>
+      <h2>Overall Statistics</h2>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px">
         <div style="background:linear-gradient(135deg,#3affd0,#20a56e);padding:12px;border-radius:8px;text-align:center;font-weight:700;color:#07130f">
           <div>Total Games</div><div id="totalGames">0</div>
@@ -135,79 +132,92 @@ body{
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  console.log("🔥 Firebase live sync enabled (resilient mode).");
+  const gamesRef = collection(db, "games");
+
+  console.log("🔥 Firebase initialized");
 
   let gameData = { games: [], teamStats: {} };
   const STORAGE_KEY = 'bluff_tracker_v1';
 
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) gameData = JSON.parse(raw);
-  } catch (e) { console.warn("No local data yet"); }
+  window.startNewGame = () => { window.currentGame = {}; showScreen('gameTypeScreen'); };
+  window.selectGameType = t => { window.currentGame.gameType = t; showScreen('winnerScreen'); };
 
-  const gamesRef = collection(db, "games");
-  onSnapshot(gamesRef, snapshot => {
-    const docs = snapshot.docs.map(d => d.data());
-    gameData.games = docs.sort((a,b)=>new Date(b.time)-new Date(a.time));
-    gameData.teamStats = {};
-    docs.forEach(g=>{
-      if(!gameData.teamStats[g.winner]) gameData.teamStats[g.winner]={wins:0,losses:0};
-      if(!gameData.teamStats[g.loser]) gameData.teamStats[g.loser]={wins:0,losses:0};
-      gameData.teamStats[g.winner].wins++;
-      gameData.teamStats[g.loser].losses++;
-    });
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(gameData));
-    updateStatsUI();
-  }, err=>console.warn("onSnapshot error:", err));
-
-  window.startNewGame=()=>{window.currentGame={};showScreen('gameTypeScreen');};
-  window.selectGameType=t=>{window.currentGame.gameType=t;showScreen('winnerScreen');};
-
-  window.selectTeam=async(role,team)=>{
-    if(role==='winner'){window.currentGame.winner=team;showScreen('loserScreen');return;}
-    if(!window.currentGame.winner){alert('Pick winner first');return;}
-    if(team===window.currentGame.winner){alert('Winner and loser cannot be same');return;}
-    window.currentGame.loser=team;
-
-    const record={winner:window.currentGame.winner,loser:window.currentGame.loser,series:window.currentGame.gameType,time:new Date().toISOString()};
-    optimisticLocalSave(record);
-    try{
-      await addDoc(gamesRef,record);
-      console.log("☁️ Game uploaded:",record);
-    }catch(e){
-      console.warn("⚠️ Cloud upload failed, kept locally:",e);
+  window.selectTeam = async (role, team) => {
+    if (role === 'winner') {
+      window.currentGame.winner = team;
+      showScreen('loserScreen');
+      return;
     }
+
+    if (!window.currentGame.winner) return alert('Pick winner first');
+    if (team === window.currentGame.winner) return alert('Winner and loser cannot be same');
+
+    window.currentGame.loser = team;
+    const record = {
+      winner: window.currentGame.winner,
+      loser: window.currentGame.loser,
+      series: window.currentGame.gameType,
+      time: new Date().toISOString()
+    };
+
+    // Save locally first
+    optimisticLocalSave(record);
+
+    // Try Firebase, but never hang
+    try {
+      await Promise.race([
+        addDoc(gamesRef, record),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000))
+      ]);
+      console.log("☁️ Uploaded to Firestore:", record);
+    } catch (err) {
+      console.warn("⚠️ Firebase save failed or timed out:", err);
+    }
+
     alert(`✅ ${record.winner} beat ${record.loser}`);
     showStats();
   };
 
-  window.showStats=()=>{showScreen('statsScreen');updateStatsUI();};
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
-    document.getElementById(id).style.display='block';
-    document.getElementById('homeBtn').style.display=(id==='homeScreen')?'none':'inline-block';
-  }
-  window.goHome=()=>showScreen('homeScreen');
-
-  function optimisticLocalSave(record){
-    gameData.games.unshift(record);
-    if(!gameData.teamStats[record.winner]) gameData.teamStats[record.winner]={wins:0,losses:0};
-    if(!gameData.teamStats[record.loser]) gameData.teamStats[record.loser]={wins:0,losses:0};
-    gameData.teamStats[record.winner].wins++;
-    gameData.teamStats[record.loser].losses++;
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(gameData));
+  function optimisticLocalSave(r) {
+    gameData.games.unshift(r);
+    if (!gameData.teamStats[r.winner]) gameData.teamStats[r.winner] = { wins: 0, losses: 0 };
+    if (!gameData.teamStats[r.loser]) gameData.teamStats[r.loser] = { wins: 0, losses: 0 };
+    gameData.teamStats[r.winner].wins++;
+    gameData.teamStats[r.loser].losses++;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData));
     updateStatsUI();
   }
 
-  function updateStatsUI(){
-    const total=gameData.games.length;
-    document.getElementById('totalGames').textContent=total;
-    document.getElementById('totalSeries').textContent=Object.keys(gameData.teamStats).length;
-    const t=Object.keys(gameData.teamStats).sort((a,b)=>(gameData.teamStats[b].wins||0)-(gameData.teamStats[a].wins||0));
-    let html='';
-    t.forEach((team,i)=>{
-      const s=gameData.teamStats[team],w=s.wins||0,l=s.losses||0,total=w+l,wp=total?Math.round((w/total)*100):0,lp=100-wp;
-      html+=`<div class="team-item ${i===0?'champion-team':''}">
+  onSnapshot(gamesRef, snapshot => {
+    const docs = snapshot.docs.map(d => d.data());
+    gameData.games = docs.sort((a, b) => new Date(b.time) - new Date(a.time));
+    gameData.teamStats = {};
+    docs.forEach(g => {
+      if (!gameData.teamStats[g.winner]) gameData.teamStats[g.winner] = { wins: 0, losses: 0 };
+      if (!gameData.teamStats[g.loser]) gameData.teamStats[g.loser] = { wins: 0, losses: 0 };
+      gameData.teamStats[g.winner].wins++;
+      gameData.teamStats[g.loser].losses++;
+    });
+    updateStatsUI();
+  });
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
+    document.getElementById('homeBtn').style.display = (id === 'homeScreen') ? 'none' : 'inline-block';
+  }
+  window.goHome = () => showScreen('homeScreen');
+  window.showStats = () => { showScreen('statsScreen'); updateStatsUI(); };
+
+  function updateStatsUI() {
+    const total = gameData.games.length;
+    document.getElementById('totalGames').textContent = total;
+    document.getElementById('totalSeries').textContent = Object.keys(gameData.teamStats).length;
+    const t = Object.keys(gameData.teamStats).sort((a, b) => (gameData.teamStats[b].wins || 0) - (gameData.teamStats[a].wins || 0));
+    let html = '';
+    t.forEach((team, i) => {
+      const s = gameData.teamStats[team], w = s.wins || 0, l = s.losses || 0, total = w + l, wp = total ? Math.round((w / total) * 100) : 0, lp = 100 - wp;
+      html += `<div class="team-item ${i === 0 ? 'champion-team' : ''}">
         <div class="team-name">${team}</div>
         <div class="metric-row">
           <div class="metric-box">Wins<br>${w}</div>
@@ -217,11 +227,11 @@ body{
         <div class="bar-graph"><div class="bar-wins" style="width:${wp}%"></div><div class="bar-losses" style="width:${lp}%"></div></div>
       </div>`;
     });
-    document.getElementById('teamStats').innerHTML=html||'<div style="color:#ccc">No teams yet</div>';
-    const hist=gameData.games.map(g=>`<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
+    document.getElementById('teamStats').innerHTML = html || '<div style="color:#ccc">No teams yet</div>';
+    const hist = gameData.games.map(g => `<div style="background:rgba(255,255,255,0.06);padding:10px;margin:8px 0;border-radius:10px;">
       <small>${new Date(g.time).toLocaleString()}</small><br><b>${g.winner}</b> beat <b>${g.loser}</b>
     </div>`).join('');
-    document.getElementById('gameHistory').innerHTML=hist||'<div style="color:#ccc">No games yet</div>';
+    document.getElementById('gameHistory').innerHTML = hist || '<div style="color:#ccc">No games yet</div>';
   }
 </script>
 </body>
