@@ -598,4 +598,17 @@ console.log("✅ Bluff Masters app.js loaded — features: detailed add, full st
 /* ========== Expose a few helpers for debugging ========== */
 window._dumpLocal = () => JSON.stringify(gameData, null, 2);
 window._forceSync = async () => { if(gamesRef){ const snaps = await getDocs(query(gamesRef, orderBy("time"))); gameData.games = snaps.docs.map(d=>d.data()); saveLocal(); renderHomeActiveList(); updateStatsUI(); console.log("Forced sync"); } };
+/* === UI Navigation === */
+window.showStats = function() {
+  document.getElementById("homeSection").style.display = "none";
+  document.getElementById("statsSection").style.display = "block";
+  updateStatsUI();
+};
+
+window.showHome = function() {
+  document.getElementById("statsSection").style.display = "none";
+  document.getElementById("homeSection").style.display = "block";
+  renderHomeActiveList();
+};
+
 
