@@ -6,73 +6,58 @@
 <title>Bluff Masters</title>
 <link rel="icon" href="blufffavicon.png" />
 <style>
-  /* --- Base (deep navy + neumorphic cards) --- */
   :root{
-    --bg1:#071026; /* deeper navy */
-    --bg2:#0b1b34;
-    --card:#0f2238;
+    --bg1:#061226;
+    --bg2:#081b31;
+    --card:#0e2336;
     --muted:#9fb7bf;
     --accent:#2ecc71;
-    --glass: rgba(255,255,255,0.03);
     --gold:#ffd36d;
     --danger:#ff6b6b;
   }
-  html,body{height:100%;margin:0;font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(circle at top left,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
-  .wrap{max-width:1100px;margin:24px auto;padding:28px;}
+  html,body{height:100%;margin:0;font-family:Inter,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1100px;margin:22px auto;padding:20px;}
   header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
-  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 6px 18px rgba(0,0,0,0.5)}
+  .logo{width:62px;height:62px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
   h1{margin:0;font-size:28px}
-  .subtitle{color:var(--muted);font-size:14px;margin-top:6px}
+  .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
 
-  /* neumorphic card */
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:18px; box-shadow: 8px 8px 24px rgba(2,10,20,0.6), -6px -6px 18px rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03);}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:16px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6), -6px -6px 18px rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03);}
 
-  /* Active Series area */
   .section-title{font-size:28px;margin:6px 0 12px}
+  .small-muted{font-size:0.9rem;color:var(--muted)}
+
+  /* active series */
   .active-wrap{margin-top:12px}
   #activeList{display:flex;flex-direction:column;gap:12px}
-
-  /* single series card - layout + right controls */
   .series-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(0,0,0,0.02));border:1px solid rgba(255,255,255,0.02)}
-  .series-card .left { flex:1; }
-  .series-card .left .title { font-weight:700;font-size:1.05rem }
-  .series-card .left .sub { color:var(--muted); font-size:0.9rem;margin-top:6px }
-
+  .series-card .left{flex:1}
+  .series-card .title{font-weight:700;font-size:1.05rem}
+  .series-card .sub{color:var(--muted);font-size:0.9rem;margin-top:6px}
   .right-controls{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;background:linear-gradient(90deg, rgba(255,208,96,0.02), rgba(255,208,96,0.005));border:1px solid rgba(255,208,96,0.04)}
   .score{font-weight:800;font-size:1.05rem;margin-right:6px;color:#e9f7f1}
-  .neu-btn{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:10px;border:1px solid rgba(255,255,255,0.04);padding:10px 14px;color:#e6eef3;font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);transition:transform .12s ease,box-shadow .12s ease}
+  .neu-btn{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:10px;border:1px solid rgba(255,255,255,0.04);padding:10px 14px;color:#e6eef3;font-weight:700;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
   .neu-btn.secondary{background:linear-gradient(180deg, rgba(0,0,0,0.06), rgba(255,255,255,0.01));color:#cfe3e3}
-  .neu-btn:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,0.5)}
+  .neu-btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.5)}
   .trash{background:transparent;border:none;padding:8px;border-radius:8px;cursor:pointer;color:rgba(255,255,255,0.9);transition:transform .12s ease,box-shadow .12s ease}
   .trash:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(255,80,80,0.25);color:var(--danger)}
 
-  /* stats area (hidden initial) */
-  #statsSection{display:none;margin-top:18px}
-  .stats-grid{display:flex;gap:12px;flex-wrap:wrap}
-  .stat-card{flex:1;min-width:180px;padding:12px;border-radius:12px;font-weight:700;text-align:center;color:#07130f}
+  /* champion */
+  .champion-bar{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;position:relative;overflow:visible}
+  .trophy{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 12px 40px rgba(255,200,80,0.12)}
+  .champion-aurora{position:absolute;left:-12px;top:-10px;width:220px;height:80px;pointer-events:none;border-radius:40px;filter:blur(26px);opacity:0.95;background: radial-gradient(ellipse at center, rgba(255,210,110,0.12), rgba(255,210,110,0.02) 40%);transform:translateX(-40%);}
+  #champParticles{position:absolute;right:12px;top:4px;width:160px;height:60px;pointer-events:none;overflow:visible}
 
-  /* modal/overlay */
+  /* modal overlay */
   .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;z-index:9999}
   .confirm-box{background:#0b1622;padding:22px;border-radius:12px;color:#e6eef3;max-width:520px;width:92%;box-shadow:0 12px 60px rgba(2,6,12,0.7);border:1px solid rgba(255,255,255,0.04)}
-  .small-muted{font-size:0.85rem;color:var(--muted);margin-top:10px}
-
-  /* trophy & champion */
-  .champion-bar{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;position:relative;overflow:visible}
-  .trophy{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 12px 40px rgba(255,200,80,0.12)}
-  .trophy .svg{filter: drop-shadow(0 6px 22px rgba(255,200,80,0.18));}
-  .champion-aurora{position:absolute;left:-12px;top:-10px;width:220px;height:80px;pointer-events:none;border-radius:40px;filter:blur(26px);opacity:0.9; background: radial-gradient(ellipse at center, rgba(255,210,110,0.12), rgba(255,210,110,0.02) 40%); transform:translateX(-40%);}
-  #champParticles{position:absolute;right:12px;top:4px;width:160px;height:60px;pointer-events:none;overflow:visible}
+  .confirm-box h3{margin:0 0 10px 0}
 
   /* fireworks canvas */
   canvas#fireworks{position:fixed;left:0;top:0;width:100%;height:100%;z-index:9996;pointer-events:none;display:none}
 
-  /* heading/button row */
-  .controls-row{display:flex;gap:12px;margin-top:12px;align-items:center}
-
-  /* responsive */
   @media (max-width:760px){
     .right-controls{flex-direction:column;align-items:flex-end}
-    .controls-row{flex-direction:column;align-items:stretch}
   }
 </style>
 </head>
@@ -90,7 +75,7 @@
     </div>
   </header>
 
-  <!-- HERO / HOME SECTION -->
+  <!-- HOME -->
   <section id="homeSection">
     <div class="card hero">
       <img src="bluffmasters.png" alt="Bluff Masters" style="width:100%;border-radius:10px;display:block;margin-bottom:14px" onerror="console.warn('bluffmasters.png missing')"/>
@@ -101,7 +86,7 @@
             <div class="small-muted" id="noActive">No Active Series — start a new one.</div>
             <div style="color:#cfeee6;margin-top:8px" id="seriesCount">Series Active: 0</div>
           </div>
-          <div class="controls-row">
+          <div style="display:flex;gap:12px;align-items:center">
             <button class="neu-btn" onclick="startNewSeries()">➕ New Series</button>
             <button class="neu-btn secondary" onclick="showStats()">📊 View Statistics</button>
           </div>
@@ -119,19 +104,17 @@
     </div>
   </section>
 
-  <!-- STATS SECTION (hidden by default) -->
-  <section id="statsSection" class="card" style="margin-top:18px">
-    <!-- content filled by JS -->
+  <!-- STATS -->
+  <section id="statsSection" class="card" style="margin-top:18px;display:none">
+    <!-- populated by JS -->
   </section>
 </div>
 
-<!-- modal container -->
 <div id="modalContainer"></div>
 <canvas id="fireworks"></canvas>
 
-<!-- Firebase + App JS (module) -->
 <script type="module">
-/* Complete integrated script (Firestore + UI + logic) */
+/* Single-file app.js embedded */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
@@ -139,7 +122,7 @@ import {
   getDocs, deleteDoc, limit, where, updateDoc
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-/* ========== CONFIG ========== */
+/* CONFIG */
 const FIREBASE_CONF = {
   apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc",
   authDomain: "bluff-tracker-7542e.firebaseapp.com",
@@ -150,71 +133,61 @@ const FIREBASE_CONF = {
 };
 const SECRET_KEY = "zachariahrenji";
 const STORAGE_KEY = "bluff_tracker_v1";
+const TEAM_LIST = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
 
-const TEAM_LIST = [
-  "Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"
-];
-
-/* ========== FIRESTORE INIT (best-effort) ========== */
-let db = null, gamesRef = null;
-try {
+/* FIRESTORE INIT */
+let db=null,gamesRef=null;
+try{
   const app = initializeApp(FIREBASE_CONF);
   db = getFirestore(app);
   gamesRef = collection(db, "games");
   console.log("Firebase initialized");
-} catch (e) {
-  console.warn("Firebase init failed — local-only mode", e);
-}
+}catch(e){ console.warn("Firebase init failed — local-only", e); }
 
-/* ========== LOCAL CACHE ========== */
+/* LOCAL CACHE */
 let gameData = { games: [] };
 (function loadLocal(){
-  try {
+  try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) gameData = JSON.parse(raw);
     console.log("Loaded local data:", (gameData.games||[]).length, "games");
-  } catch(e) { console.warn("Local load failed", e); }
+  }catch(e){ console.warn("Local load fail", e); }
 })();
-function saveLocal(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData)); } catch(e){ console.warn("Local save failed", e); }}
+function saveLocal(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData)); }catch(e){console.warn("Local save fail",e);} }
 
-/* ========== HELPERS ========== */
-function uid(p="s"){ return p + "_" + Date.now() + "_" + Math.floor(Math.random()*9000+1000); }
+function uid(prefix="s"){ return prefix + "_" + Date.now() + "_" + Math.floor(Math.random()*9000+1000); }
 function escapeHtml(s){ if(!s) return ""; return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 
-/* ========== PATCH: ensure cloud docs have secret (best-effort) ========== */
+/* Patch documents that lack secret (best-effort) */
 async function patchMissingSecrets(){
   if(!gamesRef) return;
   try{
     const snaps = await getDocs(gamesRef);
-    const updates = [];
+    const updates=[];
     snaps.forEach(docSnap=>{
       const d = docSnap.data();
       if(!d || !d.secret) updates.push(updateDoc(docSnap.ref, { secret: SECRET_KEY }));
     });
-    if(updates.length){
-      await Promise.all(updates);
-      console.log("Patched", updates.length, "cloud docs with secret");
-    } else {
-      console.log("No cloud docs needed patching");
-    }
-  } catch(err){
-    console.warn("patchMissingSecrets failed or blocked:", err);
+    if(updates.length) await Promise.all(updates);
+    console.log("No cloud docs needed patching");
+  }catch(err){
+    console.warn("patchMissingSecrets may be blocked:", err);
   }
 }
 
-/* ========== CLOUD SAVE ========== */
-async function cloudSaveGameRaw(rec){
+/* Cloud save with timeout */
+async function cloudSaveGame(rec){
   if(!gamesRef) return;
   try{
     await Promise.race([
-      addDoc(gamesRef, { ...rec, secret: SECRET_KEY }),
-      new Promise((_, rej)=>setTimeout(()=>rej(new Error("timeout")), 3000))
+      addDoc(gamesRef, {...rec, secret: SECRET_KEY}),
+      new Promise((_, rej) => setTimeout(()=>rej(new Error("timeout")), 3000))
     ]);
     console.log("Cloud write OK");
-  } catch(e){ console.warn("Cloud save failed", e); }
+  }catch(e){ console.warn("Cloud save failed", e); }
 }
 
-/* ========== AGGREGATION / UTILITIES ========== */
+/* Ensure series metadata for old local records */
 function ensureSeriesIds(){
   let changed=false;
   for(const g of (gameData.games||[])){
@@ -225,48 +198,61 @@ function ensureSeriesIds(){
   if(changed) saveLocal();
 }
 
+/* Aggregation */
 function computeAggregates(){
   ensureSeriesIds();
   const seriesMap = {};
   const teamStats = {};
   (gameData.games||[]).forEach(g=>{
     const sid = g.seriesId;
-    if(!seriesMap[sid]) seriesMap[sid] = { id: sid, target: g.seriesTarget || 5, games: [], wins: {}, finished:false, winner:null, startedAt: g.seriesStartedAt || g.time || new Date().toISOString() };
+    if(!seriesMap[sid]) seriesMap[sid] = { id:sid, target: g.seriesTarget||5, games: [], wins: {}, finished:false, winner:null, startedAt: g.seriesStartedAt || g.time || new Date().toISOString() };
     const s = seriesMap[sid];
     s.games.push(g);
-    s.wins[g.winner] = (s.wins[g.winner]||0) + 1;
-    if(!teamStats[g.winner]) teamStats[g.winner] = { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
-    if(!teamStats[g.loser]) teamStats[g.loser] = { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
+    s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+    teamStats[g.winner] = teamStats[g.winner] || { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
+    teamStats[g.loser] = teamStats[g.loser] || { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
     teamStats[g.winner].wins++;
     teamStats[g.loser].losses++;
   });
 
+  // detect finished series
   Object.values(seriesMap).forEach(s=>{
     Object.keys(s.wins).forEach(t=>{
       if(s.wins[t] >= s.target && !s.finished){
-        s.finished = true; s.winner = t;
+        s.finished = true;
+        s.winner = t;
       }
     });
   });
 
+  // compute streaks and seriesWon
   const finishedSeries = Object.values(seriesMap).filter(s=>s.finished).sort((a,b)=>new Date(a.startedAt)-new Date(b.startedAt));
   const streaks = {};
   finishedSeries.forEach(s=>{
     const w = s.winner;
+    if(!teamStats[w]) teamStats[w] = { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
     teamStats[w].seriesWon = (teamStats[w].seriesWon || 0) + 1;
-    streaks[w] = (streaks[w]||0) + 1;
-    Object.keys(streaks).forEach(t=>{ if(t !== w) streaks[t]=0; });
+    streaks[w] = (streaks[w] || 0) + 1;
+    Object.keys(streaks).forEach(t=>{ if(t !== w) streaks[t] = 0; });
     teamStats[w].consecutiveSeries = streaks[w];
   });
 
   const activeSeries = Object.values(seriesMap).filter(s=>!s.finished).sort((a,b)=> new Date(b.startedAt) - new Date(a.startedAt));
   const completedByTarget = {5:0,10:0};
-  finishedSeries.forEach(s=>{ if(s.target===5) completedByTarget[5]++; if(s.target===10) completedByTarget[10]++; });
+  finishedSeries.forEach(s=>{ if(s.target === 5) completedByTarget[5]++; if(s.target === 10) completedByTarget[10]++; });
 
   return { seriesMap, teamStats, activeSeries, finishedSeries, completedByTarget };
 }
 
-/* ========== UI: render home active list (trash in right control) ========== */
+/* Champion update: show top by wins on champion bar */
+function updateChampionBar(){
+  const champEl = document.getElementById("championText");
+  const agg = computeAggregates();
+  const teams = Object.keys(agg.teamStats || {}).sort((a,b)=> (agg.teamStats[b].wins||0)-(agg.teamStats[a].wins||0));
+  champEl.textContent = teams.length ? teams[0] : "—";
+}
+
+/* Render active list */
 function renderHomeActiveList(){
   const { seriesMap, activeSeries } = computeAggregates();
   const container = document.getElementById("activeList");
@@ -321,30 +307,32 @@ function renderHomeActiveList(){
     card.appendChild(right);
     container.appendChild(card);
   });
+
+  updateChampionBar();
 }
 
-/* ========== Modal helpers ========== */
+/* Modal helpers */
 function closeModal(){ const mc = document.getElementById("modalContainer"); if(mc) mc.innerHTML = ""; }
 function showModalBox(title, innerHtml, okText="OK", onOk){
   closeModal();
-  const overlay = document.createElement("div"); overlay.className="overlay";
-  const box = document.createElement("div"); box.className="confirm-box";
+  const overlay = document.createElement("div"); overlay.className = "overlay";
+  const box = document.createElement("div"); box.className = "confirm-box";
   box.innerHTML = `<h3 style="margin-top:0">${title}</h3><div>${innerHtml}</div>`;
-  const row = document.createElement("div"); row.style.marginTop="12px"; row.style.display="flex"; row.style.justifyContent="center"; row.style.gap="8px";
-  const ok = document.createElement("button"); ok.className="neu-btn"; ok.innerText = okText; ok.onclick = ()=>{ onOk && onOk(); closeModal(); };
-  const cancel = document.createElement("button"); cancel.className="neu-btn secondary"; cancel.innerText="Cancel"; cancel.onclick = closeModal;
+  const row = document.createElement("div"); row.style.marginTop = "12px"; row.style.textAlign = "center";
+  const ok = document.createElement("button"); ok.className = "neu-btn"; ok.innerText = okText; ok.onclick = ()=>{ onOk && onOk(); closeModal(); };
+  const cancel = document.createElement("button"); cancel.className = "neu-btn secondary"; cancel.innerText = "Cancel"; cancel.onclick = closeModal;
   row.appendChild(ok); row.appendChild(cancel); box.appendChild(row); overlay.appendChild(box); document.getElementById("modalContainer").appendChild(overlay);
 }
 function showInfoBox(title, innerHtml, okText="OK", onOk){
   closeModal();
-  const overlay = document.createElement("div"); overlay.className="overlay";
-  const box = document.createElement("div"); box.className="confirm-box";
+  const overlay = document.createElement("div"); overlay.className = "overlay";
+  const box = document.createElement("div"); box.className = "confirm-box";
   box.innerHTML = `<h3 style="margin-top:0">${title}</h3><div>${innerHtml}</div>`;
-  const ok = document.createElement("button"); ok.className="neu-btn"; ok.innerText = okText; ok.onclick = ()=>{ onOk && onOk(); closeModal(); };
+  const ok = document.createElement("button"); ok.className = "neu-btn"; ok.innerText = okText; ok.onclick = ()=>{ onOk && onOk(); closeModal(); };
   box.appendChild(ok); overlay.appendChild(box); document.getElementById("modalContainer").appendChild(overlay);
 }
 
-/* ========== Start New Series ========== */
+/* Start New Series */
 window.startNewSeries = function(){
   const teamOptions = TEAM_LIST.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
   const inner = `
@@ -367,18 +355,17 @@ window.startNewSeries = function(){
     if(!teamA || !teamB){ alert("Pick both teams"); return; }
     if(teamA === teamB){ alert("Teams cannot be same"); return; }
     const sid = uid("series");
-    // Create a first match record as the starter (behavior kept from older app)
     const rec = { winner: teamA, loser: teamB, seriesId: sid, seriesTarget: target, seriesStartedAt: new Date().toISOString(), time: new Date().toISOString() };
     gameData.games.push(rec);
     saveLocal();
-    cloudSaveGameRaw(rec);
+    cloudSaveGame(rec);
     renderHomeActiveList();
     updateStatsUI();
     console.log("New series started:", sid, teamA, "vs", teamB, "target", target);
   });
 };
 
-/* ========== Add Game (detailed modal) ========== */
+/* Add Game - detailed */
 window.openAddGame = function(seriesId){
   const { seriesMap } = computeAggregates();
   const s = seriesMap[seriesId];
@@ -401,7 +388,7 @@ window.openAddGame = function(seriesId){
         <div style="font-size:1.2rem;font-weight:800">—</div>
         <div style="text-align:center"><div style="font-size:1.2rem;font-weight:800">${escapeHtml(teamB)}</div><div style="font-size:1.1rem">${scoreB}</div></div>
       </div>
-      <div style="margin-bottom:8px;color:${getComputedStyle(document.documentElement).getPropertyValue('--muted') || '#9fb7bf'}">First to ${s.target}. Remaining: ${escapeHtml(teamA)} needs ${remainingA}, ${escapeHtml(teamB)} needs ${remainingB}</div>
+      <div style="margin-bottom:8px;color:var(--muted)">First to ${s.target}. Remaining: ${escapeHtml(teamA)} needs ${remainingA}, ${escapeHtml(teamB)} needs ${remainingB}</div>
       <div style="display:flex;gap:12px;justify-content:center;margin-top:8px">
         <button class="neu-btn" id="addWinnerA">${escapeHtml(teamA)} won</button>
         <button class="neu-btn" id="addWinnerB">${escapeHtml(teamB)} won</button>
@@ -412,25 +399,32 @@ window.openAddGame = function(seriesId){
   setTimeout(()=>{
     const btnA = document.getElementById("addWinnerA");
     const btnB = document.getElementById("addWinnerB");
-    if(btnA) btnA.onclick = ()=>{ addGameToSeries(seriesId, teamA, teamB); closeModal(); };
-    if(btnB) btnB.onclick = ()=>{ addGameToSeries(seriesId, teamB, teamA); closeModal(); };
-  }, 50);
+    if(btnA) btnA.onclick = () => { addGameToSeries(seriesId, teamA, teamB); closeModal(); };
+    if(btnB) btnB.onclick = () => { addGameToSeries(seriesId, teamB, teamA); closeModal(); };
+  }, 60);
 };
 
+/* Add game core */
 async function addGameToSeries(seriesId, winner, loser){
   const { seriesMap } = computeAggregates();
   const s = seriesMap[seriesId];
   if(!s) return alert("Series not found");
   if(s.finished) return alert("Series already finished.");
 
-  const rec = { winner, loser, seriesId, seriesTarget: s.target || 5, seriesStartedAt: s.startedAt || new Date().toISOString(), time: new Date().toISOString() };
+  const rec = {
+    winner, loser,
+    seriesId,
+    seriesTarget: s.target || 5,
+    seriesStartedAt: s.startedAt || new Date().toISOString(),
+    time: new Date().toISOString()
+  };
   gameData.games.push(rec);
   saveLocal();
-  cloudSaveGameRaw(rec);
-  console.log("Added game:", seriesId, winner, "beat", loser);
+  cloudSaveGame(rec);
   renderHomeActiveList();
   updateStatsUI();
 
+  // detect if finished now and show appropriate message
   const updated = computeAggregates().seriesMap[seriesId];
   if(updated.finished){
     const winnerWins = updated.wins[updated.winner] || 0;
@@ -442,12 +436,12 @@ async function addGameToSeries(seriesId, winner, loser){
       showInfoBox("Series Complete", `<div style="font-weight:700">${escapeHtml(updated.winner)} wins the series ${winnerWins}-${opponentMax}!</div><div class="small-muted">Saved locally and synced to cloud.</div>`, "OK", ()=>{ simpleConfetti(); });
     }
   } else {
-    const remaining = Math.max(0, (updated.target || 5) - (updated.wins[winner] || 0));
+    const remaining = Math.max(0, updated.target - (updated.wins[winner]||0));
     showInfoBox("Game Saved", `<div><b>${escapeHtml(rec.winner)}</b> beat <b>${escapeHtml(rec.loser)}</b></div><div class="small-muted">${escapeHtml(rec.winner)} needs <b>${remaining}</b> more win${remaining===1?'':'s'} to reach ${updated.target}.</div>`);
   }
 }
 
-/* ========== Series details ========== */
+/* Series details */
 window.viewSeriesDetails = function(seriesId){
   const games = (gameData.games||[]).filter(g=>g.seriesId===seriesId).sort((a,b)=>new Date(a.time)-new Date(b.time));
   if(!games.length) return showInfoBox("Series Details", "<i>No games yet</i>");
@@ -455,64 +449,58 @@ window.viewSeriesDetails = function(seriesId){
   showModalBox("Series Details", `<div style="max-height:320px;overflow:auto">${rows}</div>`, "Close", ()=>{});
 };
 
-/* ========== Confetti / Fireworks ========== */
+/* Confetti & fireworks */
 function simpleConfetti(){
-  const c=document.createElement('canvas'); c.style.position='fixed'; c.style.left=0; c.style.top=0; c.style.width='100%'; c.style.height='100%'; c.style.zIndex=99997; c.style.pointerEvents='none'; document.body.appendChild(c);
+  const c=document.createElement("canvas"); c.style.position='fixed'; c.style.left=0; c.style.top=0; c.style.width='100%'; c.style.height='100%'; c.style.zIndex=99997; c.style.pointerEvents='none'; document.body.appendChild(c);
   const ctx=c.getContext('2d');
-  function r(){ c.width = innerWidth; c.height = innerHeight; } r(); window.addEventListener('resize', r);
+  function resize(){ c.width = innerWidth; c.height = innerHeight; } resize(); window.addEventListener('resize', resize);
   const colors=['#ffdd57','#ff6b6b','#44ff8a','#6ec0ff','#ff9ce3'];
   const p=[];
-  for(let i=0;i<80;i++) p.push({x:Math.random()*c.width,y:-Math.random()*c.height,w:6+Math.random()*10,h:6+Math.random()*10,vx:-2+Math.random()*4,vy:2+Math.random()*4,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*360,vr:-5+Math.random()*10});
+  for(let i=0;i<70;i++) p.push({x:Math.random()*c.width,y:-Math.random()*c.height,w:6+Math.random()*10,h:6+Math.random()*10,vx:-2+Math.random()*4,vy:2+Math.random()*4,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*360,vr:-5+Math.random()*10});
   let last=performance.now();
   function frame(t){
-    const dt=(t-last)/16.67; last=t;
-    ctx.clearRect(0,0,c.width,c.height);
+    const dt=(t-last)/16.67; last=t; ctx.clearRect(0,0,c.width,c.height);
     p.forEach(a=>{ a.x+=a.vx*dt; a.y+=a.vy*dt; a.vy+=0.05*dt; a.rot+=a.vr*dt; ctx.save(); ctx.translate(a.x,a.y); ctx.rotate(a.rot*Math.PI/180); ctx.fillStyle=a.color; ctx.fillRect(-a.w/2,-a.h/2,a.w,a.h); ctx.restore(); });
     if(p.every(a=>a.y>c.height+50)){ c.remove(); return; }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
-function startFireworks(duration=2800){
-  let c=document.getElementById('fireworks');
-  if(!c){ c=document.createElement('canvas'); c.id='fireworks'; document.body.appendChild(c); }
-  c.style.display='block';
-  const ctx=c.getContext('2d');
-  function r(){ c.width = innerWidth; c.height = innerHeight; } r(); window.addEventListener('resize', r);
-  const fireworks=[];
-  function spawn(){ const x=Math.random()*c.width; const y=Math.random()*c.height*0.6; const count=30+Math.round(Math.random()*40); const hue=Math.round(Math.random()*360); for(let i=0;i<count;i++){ const speed=Math.random()*4+1; const angle=Math.random()*Math.PI*2; fireworks.push({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:60+Math.round(Math.random()*40),color:`hsl(${hue} 70% 60%)`}); } }
+function startFireworks(duration=3000){
+  const c=document.getElementById("fireworks"); c.style.display="block"; const ctx=c.getContext("2d"); c.width=innerWidth; c.height=innerHeight;
+  const particles=[];
+  function spawn(){ const cx=Math.random()*c.width, cy=Math.random()*c.height*0.6, hue=Math.floor(Math.random()*360), count=20+Math.round(Math.random()*40); for(let i=0;i<count;i++){ const ang=Math.random()*Math.PI*2, sp=Math.random()*4+1; particles.push({x:cx,y:cy,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,life:50+Math.round(Math.random()*50),color:`hsl(${hue} 70% 60%)`}); } }
   let last=performance.now();
-  function frame(t){ const dt=(t-last)/16.67; last=t; ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fillRect(0,0,c.width,c.height); for(let i=fireworks.length-1;i>=0;i--){ const p=fireworks[i]; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=0.06*dt; p.life--; ctx.beginPath(); ctx.fillStyle=p.color; ctx.arc(p.x,p.y,Math.max(0,Math.min(3,p.life/12)),0,Math.PI*2); ctx.fill(); if(p.life<=0) fireworks.splice(i,1); } requestAnimationFrame(frame); }
-  const sp=setInterval(spawn,220); requestAnimationFrame(frame);
-  setTimeout(()=>{ clearInterval(sp); setTimeout(()=>{ c.style.display='none'; },1200); }, duration);
+  function frame(t){ const dt=(t-last)/16.67; last=t; ctx.fillStyle="rgba(0,0,0,0.18)"; ctx.fillRect(0,0,c.width,c.height); for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=0.06*dt; p.life--; ctx.beginPath(); ctx.fillStyle=p.color; ctx.arc(p.x,p.y,Math.max(0,Math.min(3,p.life/12)),0,Math.PI*2); ctx.fill(); if(p.life<=0) particles.splice(i,1); } requestAnimationFrame(frame); }
+  const sp=setInterval(spawn,220); requestAnimationFrame(frame); setTimeout(()=>{ clearInterval(sp); setTimeout(()=>{ c.style.display='none'; },1200); }, duration);
 }
 
-/* ========== Cloud delete helpers ========== */
+/* Cloud delete helpers */
 async function cloudDeleteAll(){ if(!gamesRef) return; await patchMissingSecrets(); const snaps = await getDocs(gamesRef); await Promise.all(snaps.docs.map(d=>deleteDoc(d.ref))); console.log("Cloud: all data deleted"); }
 async function cloudDeleteLast(){ if(!gamesRef) return; await patchMissingSecrets(); const q = query(gamesRef, orderBy("time","desc"), limit(1)); const snaps = await getDocs(q); await Promise.all(snaps.docs.map(d=>deleteDoc(d.ref))); console.log("Cloud: last game deleted"); }
 async function cloudDeleteSeries(seriesId){ if(!gamesRef) return; await patchMissingSecrets(); const q = query(gamesRef, where("seriesId","==",seriesId)); const snaps = await getDocs(q); await Promise.all(snaps.docs.map(d=>deleteDoc(d.ref))); console.log("Cloud: series",seriesId,"deleted"); }
 
-/* ========== Delete functions (UI) ========== */
+/* Delete functions (password protected) */
 window.resetStats = async function(){
   const pw = prompt("Enter password to reset all data:");
   if(pw !== SECRET_KEY){ alert("❌ Incorrect password"); return; }
   if(!confirm("⚠️ This will permanently delete ALL stats from everywhere. Continue?")) return;
-  try{ gameData = { games: [] }; saveLocal(); if(gamesRef) await cloudDeleteAll(); renderHomeActiveList(); updateStatsUI(); alert("✅ All statistics erased everywhere."); } catch(e){ console.error(e); alert("Error deleting cloud data."); }
+  try{ gameData = { games: [] }; saveLocal(); if(gamesRef) await cloudDeleteAll(); renderHomeActiveList(); updateStatsUI(); alert("✅ All statistics erased everywhere."); } catch(err){ console.error(err); alert("Error deleting cloud data."); }
 };
 window.deleteLastGame = async function(){
   const pw = prompt("Enter password to delete last game:");
   if(pw !== SECRET_KEY){ alert("❌ Incorrect password"); return; }
   if(!confirm("Delete the most recent game permanently from everywhere?")) return;
-  try{ if(gameData.games && gameData.games.length) gameData.games.pop(); saveLocal(); if(gamesRef) await cloudDeleteLast(); renderHomeActiveList(); updateStatsUI(); alert("✅ Last game deleted everywhere."); } catch(e){ console.error(e); alert("Error deleting last game."); }
+  try{ if(gameData.games && gameData.games.length) gameData.games.pop(); saveLocal(); if(gamesRef) await cloudDeleteLast(); renderHomeActiveList(); updateStatsUI(); alert("✅ Last game deleted everywhere."); } catch(err){ console.error(err); alert("Error deleting last game."); }
 };
 window.deleteSeriesConfirm = async function(seriesId){
   const pw = prompt("Enter password to delete this series and its games:");
   if(pw !== SECRET_KEY){ alert("❌ Incorrect password"); return; }
   if(!confirm("Delete entire series and its game history everywhere?")) return;
-  try{ gameData.games = (gameData.games||[]).filter(g=>g.seriesId !== seriesId); saveLocal(); if(gamesRef) await cloudDeleteSeries(seriesId); renderHomeActiveList(); updateStatsUI(); alert("✅ Series deleted everywhere."); } catch(e){ console.error(e); alert("Error deleting series."); }
+  try{ gameData.games = (gameData.games||[]).filter(g => g.seriesId !== seriesId); saveLocal(); if(gamesRef) await cloudDeleteSeries(seriesId); renderHomeActiveList(); updateStatsUI(); alert("✅ Series deleted everywhere."); } catch(err){ console.error(err); alert("Error deleting series."); }
 };
 
-/* ========== WhatsApp share & Stats calculation ========== */
+/* WhatsApp share & Stats UI */
 window.shareToWhatsApp = function(){
   const agg = computeAggregates();
   const totalGames = (gameData.games||[]).length;
@@ -527,7 +515,7 @@ window.shareToWhatsApp = function(){
   const finished = agg.finishedSeries || [];
   let bestMargin = -1;
   const finishedDetails = finished.map(s=>{
-    const tally={}; s.games.forEach(g=>{ tally[g.winner]=(tally[g.winner]||0)+1; });
+    const tally={}; s.games.forEach(g=>{ tally[g.winner] = (tally[g.winner]||0) + 1; });
     const winner = s.winner;
     const winnerWins = tally[winner] || 0;
     const opponents = Array.from(new Set(s.games.flatMap(g=>[g.winner,g.loser]))).filter(x=>x!==winner);
@@ -543,15 +531,14 @@ window.shareToWhatsApp = function(){
   bestMarginList.forEach(it=>{ const key=`${it.winner}|${it.winnerWins}-${it.opponentMax}|${it.opponents.join(",")}`; if(!seen.has(key)){ finalBest.push(it); seen.add(key); }});
 
   let msg = `🎴 Bluff Masters — Overall Stats\n\nTotal Games: ${totalGames}\nTotal Series:\n  5 Series → ${completedByTarget[5]||0}\n  10 Series → ${completedByTarget[10]||0}\n\n🏆 Total Wins (Top 2):\n`;
-  msg += (topWins.length?topWins.join("\n"):"None\n") + "\n\n";
-  msg += "💔 Total Losses (Top 2):\n" + (topLoss.length?topLoss.join("\n"):"None\n") + "\n\n";
+  msg += (topWins.length ? topWins.join("\n") : "None\n") + "\n\n";
+  msg += "💔 Total Losses (Top 2):\n" + (topLoss.length ? topLoss.join("\n") : "None\n") + "\n\n";
   msg += `👑 Current Champion: ${champion}\n\n`;
   if(finalBest.length){ msg += "🔥 Best Game(s):\n"; finalBest.forEach(it=>msg+=`${it.winner} — ${it.winnerWins}-${it.opponentMax} vs ${it.opponents.join(", ")}\n`); } else msg += "🔥 Best Game(s): None\n";
   const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
   window.open(url, "_blank");
 };
 
-/* ========== Stats UI builder ========== */
 function updateStatsUI(){
   const statsSection = document.getElementById("statsSection");
   if(!statsSection) return;
@@ -596,13 +583,14 @@ function updateStatsUI(){
       </div>
     </div>
 
-    <div style="margin-top:12px" class="stats-grid">
-      <div class="stat-card" style="background:linear-gradient(135deg,#3affd0,#20a56e);color:#07130f">Total Games<br><div style="font-size:20px;font-weight:900">${totalGames}</div></div>
-      <div class="stat-card" style="background:linear-gradient(135deg,#6ec0ff,#4a7bd6);color:#07130f">Total Series Completed<br><div style="font-size:20px;font-weight:900">${totalSeriesCompleted}</div></div>
-      <div style="width:100%;margin-top:12px">5 Series → ${byTarget[5]||0} completed • 10 Series → ${byTarget[10]||0} completed</div>
+    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px;padding:12px;border-radius:10px;background:linear-gradient(135deg,#3affd0,#20a56e);color:#07130f;font-weight:700;text-align:center">Total Games<br><div style="font-size:20px;font-weight:900">${totalGames}</div></div>
+      <div style="flex:1;min-width:180px;padding:12px;border-radius:10px;background:linear-gradient(135deg,#6ec0ff,#4a7bd6);color:#07130f;font-weight:700;text-align:center">Total Series Completed<br><div style="font-size:20px;font-weight:900">${totalSeriesCompleted}</div></div>
     </div>
 
-    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+    <div style="margin-top:12px">5 Series → ${byTarget[5]||0} completed • 10 Series → ${byTarget[10]||0} completed</div>
+    <hr style="margin:12px 0">
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
       <div style="flex:1;min-width:260px">
         <h3>Top Wins (Top 2)</h3>
         ${topWins.length ? topWins.map(x=>`<div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px">${x}</div>`).join('') : '<div>No data</div>'}
@@ -612,49 +600,46 @@ function updateStatsUI(){
         ${topLoss.length ? topLoss.map(x=>`<div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-bottom:8px">${x}</div>`).join('') : '<div>No data</div>'}
       </div>
     </div>
-
     <div style="margin-top:12px"><b>Champions:</b> ${escapeHtml(champion)}</div>
     <div style="margin-top:12px"><b>Best Game(s):</b>
       ${finalBest.length ? finalBest.map(it=>`<div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-top:8px">${escapeHtml(it.winner)} — ${it.winnerWins}-${it.opponentMax} vs ${it.opponents.join(", ")}</div>`).join('') : '<div style="margin-top:8px">None</div>'}
     </div>
-
-    <hr style="margin:16px 0">
+    <hr style="margin:12px 0">
     <h3>Game History</h3>
     ${ (gameData.games||[]).slice().reverse().map(g=>`<div style="padding:8px;background:rgba(255,255,255,0.02);margin:8px 0;border-radius:8px"><small style="opacity:.75">${new Date(g.time).toLocaleString()}</small><br><b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b> <small style="opacity:.7">[series:${g.seriesId} target:${g.seriesTarget||5}]</small></div>`).join('') || '<div>No games yet</div>'}
-
     <div style="margin-top:12px"><button class="neu-btn" onclick="resetStats()">⚠️ Reset All</button> <button class="neu-btn secondary" onclick="deleteLastGame()">Delete Last Game</button></div>
   `;
   statsSection.innerHTML = html;
 }
 
-/* ========== Firestore snapshot: replace local cache entirely (multi-device sync) ========== */
+/* Real-time sync: replace local cache entirely on cloud changes */
 if(gamesRef){
   (async ()=>{
-    try { await patchMissingSecrets(); } catch(e){ console.warn("Initial patch may have failed", e); }
-    try {
+    try{ await patchMissingSecrets(); } catch(e){ console.warn("patch may have failed", e); }
+    try{
       const q = query(gamesRef, orderBy("time"));
       onSnapshot(q, snapshot=>{
         const docs = snapshot.docs.map(d=>d.data()).sort((a,b)=> new Date(a.time) - new Date(b.time));
-        const count = docs.length;
-        gameData.games = count ? docs : [];
+        gameData.games = docs.length ? docs : [];
         saveLocal();
         renderHomeActiveList();
         updateStatsUI();
-        console.log("Synced from cloud:", count, "records (local refreshed)");
-      }, err=>{ console.warn("onSnapshot error", err); });
+        console.log("Synced from cloud:", docs.length, "records (local refreshed)");
+      }, err=>{ console.warn("onSnapshot error:", err); });
     } catch(e){ console.warn("onSnapshot failed", e); }
   })();
 }
 
-/* ========== Navigation helpers to show/hide sections ========== */
+/* Navigation helpers */
 window.showStats = function(){ document.getElementById("homeSection").style.display = "none"; document.getElementById("statsSection").style.display = "block"; updateStatsUI(); window.scrollTo({top:0,behavior:'smooth'}); };
 window.showHome = function(){ document.getElementById("statsSection").style.display = "none"; document.getElementById("homeSection").style.display = "block"; renderHomeActiveList(); window.scrollTo({top:0,behavior:'smooth'}); };
 window.goHome = window.showHome;
 
-/* ========== Init UI ========== */
+/* Init */
 renderHomeActiveList();
 updateStatsUI();
-console.log("✅ Bluff Masters app.js loaded — ready.");
+updateChampionBar();
+console.log("✅ Bluff Masters (single-file) loaded.");
 </script>
 </body>
 </html>
