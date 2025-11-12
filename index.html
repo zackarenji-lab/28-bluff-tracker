@@ -1,76 +1,110 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>28 | Bluff Masters</title>
-
-<link rel="preconnect" href="https://www.gstatic.com">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Bluff Masters</title>
 <style>
-:root{--bg1:#071426;--bg2:#0f2b44;--card:#0f2230;--muted:#9fb7bf;--accent:#2ecc71}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;color:#e8f7f6;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
-.container{max-width:1180px;margin:0 auto;padding:20px}
-.header{position:sticky;top:12px;z-index:40;background:rgba(255,255,255,.02);padding:12px 18px;border-radius:14px;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:space-between;box-shadow:15px 15px 30px rgba(0,0,0,.6),-8px -8px 18px rgba(255,255,255,.02)}
-.brand{display:flex;align-items:center;gap:14px}
-.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,#ffd36d,#ffb347);display:flex;align-items:center;justify-content:center;font-weight:800;color:#3b2b00;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.5)}
-.title h1{margin:0;font-size:1.2rem;color:#ffd36d}
-.title p{margin:0;color:var(--muted);font-size:.86rem}
-.hero{margin-top:18px;background:rgba(255,255,255,.02);border-radius:14px;padding:18px;box-shadow:15px 15px 30px rgba(0,0,0,.6),-8px -8px 18px rgba(255,255,255,.02)}
-.hero-img{width:100%;border-radius:10px;display:block;margin:0 auto;max-height:360px;object-fit:contain;box-shadow:0 8px 28px rgba(2,8,20,.6)}
-.active-card{margin-top:14px;padding:14px;border-radius:12px;background:linear-gradient(180deg,#0b2a3f,#071726);box-shadow:10px 10px 24px rgba(0,0,0,.6),-8px -8px 18px rgba(255,255,255,.02)}
-.neu-btn{padding:10px 12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:linear-gradient(180deg,#2ecc71,#21b66a);color:#052018;box-shadow:6px 6px 14px rgba(0,0,0,.5),-6px -6px 14px rgba(255,255,255,.02)}
-.neu-btn.secondary{background:linear-gradient(180deg,#22343f,#12202a);color:#dff6f2;border:1px solid rgba(255,255,255,.02)}
-.series-card{background:var(--card);padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(255,255,255,.03);display:flex;justify-content:space-between;align-items:center;position:relative}
-.trash{position:absolute;right:10px;top:10px;opacity:.85;border-radius:6px;padding:6px;cursor:pointer;color:rgba(255,255,255,.5);transition:all .18s ease}
-.trash:hover{color:#ff5b5b;box-shadow:0 0 12px rgba(255,85,85,.7);transform:scale(1.08)}
-.champion{margin-top:18px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#0b1a26,#071425);display:flex;align-items:center;gap:12px;box-shadow:15px 15px 30px rgba(0,0,0,.6),-8px -8px 18px rgba(255,255,255,.02);position:relative;overflow:visible}
-.trophy-wrap{width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:none; /* removed yellow circle */ }
-@keyframes shimmer{0%{filter:brightness(1) drop-shadow(0 0 3px gold)}50%{filter:brightness(1.4) drop-shadow(0 0 10px gold)}100%{filter:brightness(1) drop-shadow(0 0 3px gold)}}
+body{
+  margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:radial-gradient(circle at top,#0b152c,#000814 70%,#111 100%);
+  color:#e7f0f4;min-height:100vh;
+}
+h1,h2,h3{margin:0}
+.container{max-width:1000px;margin:auto;padding:20px;}
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;background:rgba(255,255,255,0.03);
+  box-shadow:inset 0 0 4px rgba(255,255,255,0.05);
+}
+header h1{color:#ff4f4f;font-size:1.3rem;font-weight:700;display:flex;align-items:center;gap:8px}
+header h1 span{color:#fff;font-weight:500}
+header .home-btn{
+  background:#24334a;color:#fff;border:none;border-radius:50%;width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;
+  box-shadow:inset 3px 3px 6px rgba(0,0,0,.3),inset -3px -3px 6px rgba(255,255,255,.05);
+  transition:.2s;
+}
+header .home-btn:hover{background:#344864}
+.hero{
+  margin-top:24px;text-align:center;
+}
+.hero img{
+  width:100%;max-width:780px;border-radius:14px;box-shadow:0 0 20px rgba(255,255,255,0.08);
+}
+.neu-btn{
+  background:#182a3d;color:#fff;border:none;border-radius:10px;padding:10px 18px;
+  font-weight:600;cursor:pointer;
+  box-shadow:4px 4px 8px #0a1018,inset -4px -4px 8px #22384d;
+  transition:.2s;
+}
+.neu-btn:hover{background:#22364c;transform:translateY(-1px)}
+.neu-btn.secondary{background:#3b4a5a;color:#cdd6dd;box-shadow:inset 2px 2px 6px #283442,inset -2px -2px 6px #46576a;}
+.series-card{
+  background:rgba(255,255,255,0.04);border-radius:14px;padding:14px;margin-top:10px;
+  position:relative;overflow:hidden;transition:.3s;
+}
+.series-card.lead{box-shadow:0 0 10px rgba(255,215,0,.2)}
+.trash{
+  position:absolute;top:8px;right:8px;font-size:1.2rem;cursor:pointer;opacity:0.7;transition:.2s;
+}
+.trash:hover{color:#ff4f4f;opacity:1;transform:scale(1.2)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:9999}
+.confirm-box{background:#071627;padding:22px;border-radius:12px;color:#e6f3f0;max-width:640px;text-align:center}
+.small-muted{font-size:0.9rem;color:#9fb7bf;margin-top:8px}
+.fireworks-canvas{position:fixed;inset:0;pointer-events:none;z-index:99998;display:none}
+#championBanner{
+  background:linear-gradient(90deg,#3c2f00,#a37b00,#3c2f00);
+  color:#fff;font-weight:700;text-align:center;
+  border-radius:12px;margin-top:20px;padding:12px;
+  position:relative;overflow:hidden;animation:glowPulse 4s infinite;
+}
+@keyframes glowPulse{
+  0%{box-shadow:0 0 8px rgba(255,215,0,.3);}
+  50%{box-shadow:0 0 20px rgba(255,215,0,.6);}
+  100%{box-shadow:0 0 8px rgba(255,215,0,.3);}
+}
+#champParticles{position:absolute;left:0;right:0;top:0;bottom:0;overflow:visible;pointer-events:none}
+#championText{font-size:1.1rem;animation:shimmer 4s linear infinite;display:inline-block;background:linear-gradient(90deg,#fff,#ffe57e,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+@keyframes shimmer{
+  0%{background-position:-100px}
+  100%{background-position:100px}
+}
 </style>
 </head>
 <body>
+<header>
+  <h1>28 | <span>Bluff Masters</span></h1>
+  <button class="home-btn" onclick="goHome()">🏠</button>
+</header>
+
 <div class="container">
-  <div class="header">
-    <div class="brand">
-      <div class="logo">28</div>
-      <div class="title"><h1>Bluff Masters</h1><p>Track active series, shared stats & celebrations</p></div>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px">
-      <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.03);border:2px solid rgba(255,255,255,.06);cursor:pointer" onclick="goHome()">🏠</div>
-    </div>
-  </div>
-
   <div class="hero">
-    <img src="bluffmasters.png" class="hero-img" alt="Bluff Masters">
-    <div class="active-card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-weight:700;font-size:1.05rem">Active Series</div>
-        <div>
-          <button class="neu-btn" onclick="startNewSeries()">➕ New Series</button>
-          <button class="neu-btn secondary" onclick="showStats()">📊 View Statistics</button>
-        </div>
-      </div>
-      <div id="activeList"></div>
-      <div id="noActive" style="color:#9fb7bf;margin-top:8px">No Active Series — start a new one.</div>
-    </div>
-
-    <div class="champion" id="championBanner">
-      <div class="trophy-wrap">
-        <svg id="trophySvg" width="36" height="36" viewBox="0 0 24 24" fill="none"
-          style="animation:shimmer 3s ease-in-out infinite">
-          <path d="M8 2h8v2h1a1 1 0 0 1 1 1v2a4 4 0 0 1-3 3.87V12a5 5 0 0 1-5 5 5 5 0 0 1-5-5v-1.13A4 4 0 0 1 4 7V5a1 1 0 0 1 1-1h1V2z" fill="#FFD36D"/>
-          <path d="M9 18h6v2H9v-2z" fill="#D39B2C"/>
-        </svg>
-      </div>
-      <div style="font-weight:700;color:#fff">Current Champions : <span id="championText">—</span></div>
-      <div id="champParticles" style="position:absolute;left:0;top:-30px;width:100%;height:120px;pointer-events:none;"></div>
-    </div>
+    <img src="bluffmasters.png" alt="Bluff Masters">
   </div>
 
-  <div id="statsSection" style="display:none;margin-top:20px"></div>
+  <section id="activeSeries" style="margin-top:30px">
+    <h2>Active Series</h2>
+    <div id="noActive" style="opacity:.8;margin-top:6px;">No Active Series — start a new one.</div>
+    <div id="activeList" style="margin-top:8px"></div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="neu-btn" onclick="startNewSeries()">➕ New Series</button>
+      <button class="neu-btn secondary" onclick="showStats()">📊 View Statistics</button>
+    </div>
+  </section>
+
+  <div id="championBanner">
+    <div id="champParticles"></div>
+    🏆 Current Champions : <span id="championText">—</span>
+  </div>
+
+  <section id="statsSection" style="display:none;margin-top:30px"></section>
 </div>
 
-<!-- attach external logic -->
+<!-- Modal + Fireworks placeholders -->
+<div id="modalContainer"></div>
+<canvas id="fireworks" class="fireworks-canvas"></canvas>
+
 <script type="module" src="app.js"></script>
 </body>
 </html>
