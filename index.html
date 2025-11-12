@@ -3,105 +3,174 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Bluff Masters</title>
+<title>28 | Bluff Masters</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-:root{--color-primary:#2ecc71;--color-dark:#ecf0f1}
+:root{
+  --bg1:#071426;
+  --bg2:#0f2b44;
+  --card:#0f2230;
+  --muted:#9fb7bf;
+  --accent:#2ecc71;
+  --glass: rgba(255,255,255,0.025);
+  --soft-shadow: 15px 15px 30px rgba(0,0,0,0.6);
+  --soft-highlight: -8px -8px 18px rgba(255,255,255,0.02);
+}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 *{box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;background:radial-gradient(circle at top,#0f2a4d,#031026 65%,#021018 100%);color:var(--color-dark);padding:18px;min-height:100vh}
-.container{max-width:1100px;margin:0 auto}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-h1{margin:0;font-size:1.8rem}
-.card{background:rgba(255,255,255,0.03);padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.04)}
-.btn{padding:10px 12px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--color-primary);color:#052018}
-.btn-secondary{background:#2f3b4a;color:#eaf3f2}
-.series-card{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.03)}
-.active-lead{box-shadow:0 0 18px rgba(255,215,0,0.14);border:2px solid rgba(255,215,0,0.08)}
-.team-item{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px;margin:8px 0;border:1px solid rgba(255,255,255,0.03)}
-.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
-.metric-box{background:rgba(0,0,0,0.22);padding:12px;border-radius:8px;text-align:center}
-.bar-graph{height:8px;width:100%;background:#062028;border-radius:6px;overflow:hidden;margin-top:8px}
-.bar-wins{background:#2ecc71;transition:width .7s}
-.bar-losses{background:#e74c3c;transition:width .7s}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999}
-.confirm-box{background:#071627;padding:22px;border-radius:12px;color:#e6f3f0;max-width:680px;text-align:center}
-.confirm-title{font-size:1.35rem;margin-bottom:8px}
-.confirm-message{font-size:1rem;margin-bottom:12px}
-.small-muted{font-size:0.8rem;color:#9aa6ad;margin-top:8px}
-.fireworks-canvas{position:fixed;inset:0;pointer-events:none;z-index:99999;display:none}
-.note{font-size:0.9rem;color:#cfe7ea;margin-top:8px}
-.linklike{cursor:pointer;color:#eaf3f2;text-decoration:underline}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e8f7f6;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
+.container{max-width:1180px;margin:0 auto;padding:28px}
+.header{
+  position:sticky;top:12px;z-index:40;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  padding:12px 18px;border-radius:14px;backdrop-filter: blur(6px);
+  display:flex;align-items:center;justify-content:space-between;box-shadow:var(--soft-shadow), var(--soft-highlight);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{
+  width:56px;height:56px;border-radius:10px;background:linear-gradient(180deg,#ff5a5f,#ff9f43);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:white;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,0.5)
+}
+.title{line-height:1}
+.title h1{margin:0;font-size:1.3rem;color:#ff4e4e}
+.title p{margin:0;color:var(--muted);font-size:0.86rem}
+.home-btn{
+  width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,#ffffff11,#00000011);
+  display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.06);box-shadow: 6px 6px 18px rgba(0,0,0,0.5), -6px -6px 18px rgba(255,255,255,0.02)
+}
+
+/* hero */
+.hero{
+  margin-top:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:14px;padding:22px;box-shadow:var(--soft-shadow),var(--soft-highlight);
+}
+.hero-img{
+  width:100%;border-radius:8px;display:block;margin:0 auto;max-height:360px;object-fit:contain;box-shadow: 0 8px 28px rgba(2,8,20,0.6);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+}
+
+/* Active series card (neumorphic) */
+.active-card{
+  margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,#0b2a3f,#071726);
+  box-shadow: 10px 10px 24px rgba(0,0,0,0.6), -8px -8px 18px rgba(255,255,255,0.02);
+  display:flex;flex-direction:column;
+}
+.controls{display:flex;justify-content:flex-end;gap:10px}
+.neu-btn{
+  padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:linear-gradient(180deg,#0fffff0,#0e3); /* fallback */
+  color:#052018;box-shadow: 6px 6px 14px rgba(0,0,0,0.5), -6px -6px 14px rgba(255,255,255,0.02);
+}
+.neu-btn.secondary{background:linear-gradient(180deg,#22343f,#12202a);color:#dff6f2;box-shadow: 6px 6px 14px rgba(0,0,0,0.6), -6px -6px 14px rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+.active-list{margin-top:12px}
+.series-card{background:var(--card);padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center}
+.series-card.lead{box-shadow: 0 6px 24px rgba(255,200,80,0.07), inset 0 0 18px rgba(255,200,80,0.02);border:1px solid rgba(255,200,80,0.06)}
+
+/* champion banner */
+.champion{
+  margin-top:28px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#071826,#0a2b3e);display:flex;align-items:center;gap:12px;box-shadow: var(--soft-shadow), var(--soft-highlight)
+}
+.champion .icon{width:64px;height:64px;border-radius:50%;background:linear-gradient(180deg,#ffd36d,#ffb347);display:flex;align-items:center;justify-content:center;font-weight:800;color:#3b2b00}
+.champion .text{font-weight:700;color:#ffd;}
+
+/* stats card (where stats and share live) */
+.stats-card{margin-top:18px;padding:16px;border-radius:12px;background:linear-gradient(180deg,#081827,#071425);box-shadow:var(--soft-shadow),var(--soft-highlight)}
+.stat-row{display:flex;gap:12px;flex-wrap:wrap}
+.stat-box{flex:1;min-width:180px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);text-align:center}
+.stat-box h3{margin:0;font-size:1.05rem}
+.stat-box p{margin:6px 0 0 0;color:var(--muted)}
+
+/* small helpers */
+.note{color:var(--muted);font-size:0.95rem;margin-top:10px}
+.linklike{cursor:pointer;color:#dff6f2;text-decoration:underline}
+.screen{display:block}
+
+/* responsive */
+@media (max-width:820px){
+  .header{flex-direction:column;gap:12px}
+  .stat-row{flex-direction:column}
+}
 </style>
 </head>
 <body>
 <div class="container">
-  <div class="header">
-    <div>
-      <h1>Bluff Masters</h1>
-      <div style="color:#cfe7ea;font-size:0.95rem">Track multiple active series, shared stats & celebrations</div>
+  <div class="header" role="banner">
+    <div class="brand">
+      <div class="logo">28</div>
+      <div class="title">
+        <h1>Bluff Masters</h1>
+        <p>Track multiple active series, shared stats & celebrations</p>
+      </div>
     </div>
-    <div>
-      <button class="btn btn-secondary" onclick="goHome()">🏠 Home</button>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="note" style="margin-right:20px">Welcome, Zach</div>
+      <div class="home-btn" title="Home" onclick="goHome()" aria-hidden="false">🏠</div>
     </div>
   </div>
 
-  <!-- HOME -->
-  <div id="homeScreen" class="screen">
-    <div class="card">
+  <!-- HERO: image restored -->
+  <div class="hero">
+    <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="console.warn('Hero image not found: bluffmasters.png')" />
+    <div class="active-card">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <h2 style="margin:0">Active Series</h2>
-        <div>
-          <button class="btn btn-primary" onclick="startNewSeries()">➕ New Series</button>
-          <button class="btn btn-secondary" onclick="showStats()">📊 View Statistics</button>
+        <div style="font-weight:700;font-size:1.05rem">Active Series</div>
+        <div class="controls">
+          <button class="neu-btn" onclick="startNewSeries()">➕ New Series</button>
+          <button class="neu-btn secondary" onclick="showStats()">📊 View Statistics</button>
         </div>
       </div>
 
-      <div id="activeList" style="margin-top:12px"></div>
+      <div id="activeList" class="active-list" style="margin-top:12px">
+        <!-- filled dynamically -->
+      </div>
       <div id="noActive" class="note">No Active Series — start a new one.</div>
     </div>
-  </div>
 
-  <!-- STATS -->
-  <div id="statsScreen" class="screen" style="display:none">
-    <div class="card">
-      <h2>Overall Statistics</h2>
-
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px">
-        <div style="background:linear-gradient(135deg,#3affd0,#20a56e);padding:14px;border-radius:10px;text-align:center;font-weight:700;color:#07130f">
-          <div>Total Games</div><div id="totalGames" style="font-size:1.6rem">0</div>
-        </div>
-        <div style="background:linear-gradient(135deg,#6ec0ff,#4a7bd6);padding:14px;border-radius:10px;text-align:center;font-weight:700;color:#07130f">
-          <div>Total Series (completed)</div><div id="totalSeries" style="font-size:1.6rem">0</div>
-        </div>
-      </div>
-
-      <div id="summaryBreakdown" style="margin-top:12px"></div>
-
-      <div id="teamStats" style="margin-top:12px"></div>
-
-      <h3 style="margin-top:14px">Game History</h3>
-      <div id="gameHistory"></div>
-
-      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="shareToWhatsApp()">📤 Share to WhatsApp</button>
-        <button class="btn btn-secondary" onclick="goHome()">← Back</button>
-      </div>
-
-      <div style="margin-top:10px;font-size:0.95rem">
-        <span class="linklike" onclick="deleteLastGame()">Delete last game</span> &nbsp;•&nbsp;
-        <span class="linklike" onclick="resetStats()">Reset all statistics</span>
-      </div>
+    <div class="champion" id="championBanner">
+      <div class="icon">1</div>
+      <div class="text">Current Champions : <span id="championText"> — </span></div>
     </div>
   </div>
+
+  <!-- Stats (collapsed initially) -->
+  <div id="statsSection" class="stats-card" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">Overall Statistics</div>
+      <div>
+        <button class="neu-btn" onclick="shareToWhatsApp()">📤 Share to WhatsApp</button>
+        <button class="neu-btn secondary" onclick="goHome()">← Back</button>
+      </div>
+    </div>
+
+    <div class="stat-row" style="margin-top:12px">
+      <div class="stat-box">
+        <h3 id="totalGames">0</h3><p>Total Games</p>
+      </div>
+      <div class="stat-box">
+        <h3 id="totalSeries">0</h3><p>Total Series (completed)</p>
+      </div>
+    </div>
+
+    <div id="summaryBreakdown" style="margin-top:12px"></div>
+
+    <div id="teamStats" style="margin-top:12px"></div>
+
+    <h3 style="margin-top:14px">Game History</h3>
+    <div id="gameHistory"></div>
+
+    <div style="margin-top:10px;font-size:0.95rem">
+      <span class="linklike" onclick="deleteLastGame()">Delete last game</span> &nbsp;•&nbsp;
+      <span class="linklike" onclick="resetStats()">Reset all statistics</span>
+    </div>
+  </div>
+
 </div>
 
+<!-- modal container and fireworks canvas -->
 <div id="modalContainer"></div>
 <canvas id="fireworks" class="fireworks-canvas"></canvas>
 
 <script type="module">
-/* =========================
-   Firebase (best-effort) - Firestore
-   ========================= */
+/* Firebase (best-effort) */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
@@ -114,131 +183,168 @@ const firebaseConfig = {
   appId: "1:280965687037:web:be0b05da36ef653ab68094"
 };
 
-let db = null, gamesRef = null;
-try {
+let db=null,gamesRef=null;
+try{
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
-  gamesRef = collection(db, "games");
-  console.log("Firebase initialized (attempt).");
-} catch (e) {
-  console.warn("Firebase init failed:", e);
-}
+  gamesRef = collection(db,'games');
+  console.log('Firebase inited');
+}catch(e){ console.warn('Firebase init failed', e); }
 
-/* =========================
-   Local model & persistence
-   gameData.games: array of { winner, loser, time, seriesId, seriesTarget, seriesStartedAt }
-   ========================= */
+/* ------------------------
+   Core model and storage
+   ------------------------ */
 let gameData = { games: [] };
-const STORAGE_KEY = "bluff_tracker_v1";
+const STORAGE_KEY = 'bluff_tracker_v1';
+const TEAM_LIST = [
+  "Bibin & Zach",
+  "Bimal & Annu",
+  "Bibin & Annu",
+  "Zach & Daddy",
+  "Bibin & Bimal",
+  "Zach & Rikku",
+  "Bibin & Daddy"
+];
 
-// load local backup
 (function loadLocal(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw) gameData = JSON.parse(raw);
-  }catch(e){ console.warn("local load failed", e); }
+  }catch(e){ console.warn('local load failed', e); }
 })();
 
-/* =========================
-   Aggregation helpers
-   computeAggregates() returns:
-   { seriesMap, teamStats, activeSeries, completedSeriesCount, completedByTarget: {5: n, 10: m} }
-   ========================= */
+/* Aggregation helper */
 function computeAggregates(){
-  const seriesMap = {}; // id -> { id, target, games:[], wins:{team:count}, finished, winner, startedAt }
-  const teamStats = {}; // team -> { wins, losses, seriesWon, consecutiveSeries }
+  const seriesMap = {}; // id -> {id,target,games,wins,finished,winner,startedAt}
+  const teamStats = {}; // team -> {wins,losses,seriesWon,consecutiveSeries}
   (gameData.games || []).forEach(g=>{
-    const sid = g.seriesId || ("series_" + (g.seriesStartedAt || g.time));
-    if(!seriesMap[sid]) seriesMap[sid] = { id: sid, target: g.seriesTarget || 5, games: [], wins: {}, finished: false, winner: null, startedAt: g.seriesStartedAt || g.time };
+    const sid = g.seriesId || ("series_"+(g.seriesStartedAt||g.time||Date.now()));
+    if(!seriesMap[sid]) seriesMap[sid] = { id: sid, target: g.seriesTarget || 5, games: [], wins: {}, finished:false, winner:null, startedAt: g.seriesStartedAt || g.time || new Date().toISOString() };
     const s = seriesMap[sid];
     s.games.push(g);
-    s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
-    // finished?
-    if(s.wins[g.winner] >= s.target && !s.finished){
-      s.finished = true;
-      s.winner = g.winner;
-    }
-    // team tallies
-    if(!teamStats[g.winner]) teamStats[g.winner] = { wins: 0, losses: 0, seriesWon: 0, consecutiveSeries: 0 };
-    if(!teamStats[g.loser]) teamStats[g.loser] = { wins: 0, losses: 0, seriesWon: 0, consecutiveSeries: 0 };
+    s.wins[g.winner] = (s.wins[g.winner]||0) + 1;
+    if(s.wins[g.winner] >= s.target && !s.finished){ s.finished = true; s.winner = g.winner; }
+    if(!teamStats[g.winner]) teamStats[g.winner] = { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
+    if(!teamStats[g.loser]) teamStats[g.loser] = { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
     teamStats[g.winner].wins++;
     teamStats[g.loser].losses++;
   });
 
-  // compute seriesWon and consecutive series streaks by chronological finished series
-  const finishedSeries = Object.values(seriesMap).filter(s => s.finished).sort((a,b)=> new Date(a.startedAt) - new Date(b.startedAt));
+  const finishedSeries = Object.values(seriesMap).filter(s=>s.finished).sort((a,b)=>new Date(a.startedAt)-new Date(b.startedAt));
   const streaks = {};
   finishedSeries.forEach(s=>{
     const w = s.winner;
     if(!teamStats[w]) teamStats[w] = { wins:0, losses:0, seriesWon:0, consecutiveSeries:0 };
-    teamStats[w].seriesWon = (teamStats[w].seriesWon || 0) + 1;
-    streaks[w] = (streaks[w] || 0) + 1;
-    // reset other streaks
-    Object.keys(streaks).forEach(t => { if(t !== w) streaks[t] = 0; });
+    teamStats[w].seriesWon = (teamStats[w].seriesWon||0) + 1;
+    streaks[w] = (streaks[w]||0) + 1;
+    Object.keys(streaks).forEach(t=>{ if(t!==w) streaks[t] = 0; });
     teamStats[w].consecutiveSeries = streaks[w];
   });
 
-  // active series
-  const activeSeries = Object.values(seriesMap).filter(s => !s.finished).sort((a,b)=> new Date(b.startedAt) - new Date(a.startedAt));
+  const activeSeries = Object.values(seriesMap).filter(s=>!s.finished).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
 
-  // completed by target counts
-  const completedByTarget = { 5: 0, 10: 0 };
+  const completedByTarget = {5:0,10:0};
   finishedSeries.forEach(s=>{
-    const t = s.target;
-    if(t === 5 || t === 10) completedByTarget[t] = (completedByTarget[t] || 0) + 1;
+    if(s.target === 5) completedByTarget[5] = (completedByTarget[5] || 0) + 1;
+    if(s.target === 10) completedByTarget[10] = (completedByTarget[10] || 0) + 1;
   });
 
   return { seriesMap, teamStats, activeSeries, completedSeriesCount: finishedSeries.length, completedByTarget };
 }
 
-/* Save local */
-function saveLocal(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData)); }catch(e){ console.warn("saveLocal failed", e); }
-}
+/* Save local helper */
+function saveLocal(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(gameData)); }catch(e){ console.warn('saveLocal failed', e);} }
 
-/* =========================
-   Render Home active series list
-   ========================= */
+/* ------------------------
+   UI rendering functions
+   ------------------------ */
 function renderHomeActiveList(){
   const { activeSeries } = computeAggregates();
-  const container = document.getElementById("activeList");
-  container.innerHTML = "";
+  const container = document.getElementById('activeList');
+  container.innerHTML = '';
   if(!activeSeries || activeSeries.length === 0){
-    document.getElementById("noActive").style.display = "block";
+    document.getElementById('noActive').style.display = 'block';
     return;
   }
-  document.getElementById("noActive").style.display = "none";
-  activeSeries.forEach(s => {
+  document.getElementById('noActive').style.display = 'none';
+  activeSeries.forEach(s=>{
     const wins = s.wins || {};
-    const pair = Array.from(new Set(s.games.flatMap(g=>[g.winner, g.loser]))).slice(0,2);
-    const t1 = pair[0] || "Team A";
-    const t2 = pair[1] || (pair[0] ? ("Other") : "Team B");
+    const pair = Array.from(new Set(s.games.flatMap(g=>[g.winner,g.loser]))).slice(0,2);
+    const t1 = pair[0] || TEAM_LIST[0];
+    const t2 = pair[1] || TEAM_LIST[1];
     const s1 = wins[t1] || 0;
     const s2 = wins[t2] || 0;
-    const el = document.createElement("div"); el.className = "series-card";
-    if(s1 !== s2) el.classList.add("active-lead");
-    el.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <div style="font-weight:700">${escapeHtml(t1)} <span style="opacity:0.8">vs</span> ${escapeHtml(t2)}</div>
-          <div style="font-size:0.9rem;color:#a3c8c6">First to ${s.target} wins — started ${new Date(s.startedAt).toLocaleString()}</div>
+    const el = document.createElement('div');
+    el.className = 'series-card' + ((s1!==s2)?' lead':'');
+    el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div style="font-weight:700">${escapeHtml(t1)} <span style="opacity:0.7">vs</span> ${escapeHtml(t2)}</div>
+        <div style="font-size:0.9rem;color:var(--muted)">First to ${s.target} wins • started ${new Date(s.startedAt).toLocaleString()}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:1.1rem;font-weight:800">${s1} — ${s2}</div>
+        <div style="margin-top:8px">
+          <button class="neu-btn" onclick="resumeSeries('${s.id}')">➕ Add</button>
+          <button class="neu-btn secondary" onclick="viewSeriesDetails('${s.id}')">Details</button>
         </div>
-        <div style="text-align:right">
-          <div style="font-size:1.2rem;font-weight:800">${s1} — ${s2}</div>
-          <div style="margin-top:8px">
-            <button class="btn btn-primary" onclick="resumeSeries('${s.id}')">➕ Add</button>
-            <button class="btn btn-secondary" onclick="viewSeriesDetails('${s.id}')">Details</button>
-          </div>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
     container.appendChild(el);
   });
 }
 
-/* =========================
-   Series flow: New Series, Resume series add match
-   ========================= */
+/* render champion banner and stats summary card */
+function updateStatsUI(){
+  const { seriesMap, teamStats, activeSeries, completedByTarget, completedSeriesCount } = computeAggregates();
+  document.getElementById('totalGames').textContent = (gameData.games||[]).length;
+  document.getElementById('totalSeries').textContent = completedSeriesCount;
+
+  // champion (highest wins)
+  const teams = Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].wins||0) - (teamStats[a].wins||0));
+  const champion = teams.length ? teams[0] : "—";
+  document.getElementById('championText').textContent = champion;
+
+  // breakdown
+  const breakdown = document.getElementById('summaryBreakdown');
+  breakdown.innerHTML = `<div style="margin-top:8px">
+    <div style="font-weight:700">Completed Series Breakdown</div>
+    <div style="margin-left:8px;color:var(--muted)">5 Series → ${completedByTarget[5] || 0} completed</div>
+    <div style="margin-left:8px;color:var(--muted)">10 Series → ${completedByTarget[10] || 0} completed</div>
+  </div>`;
+
+  // team cards sorted by wins
+  const tContainer = document.getElementById('teamStats');
+  tContainer.innerHTML = '';
+  Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].wins||0) - (teamStats[a].wins||0)).forEach((team, idx)=>{
+    const s = teamStats[team];
+    const w = s.wins||0, l = s.losses||0, sw = s.seriesWon||0, cs = s.consecutiveSeries||0;
+    const total = w + l; const wp = total ? Math.round((w/total)*100) : 0;
+    const div = document.createElement('div');
+    div.className = 'team-item';
+    div.innerHTML = `<div style="font-weight:700">${escapeHtml(team)} ${idx===0?'<span style="color:#ffd36d">👑</span>':''}</div>
+      <div class="metric-row" style="margin-top:8px">
+        <div class="metric-box"><div style="opacity:0.7">Wins</div><div style="font-size:1.1rem">${w}</div></div>
+        <div class="metric-box"><div style="opacity:0.7">Losses</div><div style="font-size:1.1rem">${l}</div></div>
+        <div class="metric-box"><div style="opacity:0.7">Series</div><div style="font-size:1.1rem">${sw}${cs>0?` <small>(${cs} streak)</small>`:''}</div></div>
+        <div class="metric-box"><div style="opacity:0.7">Win %</div><div style="font-size:1.1rem">${wp}%</div></div>
+      </div>`;
+    tContainer.appendChild(div);
+  });
+
+  // history list
+  const hist = (gameData.games || []).slice().reverse().map(g=>{
+    return `<div style="background:rgba(255,255,255,0.02);padding:10px;margin:8px 0;border-radius:8px">
+      <small style="opacity:0.7">${new Date(g.time).toLocaleString()}</small><br><b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b> <small style="opacity:0.7">[Series:${g.seriesId}, target:${g.seriesTarget||5}]</small>
+    </div>`;
+  }).join('');
+  document.getElementById('gameHistory').innerHTML = hist || '<div style="opacity:0.75">No games yet</div>';
+}
+
+/* ------------------------
+   Start New Series (modal with dropdowns)
+   ------------------------ */
 window.startNewSeries = () => {
+  const teamOptions = TEAM_LIST.map(t => `<option>${escapeHtml(t)}</option>`).join('');
   const html = `
     <div style="text-align:left">
       <label>Series target (first to N wins):</label>
@@ -247,87 +353,74 @@ window.startNewSeries = () => {
         <option value="10">First to 10</option>
       </select>
       <label style="margin-top:10px;display:block">Winner team (first match):</label>
-      <input id="modalWinner" placeholder="Team A name" style="width:100%;padding:8px;margin-top:6px" />
+      <select id="modalWinner" style="width:100%;padding:8px;margin-top:6px">${teamOptions}</select>
       <label style="margin-top:10px;display:block">Loser team (first match):</label>
-      <input id="modalLoser" placeholder="Team B name" style="width:100%;padding:8px;margin-top:6px" />
-    </div>`;
-  showModal("Start New Series", html, () => {
-    const target = parseInt(document.getElementById("modalSeriesTarget").value, 10) || 5;
-    const winner = document.getElementById("modalWinner").value.trim();
-    const loser = document.getElementById("modalLoser").value.trim();
-    if(!winner || !loser){ alert("Please enter both team names."); return; }
-    const sid = "series_" + Date.now() + "_" + Math.floor(Math.random()*9999);
-    const rec = {
-      winner, loser,
-      seriesId: sid,
-      seriesTarget: target,
-      seriesStartedAt: new Date().toISOString(),
-      time: new Date().toISOString()
-    };
+      <select id="modalLoser" style="width:100%;padding:8px;margin-top:6px">${teamOptions}</select>
+    </div>
+  `;
+  showModal('Start New Series', html, () => {
+    const target = parseInt(document.getElementById('modalSeriesTarget').value,10) || 5;
+    const winner = document.getElementById('modalWinner').value.trim();
+    const loser  = document.getElementById('modalLoser').value.trim();
+    if(!winner || !loser) { alert('Please pick both teams'); return; }
+    if(winner === loser) { alert('Winner and loser cannot be same'); return; }
+    const sid = 'series_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    const rec = { winner, loser, seriesId: sid, seriesTarget: target, seriesStartedAt: new Date().toISOString(), time: new Date().toISOString() };
     gameData.games.push(rec);
     saveLocal();
     cloudSaveGame(rec);
     afterLocalSave(rec);
-  }, "Start Series");
+  }, 'Start Series');
 };
 
+/* ------------------------
+   Resume series: choose winner/loser from teams present (or from team list fallback)
+   ------------------------ */
 window.resumeSeries = (seriesId) => {
   const { seriesMap } = computeAggregates();
   const s = seriesMap[seriesId];
-  if(!s) return alert("Series not found");
-  const teams = Array.from(new Set(s.games.flatMap(g=>[g.winner, g.loser])));
-  // If only one team exists so far, user may input opponent
-  const winnerOptions = teams.map(t => `<option>${escapeHtml(t)}</option>`).join("");
-  const loserOptions = teams.map(t => `<option>${escapeHtml(t)}</option>`).join("");
+  if(!s) return alert('Series not found');
+  const teams = Array.from(new Set(s.games.flatMap(g=>[g.winner,g.loser])));
+  // if not enough teams, fallback to TEAM_LIST
+  const opts = (teams.length ? teams : TEAM_LIST).map(t => `<option>${escapeHtml(t)}</option>`).join('');
   const html = `<div>
-    <div style="margin-top:6px">Winner:</div>
-    <select id="modalWinnerSelect" style="width:100%;padding:8px;margin-top:6px">${winnerOptions}</select>
-    <div style="margin-top:10px">Loser:</div>
-    <select id="modalLoserSelect" style="width:100%;padding:8px;margin-top:6px">${loserOptions}</select>
+    <div style="margin-top:6px">Winner:</div><select id="modalWinnerSelect" style="width:100%;padding:8px;margin-top:6px">${opts}</select>
+    <div style="margin-top:10px">Loser:</div><select id="modalLoserSelect" style="width:100%;padding:8px;margin-top:6px">${opts}</select>
   </div>`;
-  showModal("Add Next Game", html, () => {
-    const winner = document.getElementById("modalWinnerSelect").value;
-    const loser = document.getElementById("modalLoserSelect").value;
-    if(!winner || !loser) { alert("Choose teams"); return; }
-    if(winner === loser) { alert("Winner and loser cannot be same"); return; }
-    const rec = {
-      winner, loser,
-      seriesId: s.id,
-      seriesTarget: s.target,
-      seriesStartedAt: s.startedAt,
-      time: new Date().toISOString()
-    };
+  showModal('Add Match', html, () => {
+    const winner = document.getElementById('modalWinnerSelect').value;
+    const loser = document.getElementById('modalLoserSelect').value;
+    if(!winner || !loser){ alert('Choose teams'); return; }
+    if(winner === loser){ alert('Winner and loser cannot be same'); return; }
+    const rec = { winner, loser, seriesId: s.id, seriesTarget: s.target, seriesStartedAt: s.startedAt, time: new Date().toISOString() };
     gameData.games.push(rec);
-    saveLocal();
-    cloudSaveGame(rec);
-    afterLocalSave(rec);
-  }, "Save");
+    saveLocal(); cloudSaveGame(rec); afterLocalSave(rec);
+  }, 'Save');
 };
 
+/* view series history */
 window.viewSeriesDetails = (seriesId) => {
-  const games = (gameData.games || []).filter(g => g.seriesId === seriesId).sort((a,b)=> new Date(a.time) - new Date(b.time));
-  const rows = games.map((g,i)=>`<div style="padding:6px;border-bottom:1px solid rgba(255,255,255,0.03)">${i+1}. ${new Date(g.time).toLocaleString()} — <b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b></div>`).join("");
-  showModal("Series Details", `<div style="max-height:320px;overflow:auto">${rows || "<i>No games yet</i>"}</div>`, ()=>{}, "Close");
+  const games = (gameData.games || []).filter(g=>g.seriesId === seriesId).sort((a,b)=> new Date(a.time) - new Date(b.time));
+  const rows = games.map((g,i)=>`<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,0.03)">${i+1}. ${new Date(g.time).toLocaleString()} — <b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b></div>`).join('');
+  showModal('Series Details', `<div style="max-height:320px;overflow:auto">${rows || '<i>No games yet</i>'}</div>`, ()=>{}, 'Close');
 };
 
-/* After local save: rebuild, UI update, show confirmation & graphics */
+/* ------------------------
+   After local save: UI updates, message & graphics
+   ------------------------ */
 function afterLocalSave(rec){
   renderHomeActiveList();
   updateStatsUI();
   const msg = buildSeriesProgressMessage(rec);
-  showLargeConfirm("✅ Game Saved", msg, () => { showStats(); });
+  showLargeConfirm('✅ Game Saved', msg, () => { showStats(); });
   maybeShowGraphics(rec);
 }
 
-/* =========================
-   Build messages and graphics
-   ========================= */
+/* Build series progress message */
 function buildSeriesProgressMessage(rec){
-  const seriesId = rec.seriesId;
   const { seriesMap, teamStats } = computeAggregates();
-  const s = seriesMap[seriesId];
-  const winner = rec.winner;
-  const loser = rec.loser;
+  const s = seriesMap[rec.seriesId];
+  const winner = rec.winner, loser = rec.loser;
   const winnerWins = s.wins[winner] || 0;
   const loserWins = s.wins[loser] || 0;
   const remaining = Math.max(0, s.target - winnerWins);
@@ -338,74 +431,53 @@ function buildSeriesProgressMessage(rec){
       return `<div class="confirm-message"><b>FLAWLESS VICTORY! ${scoreLine}!</b><br>${escapeHtml(winner)} sweeps the series!</div><div class="small-muted">Saved locally and syncing to cloud.</div>`;
     }
     const streak = (teamStats[winner] && teamStats[winner].consecutiveSeries) || 1;
-    if(streak >= 3){
-      return `<div class="confirm-message"><b>🔥 HAT-TRICK! ${escapeHtml(winner)} wins again — ${scoreLine}!</b><br>Incredible streak: ${streak} consecutive series!</div>`;
-    }
-    if(streak === 2){
-      return `<div class="confirm-message"><b>🏆 Series Won — ${scoreLine}</b><br>Yaay.. Another fabulous series. ${escapeHtml(winner)} won ${streak} series in a row! All the best for a Hat-Trick!</div>`;
-    }
+    if(streak >= 3) return `<div class="confirm-message"><b>🔥 HAT-TRICK! ${escapeHtml(winner)} wins again — ${scoreLine}!</b><br>Incredible streak: ${streak} consecutive series!</div>`;
+    if(streak === 2) return `<div class="confirm-message"><b>🏆 Series Won — ${scoreLine}</b><br>Yaay.. Another fabulous series. ${escapeHtml(winner)} won ${streak} series in a row! All the best for a Hat-Trick!</div>`;
     return `<div class="confirm-message"><b>🏆 Series Won — ${scoreLine}</b><br>${escapeHtml(winner)} wins this series!</div>`;
   } else {
-    return `<div class="confirm-message"><b>${escapeHtml(winner)} beat ${escapeHtml(loser)}</b><br>${escapeHtml(winner)} needs <b>${remaining}</b> more win${remaining===1?"":"s"} to reach ${s.target} wins in this series.</div><div class="small-muted">Saved locally and syncing to cloud.</div>`;
+    return `<div class="confirm-message"><b>${escapeHtml(winner)} beat ${escapeHtml(loser)}</b><br>${escapeHtml(winner)} needs <b>${remaining}</b> more win${remaining===1?'':'s'} to reach ${s.target} wins in this series.</div><div class="small-muted">Saved locally and syncing to cloud.</div>`;
   }
 }
 
+/* ------------------------
+   Confetti & Fireworks
+   ------------------------ */
 function simpleConfetti(){
-  const canvas = document.createElement("canvas");
-  canvas.style.position = "fixed"; canvas.style.left = 0; canvas.style.top = 0;
-  canvas.style.width = "100%"; canvas.style.height = "100%"; canvas.style.zIndex = 99998; canvas.style.pointerEvents = "none";
+  const canvas = document.createElement('canvas');
+  canvas.style.position='fixed'; canvas.style.left=0; canvas.style.top=0; canvas.style.width='100%'; canvas.style.height='100%'; canvas.style.zIndex=99998; canvas.style.pointerEvents='none';
   document.body.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext('2d');
   function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
-  resize(); window.addEventListener("resize", resize);
-  const colors = ["#ffdd57","#ff6b6b","#44ff8a","#6ec0ff","#ff9ce3"];
-  const p = [];
-  for(let i=0;i<80;i++) p.push({ x: Math.random()*canvas.width, y: -Math.random()*canvas.height, w:6+Math.random()*10, h:6+Math.random()*10, vx:-2+Math.random()*4, vy:2+Math.random()*4, color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, vr: -5+Math.random()*10 });
+  resize(); window.addEventListener('resize', resize);
+  const colors=['#ffdd57','#ff6b6b','#44ff8a','#6ec0ff','#ff9ce3'];
+  const p=[];
+  for(let i=0;i<80;i++){
+    p.push({ x:Math.random()*canvas.width, y:-Math.random()*canvas.height, w:6+Math.random()*10, h:6+Math.random()*10, vx:-2+Math.random()*4, vy:2+Math.random()*4, color:colors[Math.floor(Math.random()*colors.length)], rot:Math.random()*360, vr:-5+Math.random()*10 });
+  }
   let last = performance.now();
   function frame(t){
-    const dt = (t-last)/16.67; last = t;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    p.forEach(a => { a.x += a.vx * dt; a.y += a.vy * dt; a.vy += 0.05*dt; a.rot += a.vr*dt; ctx.save(); ctx.translate(a.x,a.y); ctx.rotate(a.rot*Math.PI/180); ctx.fillStyle = a.color; ctx.fillRect(-a.w/2,-a.h/2,a.w,a.h); ctx.restore(); });
-    if(p.every(a=>a.y > canvas.height + 50)){ canvas.remove(); return; }
+    const dt=(t-last)/16.67; last=t; ctx.clearRect(0,0,canvas.width,canvas.height);
+    p.forEach(a=>{ a.x+=a.vx*dt; a.y+=a.vy*dt; a.vy+=0.05*dt; a.rot+=a.vr*dt; ctx.save(); ctx.translate(a.x,a.y); ctx.rotate(a.rot*Math.PI/180); ctx.fillStyle=a.color; ctx.fillRect(-a.w/2,-a.h/2,a.w,a.h); ctx.restore(); });
+    if(p.every(a=>a.y>canvas.height+50)){ canvas.remove(); return; }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 }
 
-function startFireworks(duration = 3000){
-  const canvas = document.getElementById("fireworks");
+function startFireworks(duration=2800){
+  const canvas = document.getElementById('fireworks');
   if(!canvas) return;
-  canvas.style.display = "block";
-  const ctx = canvas.getContext("2d");
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
   function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
-  resize(); window.addEventListener("resize", resize);
+  resize(); window.addEventListener('resize', resize);
   const fireworks = [];
-  function spawn(){
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height * 0.6;
-    const count = 30 + Math.round(Math.random()*40);
-    const hue = Math.round(Math.random()*360);
-    for(let i=0;i<count;i++){
-      const speed = Math.random()*4 + 1;
-      const angle = Math.random()*Math.PI*2;
-      fireworks.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 60 + Math.round(Math.random()*40), color: `hsl(${hue} ${60+Math.round(Math.random()*40)}% ${40+Math.round(Math.random()*40)}%)` });
-    }
-  }
+  function spawn(){ const x = Math.random()*canvas.width; const y = Math.random()*canvas.height*0.6; const count = 30 + Math.round(Math.random()*40); const hue = Math.round(Math.random()*360); for(let i=0;i<count;i++){ const speed = Math.random()*4 + 1; const angle = Math.random()*Math.PI*2; fireworks.push({ x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:60+Math.round(Math.random()*40),color:`hsl(${hue} ${60+Math.round(Math.random()*40)}% ${40+Math.round(Math.random()*40)}%)` }); } }
   let last = performance.now();
-  function frame(t){
-    const dt = (t-last)/16.67; last = t;
-    ctx.fillStyle = "rgba(0,0,0,0.18)"; ctx.fillRect(0,0,canvas.width,canvas.height);
-    for(let i=fireworks.length-1;i>=0;i--){
-      const p = fireworks[i];
-      p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 0.06*dt; p.life--;
-      ctx.beginPath(); ctx.fillStyle = p.color; ctx.arc(p.x,p.y, Math.max(0, Math.min(3,p.life/10)), 0, Math.PI*2); ctx.fill();
-      if(p.life <= 0) fireworks.splice(i,1);
-    }
-    requestAnimationFrame(frame);
-  }
-  const sp = setInterval(spawn, 250);
+  function frame(t){ const dt=(t-last)/16.67; last=t; ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fillRect(0,0,canvas.width,canvas.height); for(let i=fireworks.length-1;i>=0;i--){ const p=fireworks[i]; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=0.06*dt; p.life--; ctx.beginPath(); ctx.fillStyle=p.color; ctx.arc(p.x,p.y, Math.max(0,Math.min(3,p.life/10)), 0, Math.PI*2); ctx.fill(); if(p.life<=0) fireworks.splice(i,1); } requestAnimationFrame(frame); }
+  const sp = setInterval(spawn,250);
   requestAnimationFrame(frame);
-  setTimeout(()=>{ clearInterval(sp); setTimeout(()=>{ canvas.style.display = "none"; }, 1200); }, duration);
+  setTimeout(()=>{ clearInterval(sp); setTimeout(()=>{ canvas.style.display='none'; },1200); }, duration);
 }
 
 function maybeShowGraphics(rec){
@@ -413,277 +485,158 @@ function maybeShowGraphics(rec){
   const s = seriesMap[rec.seriesId];
   const ww = s.wins[rec.winner] || 0;
   const lw = s.wins[rec.loser] || 0;
-  if(ww >= s.target && lw === 0){ startFireworks(3000); } else { simpleConfetti(); }
+  if(ww >= s.target && lw === 0) startFireworks(3200); else simpleConfetti();
 }
 
-/* =========================
-   Cloud save (non-blocking) with timeout
-   ========================= */
+/* ------------------------
+   Cloud write (non-blocking)
+   ------------------------ */
 async function cloudSaveGame(rec){
   if(!gamesRef) return;
-  try {
-    await Promise.race([ addDoc(gamesRef, rec), new Promise((_, rej) => setTimeout(()=>rej(new Error("timeout")), 2000)) ]);
-    console.log("Cloud write OK", rec);
-  } catch (e) {
-    console.warn("Cloud save failed/timed out:", e);
-  }
+  try{
+    await Promise.race([ addDoc(gamesRef, rec), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),2000)) ]);
+    console.log('Cloud write OK');
+  }catch(e){ console.warn('Cloud save failed', e); }
 }
 
-/* =========================
-   Delete last game & Reset - password protected
-   ========================= */
+/* ------------------------
+   Delete last & Reset (exposed)
+   ------------------------ */
 function deleteLastGame(){
-  if(!(gameData.games && gameData.games.length)) { alert("No games to delete."); return; }
-  const pw = prompt("Enter password to delete last game:");
-  if(pw !== "zachariahrenji"){ alert("❌ Incorrect password"); return; }
-  if(!confirm("Delete the most recent game permanently?")) return;
+  if(!(gameData.games && gameData.games.length)) { alert('No games to delete.'); return; }
+  const pw = prompt('Enter password to delete last game:');
+  if(pw !== 'zachariahrenji'){ alert('❌ Incorrect password'); return; }
+  if(!confirm('Delete the most recent game permanently?')) return;
   gameData.games.pop();
   saveLocal(); renderHomeActiveList(); updateStatsUI();
-  showLargeConfirm("✅ Last Game Deleted", `<div class="confirm-message">Last game removed from history.</div>`, ()=>{ showStats(); });
+  showLargeConfirm('✅ Last Game Deleted', `<div class="confirm-message">Last game removed from history.</div>`, ()=>{ showStats(); });
 }
 
 function resetStats(){
-  const pw = prompt("Enter password to reset all data:");
-  if(pw !== "zachariahrenji"){ alert("❌ Incorrect password"); return; }
-  if(!confirm("⚠️ This will permanently delete ALL local stats. Continue?")) return;
+  const pw = prompt('Enter password to reset all data:');
+  if(pw !== 'zachariahrenji'){ alert('❌ Incorrect password'); return; }
+  if(!confirm('⚠️ This will permanently delete ALL local stats. Continue?')) return;
   gameData = { games: [] };
   saveLocal(); renderHomeActiveList(); updateStatsUI();
-  showLargeConfirm("✅ Reset Complete", `<div class="confirm-message">All statistics erased locally.</div>`, ()=>{ goHome(); });
+  showLargeConfirm('✅ Reset Complete', `<div class="confirm-message">All statistics erased locally.</div>`, ()=>{ goHome(); });
 }
-
-/* expose delete/reset globally so UI links work (module scope -> window) */
 window.deleteLastGame = deleteLastGame;
 window.resetStats = resetStats;
 
-/* =========================
+/* ------------------------
    Modal helpers
-   ========================= */
+   ------------------------ */
 function showModal(title, html, onOk, okText='OK'){
   closeModal();
-  const overlay = document.createElement("div"); overlay.className = "overlay";
-  const box = document.createElement("div"); box.className = "confirm-box";
+  const overlay = document.createElement('div'); overlay.className = 'overlay';
+  const box = document.createElement('div'); box.className = 'confirm-box';
   box.innerHTML = `<div class="confirm-title">${title}</div><div style="text-align:left">${html}</div>`;
-  const row = document.createElement("div"); row.style.marginTop = '12px'; row.style.display = 'flex'; row.style.justifyContent = 'center'; row.style.gap = '8px';
-  const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.innerText = okText; ok.onclick = () => { onOk && onOk(); closeModal(); };
-  const cancel = document.createElement("button"); cancel.className = "btn btn-secondary"; cancel.innerText = "Cancel"; cancel.onclick = closeModal;
-  row.appendChild(ok); row.appendChild(cancel); box.appendChild(row); overlay.appendChild(box); document.getElementById("modalContainer").appendChild(overlay);
+  const row = document.createElement('div'); row.style.marginTop='12px'; row.style.display='flex'; row.style.justifyContent='center'; row.style.gap='8px';
+  const ok = document.createElement('button'); ok.className = 'neu-btn'; ok.innerText = okText; ok.onclick = ()=>{ onOk && onOk(); closeModal(); };
+  const cancel = document.createElement('button'); cancel.className = 'neu-btn secondary'; cancel.innerText = 'Cancel'; cancel.onclick = closeModal;
+  row.appendChild(ok); row.appendChild(cancel); box.appendChild(row); overlay.appendChild(box); document.getElementById('modalContainer').appendChild(overlay);
 }
 function showLargeConfirm(title, html, onOk){
   closeModal();
-  const overlay = document.createElement("div"); overlay.className = "overlay";
-  const box = document.createElement("div"); box.className = "confirm-box";
+  const overlay = document.createElement('div'); overlay.className = 'overlay';
+  const box = document.createElement('div'); box.className = 'confirm-box';
   box.innerHTML = `<div class="confirm-title">${title}</div><div class="confirm-message">${html}</div>`;
-  const ok = document.createElement("button"); ok.className = "btn btn-primary"; ok.innerText = "OK"; ok.onclick = () => { closeModal(); onOk && onOk(); };
-  box.appendChild(ok); overlay.appendChild(box); document.getElementById("modalContainer").appendChild(overlay);
+  const ok = document.createElement('button'); ok.className = 'neu-btn'; ok.innerText = 'OK'; ok.onclick = ()=>{ closeModal(); onOk && onOk(); };
+  box.appendChild(ok); overlay.appendChild(box); document.getElementById('modalContainer').appendChild(overlay);
 }
-function closeModal(){ document.getElementById("modalContainer").innerHTML = ""; }
+function closeModal(){ document.getElementById('modalContainer').innerHTML = ''; }
 
-/* =========================
-   Firestore live sync - best-effort: replace local with cloud canonical
-   ========================= */
+/* ------------------------
+   Firestore snapshot: replace local with cloud canonical (best-effort)
+   ------------------------ */
 if(gamesRef){
   try{
     onSnapshot(gamesRef, snapshot => {
       const docs = snapshot.docs.map(d => d.data()).sort((a,b)=> new Date(a.time) - new Date(b.time));
       if(docs && docs.length > 0){
-        // Adopt cloud as canonical history
         gameData.games = docs;
         saveLocal();
-        renderHomeActiveList();
-        updateStatsUI();
-        console.log("Synced from cloud. Total games:", docs.length);
+        renderHomeActiveList(); updateStatsUI();
+        console.log('Synced from cloud: ', docs.length);
       }
-    }, err => { console.warn("onSnapshot error:", err); });
-  } catch (e) { console.warn("onSnapshot failed:", e); }
+    }, err => { console.warn('onSnapshot error', err); });
+  }catch(e){ console.warn('onSnapshot failed', e); }
 }
 
-/* =========================
-   Stats rendering & WhatsApp share
-   ========================= */
-function updateStatsUI(){
-  const { seriesMap, teamStats, activeSeries, completedSeriesCount, completedByTarget } = computeAggregates();
-  document.getElementById("totalGames").textContent = (gameData.games || []).length;
-  document.getElementById("totalSeries").textContent = completedSeriesCount;
-
-  // breakdown area (completed by target)
-  const breakdown = document.getElementById("summaryBreakdown");
-  breakdown.innerHTML = `<div style="margin-top:8px">
-    <div><b>Completed Series:</b></div>
-    <div style="margin-left:8px">5 Series → ${completedByTarget[5] || 0} completed</div>
-    <div style="margin-left:8px">10 Series → ${completedByTarget[10] || 0} completed</div>
-  </div>`;
-
-  // team stats cards
-  const teams = Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].wins || 0) - (teamStats[a].wins || 0));
-  const tcont = document.getElementById("teamStats"); tcont.innerHTML = "";
-  teams.forEach((team, idx) => {
-    const s = teamStats[team];
-    const w = s.wins || 0, l = s.losses || 0, sw = s.seriesWon || 0, cs = s.consecutiveSeries || 0;
-    const total = w + l; const wp = total ? Math.round((w / total) * 100) : 0;
-    const el = document.createElement("div"); el.className = "team-item" + (idx===0 ? " champion-team" : "");
-    el.innerHTML = `<div style="font-weight:700">${escapeHtml(team)}</div>
-      <div class="metric-row">
-        <div class="metric-box"><div style="opacity:0.7">Wins</div><div style="font-size:1.2rem">${w}</div></div>
-        <div class="metric-box"><div style="opacity:0.7">Losses</div><div style="font-size:1.2rem">${l}</div></div>
-        <div class="metric-box"><div style="opacity:0.7">Series</div><div style="font-size:1.2rem">${sw}${cs>0?` <small>(${cs} streak)</small>` : ""}</div></div>
-        <div class="metric-box"><div style="opacity:0.7">Win %</div><div style="font-size:1.2rem">${wp}%</div></div>
-      </div>
-      <div class="bar-graph"><div class="bar-wins" style="width:${wp}%"></div><div class="bar-losses" style="width:${100-wp}%"></div></div>`;
-    tcont.appendChild(el);
-  });
-
-  // history
-  const hist = (gameData.games || []).slice().reverse().map(g => {
-    return `<div style="background:rgba(255,255,255,0.02);padding:10px;margin:8px 0;border-radius:8px;">
-      <small style="opacity:0.75">${new Date(g.time).toLocaleString()}</small><br><b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b> <small style="opacity:0.7">[Series:${g.seriesId}, target:${g.seriesTarget || 5}]</small>
-    </div>`;
-  }).join("");
-  document.getElementById("gameHistory").innerHTML = hist || '<div style="opacity:0.75">No games yet</div>';
-}
-
-/* WhatsApp share: build message exactly as requested (completed series only, best games, top 2 wins/losses) */
+/* ------------------------
+   Stats share: WhatsApp (format per spec)
+   ------------------------ */
 function shareToWhatsApp(){
   const { seriesMap, teamStats } = computeAggregates();
-  // total games
   const totalGames = (gameData.games || []).length;
-  // completed series grouped by target + list of completed series
   const completed = Object.values(seriesMap).filter(s => s.finished);
-  const completedByTarget = { 5: 0, 10: 0 };
-  completed.forEach(s => { if(s.target === 5) completedByTarget[5]++; if(s.target === 10) completedByTarget[10]++; });
+  const completedByTarget = {5:0,10:0};
+  completed.forEach(s=>{ if(s.target===5) completedByTarget[5]++; if(s.target===10) completedByTarget[10]++; });
 
-  // Top 2 wins
-  const teamsByWins = Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].wins || 0) - (teamStats[a].wins || 0));
-  const topWins = teamsByWins.slice(0,2).map((t,i) => `${i+1}️⃣ ${t} — ${teamStats[t].wins || 0} Games | ${teamStats[t].seriesWon || 0} Series`);
-
-  // Top 2 losses
-  const teamsByLosses = Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].losses || 0) - (teamStats[a].losses || 0));
-  const topLosses = teamsByLosses.slice(0,2).map((t,i) => `${i+1}️⃣ ${t} — ${teamStats[t].losses || 0} Games | ${teamStats[t].seriesWon || 0} Series`);
-
-  // Champion = team with max wins (if tie, first)
+  const teamsByWins = Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].wins||0) - (teamStats[a].wins||0));
+  const topWins = teamsByWins.slice(0,2).map((t,i)=> `${i+1}️⃣ ${t} — ${teamStats[t].wins || 0} Games | ${teamStats[t].seriesWon || 0} Series`);
+  const teamsByLosses = Object.keys(teamStats || {}).sort((a,b)=> (teamStats[b].losses||0) - (teamStats[a].losses||0));
+  const topLosses = teamsByLosses.slice(0,2).map((t,i)=> `${i+1}️⃣ ${t} — ${teamStats[t].losses || 0} Games | ${teamStats[t].seriesWon || 0} Series`);
   const champion = teamsByWins.length ? teamsByWins[0] : "—";
 
-  // Best Game(s): inspect completed series and compute largest margin
-  const bestGamesMap = {}; // key: margin_score e.g. "10-0" -> { winners: {team: Set(opponents)} , margin: diff }
+  // Best games: include flawless (loser 0) as well as top margin series
   let bestMargin = -1;
-  completed.forEach(s => {
-    // compute winner's wins and losers' wins
-    const wins = s.wins || {};
-    // identify loser(s) by counting total wins for other team(s) in that series
-    // derive final wins per team from s.games
+  const completedDetails = completed.map(s=>{
     const tally = {};
-    s.games.forEach(g => { tally[g.winner] = (tally[g.winner] || 0) + 1; tally[g.loser] = (tally[g.loser] || 0); }); // ensure keys
-    // find winnerTeam and maxWins and maxLoserWins (there can be multiple losers but usually one)
-    const entries = Object.keys(tally).map(team => ({team, wins: tally[team] || 0}));
-    // winnerTeam should be s.winner
+    s.games.forEach(g => { tally[g.winner] = (tally[g.winner]||0) + 1; tally[g.loser] = tally[g.loser] || 0; });
     const winnerTeam = s.winner;
     const winnerWins = tally[winnerTeam] || 0;
-    // build loser list and their wins (sum of others)
-    const losers = entries.filter(e => e.team !== winnerTeam);
-    // If multiple losers, show aggregated opponent names (comma)
-    const opponentNames = Array.from(new Set(s.games.flatMap(g => [g.winner, g.loser]))).filter(x => x !== winnerTeam);
-    // compute margin using winnerWins minus max of opponent wins (choose highest opponent score)
-    const maxOpponentWins = losers.length ? Math.max(...losers.map(x => x.wins || 0)) : 0;
-    const margin = winnerWins - maxOpponentWins;
-    if(margin > bestMargin) bestMargin = margin;
-    // store by scoreline
-    const scoreline = `${winnerWins}-${maxOpponentWins}`;
-    if(!bestGamesMap[scoreline]) bestGamesMap[scoreline] = {};
-    if(!bestGamesMap[scoreline][winnerTeam]) bestGamesMap[scoreline][winnerTeam] = new Set();
-    opponentNames.forEach(op => bestGamesMap[scoreline][winnerTeam].add(op));
-  });
-
-  // We want to include both 5-0 and 10-0 sweeps and any other top margins; spec: show best games (if multiple same margins include all)
-  // Determine highest numeric winners' wins (not just margin) — but user asked to include both 5-0 and 10-0 sweeps: we'll list all completed series that are "flawless" (loser 0) and also the absolute best margin(s)
-  // Build a list: first add flawless ones (loser==0), then add any series that match the absolute best margin (unless already included).
-  const flawlessList = [];
-  const bestMarginList = [];
-
-  completed.forEach(s => {
-    // compute final tally again
-    const tally = {};
-    s.games.forEach(g => { tally[g.winner] = (tally[g.winner] || 0) + 1; });
-    const winnerTeam = s.winner;
-    const winnerWins = tally[winnerTeam] || 0;
-    const opponentNames = Array.from(new Set(s.games.flatMap(g => [g.winner, g.loser]))).filter(x => x !== winnerTeam);
-    // opponent aggregated losses (if single opponent common)
-    // compute opponent max wins (for scoreline)
-    const opponents = Object.keys(tally).filter(k => k !== winnerTeam);
-    const opponentMaxWins = opponents.length ? Math.max(...opponents.map(k => tally[k]||0)) : 0;
-    const scoreline = `${winnerWins}-${opponentMaxWins}`;
-    if(opponentMaxWins === 0){
-      // flawless
-      flawlessList.push({ winner: winnerTeam, scoreline, opponents: opponentNames });
-    }
+    const opponents = Array.from(new Set(s.games.flatMap(g=>[g.winner,g.loser]))).filter(x=>x!==winnerTeam);
+    const opponentMaxWins = opponents.length ? Math.max(...opponents.map(o => tally[o]||0)) : 0;
     const margin = winnerWins - opponentMaxWins;
-    if(margin === bestMargin){
-      bestMarginList.push({ winner: winnerTeam, scoreline, opponents: opponentNames });
-    }
+    if(margin > bestMargin) bestMargin = margin;
+    return { series: s, winner: winnerTeam, winnerWins, opponentMaxWins, opponents };
   });
 
-  // Combine: unique listing. We will include all flawless entries (5-0,10-0 etc) and all bestMargin entries that are not already included.
-  const finalBestGames = [];
+  const flawless = completedDetails.filter(d => d.opponentMaxWins === 0).map(d => ({ winner:d.winner, score:`${d.winnerWins}-${d.opponentMaxWins}`, opponents: d.opponents }));
+  const bestMarginList = completedDetails.filter(d => (d.winnerWins - d.opponentMaxWins) === bestMargin).map(d => ({ winner:d.winner, score:`${d.winnerWins}-${d.opponentMaxWins}`, opponents: d.opponents }));
+
+  // combine unique entries: list all flawless entries first, then best margin (if not duplicate)
+  const finalBest = [];
   const seen = new Set();
-  flawlessList.forEach(it => {
-    const key = `${it.winner}|${it.scoreline}|${it.opponents.join(",")}`;
-    if(!seen.has(key)){ finalBestGames.push(it); seen.add(key); }
-  });
-  bestMarginList.forEach(it => {
-    const key = `${it.winner}|${it.scoreline}|${it.opponents.join(",")}`;
-    if(!seen.has(key)){ finalBestGames.push(it); seen.add(key); }
-  });
+  flawless.forEach(it => { const key = `${it.winner}|${it.score}|${it.opponents.join(',')}`; if(!seen.has(key)){ finalBest.push(it); seen.add(key); }});
+  bestMarginList.forEach(it => { const key = `${it.winner}|${it.score}|${it.opponents.join(',')}`; if(!seen.has(key)){ finalBest.push(it); seen.add(key); }});
 
-  // Build message string
-  let msg = `🎴 Bluff Masters — Overall Stats\n\nTotal Games: ${totalGames}\nTotal Series:\n  5 Series → ${completedByTarget[5] || 0} completed\n  10 Series → ${completedByTarget[10] || 0} completed\n\n🏆 Total Wins (Top 2):\n`;
-  if(topWins.length === 0) msg += "None\n"; else msg += topWins.join("\n") + "\n\n";
-  msg += "💔 Total Losses (Top 2):\n";
-  if(topLosses.length === 0) msg += "None\n"; else msg += topLosses.join("\n") + "\n\n";
+  // Build message
+  let msg = `🎴 Bluff Masters — Overall Stats\n\nTotal Games: ${totalGames}\nTotal Series:\n  5 Series → ${completedByTarget[5]||0} completed\n  10 Series → ${completedByTarget[10]||0} completed\n\n🏆 Total Wins (Top 2):\n`;
+  msg += (topWins.length ? topWins.join('\n') : 'None\n') + '\n\n';
+  msg += '💔 Total Losses (Top 2):\n' + (topLosses.length ? topLosses.join('\n') : 'None\n') + '\n\n';
   msg += `👑 Current Champions: ${champion}\n\n`;
-
-  if(finalBestGames.length){
-    msg += "🔥 Best Game(s):\n";
-    // show each: Winner — score vs Opponents (comma separated)
-    finalBestGames.forEach(it => {
-      const opps = it.opponents.join(", ");
-      msg += `${it.winner} — ${it.scoreline} vs ${opps}\n`;
-    });
+  if(finalBest.length){
+    msg += '🔥 Best Game(s):\n';
+    finalBest.forEach(it => { msg += `${it.winner} — ${it.score} vs ${it.opponents.join(', ')}\n`; });
   } else {
-    msg += "🔥 Best Game(s): None\n";
+    msg += '🔥 Best Game(s): None\n';
   }
 
-  // open WhatsApp direct
-  const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(msg);
-  window.open(url, "_blank");
+  const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
+  window.open(url, '_blank');
 }
-
-/* Expose shareToWhatsApp globally */
 window.shareToWhatsApp = shareToWhatsApp;
 
-/* =========================
-   Utility & helpers
-   ========================= */
-function escapeHtml(s){ if(!s) return ""; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+/* ------------------------
+   Helpers
+   ------------------------ */
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
 
-/* =========================
-   Initialize UI & expose navigation
-   ========================= */
-window.goHome = () => { showScreen("homeScreen"); renderHomeActiveList(); updateStatsUI(); };
-window.showStats = () => { showScreen("statsScreen"); updateStatsUI(); };
+/* ------------------------
+   Navigation helpers
+   ------------------------ */
+window.goHome = () => { document.getElementById('statsSection').style.display = 'none'; document.querySelector('.hero').scrollIntoView({behavior:'smooth'}); renderHomeActiveList(); updateStatsUI(); };
+window.showStats = () => { document.getElementById('statsSection').style.display = 'block'; renderHomeActiveList(); updateStatsUI(); document.getElementById('statsSection').scrollIntoView({behavior:'smooth'}); };
 
-function showScreen(id){
-  document.querySelectorAll(".screen").forEach(s => s.style.display = "none");
-  const el = document.getElementById(id);
-  if(el) el.style.display = "block";
-  // update active list when returning home
-  if(id === "homeScreen") renderHomeActiveList();
-}
+/* ------------------------
+   initial render & Firestore snapshot hookup
+   ------------------------ */
+renderHomeActiveList(); updateStatsUI();
 
-/* initial render */
-renderHomeActiveList();
-updateStatsUI();
-showScreen("homeScreen");
-
-console.log("✅ Bluff Masters loaded. Local backup present. Firebase sync (if available) runs in background.");
-
+/* Firestore listener (already defined above in snippet earlier) - preserved earlier code */
+console.log('Bluff Masters loaded. Local data ready. Firebase sync (if available) runs in background.');
 </script>
 </body>
 </html>
