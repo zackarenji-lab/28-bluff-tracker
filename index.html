@@ -53,8 +53,21 @@
   .confirm-box{background:#0b1622;padding:22px;border-radius:12px;color:#e6eef3;max-width:520px;width:92%;box-shadow:0 12px 60px rgba(2,6,12,0.7);border:1px solid rgba(255,255,255,0.04)}
   .confirm-box h3{margin:0 0 10px 0}
 
+  /* full-screen Tenor embed layer (hidden by default) */
+  .celebration-layer{
+    position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .45s ease;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter: blur(6px);
+  }
+  .celebration-inner{position:relative;width:100%;height:100%}
+  .celebration-embed{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0.95}
+  .celebration-modal{position:relative;z-index:10001;pointer-events:auto;max-width:720px;margin:auto}
+  .celebration-text{background:rgba(3,6,10,0.6);padding:18px;border-radius:12px;color:#fff;text-align:center;backdrop-filter:blur(4px);box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+  .celebration-text h2{margin:0 0 8px 0}
+  .celebration-text p{margin:0;color:#f0f6f5}
+
   /* fireworks canvas */
-  canvas#fireworks{position:fixed;left:0;top:0;width:100%;height:100%;z-index:9996;pointer-events:none;display:none}
+  canvas#fireworks{position:fixed;left:0;top:0;width:100%;height:100%;z-index:9997;pointer-events:none;display:none}
 
   @media (max-width:760px){
     .right-controls{flex-direction:column;align-items:flex-end}
@@ -110,11 +123,22 @@
   </section>
 </div>
 
+<!-- celebration layer (Tenor embed inserted dynamically here) -->
+<div id="celebrationLayer" class="celebration-layer" aria-hidden="true">
+  <div class="celebration-inner">
+    <div id="celebrationEmbed" class="celebration-embed"></div>
+    <div class="celebration-modal" id="celebrationModalContainer"></div>
+  </div>
+</div>
+
 <div id="modalContainer"></div>
 <canvas id="fireworks"></canvas>
 
+<!-- Tenor embed script (needed for tenor-gif-embed) -->
+<script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
 <script type="module">
-/* Single-file app.js embedded */
+/* Single-file app.js embedded (modified to include celebration layer + history toggle) */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
@@ -404,6 +428,60 @@ window.openAddGame = function(seriesId){
   }, 60);
 };
 
+/* Celebration: show Tenor embed fullscreen + modal text + fireworks/confetti for 3s */
+function showWinnerCelebration(winnerName, finalScoreWinner, finalScoreOpponent){
+  // build celebration layer content
+  const layer = document.getElementById("celebrationLayer");
+  const embedContainer = document.getElementById("celebrationEmbed");
+  const modalContainer = document.getElementById("celebrationModalContainer");
+  // clear previous
+  embedContainer.innerHTML = "";
+  modalContainer.innerHTML = "";
+
+  // Tenor embed div (using your provided embed markup; host mode ensures it loads)
+  const tenorDiv = document.createElement("div");
+  tenorDiv.className = "tenor-gif-embed";
+  tenorDiv.setAttribute("data-postid", "22069448");
+  tenorDiv.setAttribute("data-share-method", "host");
+  tenorDiv.setAttribute("data-aspect-ratio", "1");
+  tenorDiv.setAttribute("data-width", "100%");
+  tenorDiv.style.width = "100%";
+  tenorDiv.style.height = "100%";
+  tenorDiv.innerHTML = `<a href="https://tenor.com/view/winner-gif-22069448">Winner GIF</a> from <a href="https://tenor.com/search/winner-gifs">Winner GIFs</a>`;
+  embedContainer.appendChild(tenorDiv);
+
+  // modal text (centered)
+  const modalHtml = document.createElement("div");
+  modalHtml.className = "celebration-text";
+  modalHtml.innerHTML = `<h2>🎉 Yay! Team <b>${escapeHtml(winnerName)}</b> WON this series! Congrats! 🥳</h2>
+    <p>Final Score ${finalScoreWinner} – ${finalScoreOpponent}</p>
+    <div style="margin-top:12px"><button class="neu-btn" onclick="closeWinnerCelebration()">OK</button></div>`;
+  modalContainer.appendChild(modalHtml);
+
+  // show layer
+  layer.style.opacity = "1";
+  layer.setAttribute("aria-hidden", "false");
+
+  // small confetti + fireworks
+  simpleConfetti();
+  startFireworks(2600); // fireworks canvas will hide after duration
+
+  // ensure tenor embed script runs (tenor script included in page); refresh embed renderer
+  if(window.Tenor){ try{ window.Tenor.refresh && window.Tenor.refresh(); }catch(e){ /* ignore */ } }
+  // fade out after 3s
+  setTimeout(()=>{ closeWinnerCelebration(); }, 3000);
+}
+
+function closeWinnerCelebration(){
+  const layer = document.getElementById("celebrationLayer");
+  const embedContainer = document.getElementById("celebrationEmbed");
+  const modalContainer = document.getElementById("celebrationModalContainer");
+  layer.style.opacity = "0";
+  layer.setAttribute("aria-hidden", "true");
+  // small delay then clear inner to remove Tenor iframe
+  setTimeout(()=>{ embedContainer.innerHTML = ""; modalContainer.innerHTML = ""; }, 500);
+}
+
 /* Add game core */
 async function addGameToSeries(seriesId, winner, loser){
   const { seriesMap } = computeAggregates();
@@ -430,11 +508,8 @@ async function addGameToSeries(seriesId, winner, loser){
     const winnerWins = updated.wins[updated.winner] || 0;
     const opponents = Object.keys(updated.wins).filter(t=>t!==updated.winner);
     const opponentMax = opponents.length ? Math.max(...opponents.map(o=>updated.wins[o]||0)) : 0;
-    if(opponentMax === 0){
-      showInfoBox("FLAWLESS VICTORY!", `<div style="font-weight:800">${escapeHtml(updated.winner)} sweeps the series ${winnerWins}-${opponentMax}!</div><div class="small-muted">Saved locally and synced to cloud.</div>`, "OK", ()=>{ startFireworks(); });
-    } else {
-      showInfoBox("Series Complete", `<div style="font-weight:700">${escapeHtml(updated.winner)} wins the series ${winnerWins}-${opponentMax}!</div><div class="small-muted">Saved locally and synced to cloud.</div>`, "OK", ()=>{ simpleConfetti(); });
-    }
+    // use the new celebratory modal + Tenor background + fireworks/confetti
+    showWinnerCelebration(updated.winner, winnerWins, opponentMax);
   } else {
     const remaining = Math.max(0, updated.target - (updated.wins[winner]||0));
     showInfoBox("Game Saved", `<div><b>${escapeHtml(rec.winner)}</b> beat <b>${escapeHtml(rec.loser)}</b></div><div class="small-muted">${escapeHtml(rec.winner)} needs <b>${remaining}</b> more win${remaining===1?'':'s'} to reach ${updated.target}.</div>`);
@@ -449,7 +524,7 @@ window.viewSeriesDetails = function(seriesId){
   showModalBox("Series Details", `<div style="max-height:320px;overflow:auto">${rows}</div>`, "Close", ()=>{});
 };
 
-/* Confetti & fireworks */
+/* Confetti & fireworks (unchanged) */
 function simpleConfetti(){
   const c=document.createElement("canvas"); c.style.position='fixed'; c.style.left=0; c.style.top=0; c.style.width='100%'; c.style.height='100%'; c.style.zIndex=99997; c.style.pointerEvents='none'; document.body.appendChild(c);
   const ctx=c.getContext('2d');
@@ -539,6 +614,7 @@ window.shareToWhatsApp = function(){
   window.open(url, "_blank");
 };
 
+/* Stats UI with collapsible game history */
 function updateStatsUI(){
   const statsSection = document.getElementById("statsSection");
   if(!statsSection) return;
@@ -570,6 +646,9 @@ function updateStatsUI(){
   const finalBest=[]; const seen=new Set();
   flawless.forEach(it=>{ const k=`${it.winner}|${it.winnerWins}-${it.opponentMax}|${it.opponents.join(",")}`; if(!seen.has(k)){ finalBest.push(it); seen.add(k); }});
   bestMarginList.forEach(it=>{ const k=`${it.winner}|${it.winnerWins}-${it.opponentMax}|${it.opponents.join(",")}`; if(!seen.has(k)){ finalBest.push(it); seen.add(k); }});
+
+  // Game history collapsed by default
+  const historyHtml = (gameData.games||[]).slice().reverse().map(g=>`<div style="padding:8px;background:rgba(255,255,255,0.02);margin:8px 0;border-radius:8px"><small style="opacity:.75">${new Date(g.time).toLocaleString()}</small><br><b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b> <small style="opacity:.7">[series:${g.seriesId} target:${g.seriesTarget||5}]</small></div>`).join('') || '<div>No games yet</div>';
 
   let html = `
     <div style="display:flex;justify-content:space-between;align-items:center">
@@ -605,11 +684,23 @@ function updateStatsUI(){
       ${finalBest.length ? finalBest.map(it=>`<div style="padding:8px;border-radius:8px;background:rgba(255,255,255,0.02);margin-top:8px">${escapeHtml(it.winner)} — ${it.winnerWins}-${it.opponentMax} vs ${it.opponents.join(", ")}</div>`).join('') : '<div style="margin-top:8px">None</div>'}
     </div>
     <hr style="margin:12px 0">
-    <h3>Game History</h3>
-    ${ (gameData.games||[]).slice().reverse().map(g=>`<div style="padding:8px;background:rgba(255,255,255,0.02);margin:8px 0;border-radius:8px"><small style="opacity:.75">${new Date(g.time).toLocaleString()}</small><br><b>${escapeHtml(g.winner)}</b> beat <b>${escapeHtml(g.loser)}</b> <small style="opacity:.7">[series:${g.seriesId} target:${g.seriesTarget||5}]</small></div>`).join('') || '<div>No games yet</div>'}
+    <div style="text-align:right;margin-bottom:8px"><button id="toggleHistoryBtn" class="neu-btn secondary">🔽 Show Game History</button></div>
+    <div id="historyContainer" style="display:none;margin-top:8px;max-height:400px;overflow:auto;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px">${historyHtml}</div>
     <div style="margin-top:12px"><button class="neu-btn" onclick="resetStats()">⚠️ Reset All</button> <button class="neu-btn secondary" onclick="deleteLastGame()">Delete Last Game</button></div>
   `;
   statsSection.innerHTML = html;
+
+  // add toggle behaviour
+  const btn = document.getElementById("toggleHistoryBtn");
+  const hist = document.getElementById("historyContainer");
+  if(btn && hist){
+    btn.onclick = ()=>{
+      const now = hist.style.display === 'none' ? 'block' : 'none';
+      hist.style.display = now;
+      btn.textContent = now === 'block' ? '🔼 Hide Game History' : '🔽 Show Game History';
+      if(now === 'block') hist.scrollTop = 0;
+    };
+  }
 }
 
 /* Real-time sync: replace local cache entirely on cloud changes */
@@ -639,7 +730,7 @@ window.goHome = window.showHome;
 renderHomeActiveList();
 updateStatsUI();
 updateChampionBar();
-console.log("✅ Bluff Masters (single-file) loaded.");
+console.log("✅ Bluff Masters (single-file) loaded with celebration + history toggle.");
 </script>
 </body>
 </html>
