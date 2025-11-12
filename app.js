@@ -459,8 +459,11 @@ async function cloudSaveGame(rec) {
   if (!gamesRef) return;
   try {
     // add to Firestore collection - guard with small timeout
-    await Promise.race([addDoc(gamesRef, rec), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 2000))]);
-    console.log("Cloud write OK");
+    await Promise.race([
+  addDoc(gamesRef, { ...rec, secret: "zachariahrenji" }),
+  new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 2000))
+]);
+console.log("Cloud write OK");
   } catch (e) {
     console.warn("Cloud save failed", e);
   }
@@ -665,3 +668,4 @@ window.showStats = function () {
 renderHomeActiveList();
 updateStatsUI();
 console.log("✅ Bluff Masters app.js loaded. Local data ready; Firebase sync (if available) runs in background.");
+
