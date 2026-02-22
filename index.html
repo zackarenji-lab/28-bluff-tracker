@@ -13,36 +13,37 @@
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:800px;margin:22px auto;padding:20px;}
   
-  /* HEADER & LOGO */
   header{display:flex;align-items:center;gap:15px;margin-bottom:18px}
   .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
   h1{margin:0;font-size:22px}
   .subtitle{color:var(--muted);font-size:11px;margin-top:2px}
 
-  /* CARD STYLING */
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-  /* BUTTONS - FIXED SIZE */
   .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:1px solid rgba(255,255,255,0.08); padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; justify-content: center; }
   .neu-btn.primary { background: var(--accent); color: #061226; border: none; }
-  .neu-btn.small { padding: 6px 12px; font-size: 11px; border-radius: 6px; } /* NEW SERIES BUTTON */
+  .neu-btn.small { padding: 6px 12px; font-size: 11px; border-radius: 6px; }
   .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); flex: 0.6; }
   .neu-btn.trash { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); flex: 0.4; }
 
-  /* DROPDOWN FIX - BLACK TEXT ON WHITE */
-  select.neu-btn {
+  /* DROPDOWN & INPUT FIX: Black text on white */
+  select.neu-btn, input.custom-input {
     background: #ffffff !important;
     color: #000000 !important;
     appearance: auto;
     font-weight: 600;
   }
-  select.neu-btn option {
-    background: #ffffff;
-    color: #000000;
+  input.custom-input {
+    width: 92%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--muted);
+    font-size: 13px;
   }
+  select.neu-btn option { background: #ffffff; color: #000000; }
 
-  /* ACTIVE SERIES LIST */
   .series-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
   .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .score-box { text-align: center; flex: 1; }
@@ -51,20 +52,17 @@
   .p-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
   .p-fill { height: 100%; transition: width 0.5s ease; }
 
-  /* CHAMPION BAR */
   .champion-bar{padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;}
   .trophy{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:20px;}
 
   .badge-random { font-size: 9px; background: var(--info); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; }
 
-  /* MODALS */
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
   .confirm-box { background: #0b1622; padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center; }
 
   @media (max-width: 600px) {
     header { flex-direction: column; text-align: center; }
     .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .mobile-wide { grid-column: span 1; }
     .neu-btn.stop { grid-column: span 2; }
     .neu-btn.trash { grid-column: span 1; }
   }
@@ -85,7 +83,6 @@
     </div>
   </header>
 
-  <!-- HOME PAGE -->
   <section id="homeSection">
     <div class="card">
       <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
@@ -99,7 +96,6 @@
       <div id="noActive" style="text-align:center; padding:20px; color:var(--muted); font-size: 13px;">No active games.</div>
     </div>
 
-    <!-- CHAMPION -->
     <div class="champion-bar">
         <div class="trophy">🏆</div>
         <div>
@@ -109,7 +105,6 @@
     </div>
   </section>
 
-  <!-- STATS PAGE -->
   <section id="statsSection" style="display:none;">
     <div class="card">
         <h2 style="margin-top:0; font-size:18px;">Statistics</h2>
@@ -124,7 +119,6 @@
 
 <div id="modalContainer"></div>
 
-<!-- APP LOGIC -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
@@ -246,7 +240,6 @@ window.addWin = async (sId, winner, loser) => {
   await addDoc(gamesRef, { seriesId: sId, winner, loser, seriesTarget: s.target, time: new Date().toISOString(), secret: SECRET_KEY });
 };
 
-// PASSWORD PROTECTED STOP
 window.endSeriesEarly = async (sId) => {
     if(prompt("Enter password to STOP series:") !== SECRET_KEY) return alert("Wrong password.");
     if(confirm("End this series now? Points are saved, but the series target is ignored.")) {
@@ -254,7 +247,6 @@ window.endSeriesEarly = async (sId) => {
     }
 };
 
-// PASSWORD PROTECTED DELETE
 window.deleteSeriesConfirm = async (sId) => {
     if(prompt("Enter password to DELETE series:") !== SECRET_KEY) return alert("Wrong password.");
     if(confirm("Permanently delete this series and all its history?")) {
@@ -264,24 +256,47 @@ window.deleteSeriesConfirm = async (sId) => {
     }
 };
 
+// HANDLER FOR "NEW TEAM" OPTION
+window.handleTeamChange = (teamNum) => {
+    const select = document.getElementById(`mTeam${teamNum}`);
+    const customDiv = document.getElementById(`customTeam${teamNum}Div`);
+    if (select.value === "NEW") {
+        customDiv.style.display = "block";
+    } else {
+        customDiv.style.display = "none";
+        if (teamNum === 1) updateTeamBOptions();
+    }
+};
+
 window.updateTeamBOptions = () => {
-    const tA = document.getElementById('mTA').value;
-    const tB = document.getElementById('mTB');
+    const tA = document.getElementById('mTeam1').value;
+    const tB = document.getElementById('mTeam2');
     const prevB = tB.value;
-    tB.innerHTML = TEAM_LIST.filter(t => t !== tA).map(t => `<option value="${t}">${t}</option>`).join("");
+    
+    // Team 2 can be "NEW" or any existing team except the one selected in Team 1
+    const availableTeams = TEAM_LIST.filter(t => t !== tA);
+    let optionsHtml = availableTeams.map(t => `<option value="${t}">${t}</option>`).join("");
+    optionsHtml += `<option value="NEW">NEW TEAM</option>`;
+    
+    tB.innerHTML = optionsHtml;
     if (prevB !== tA) tB.value = prevB;
 };
 
 window.startNewSeries = () => {
-  const optsA = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join("");
-  const optsB = TEAM_LIST.filter(t => t !== TEAM_LIST[0]).map(t => `<option value="${t}">${t}</option>`).join("");
+  const optsA = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join("") + `<option value="NEW">NEW TEAM</option>`;
+  const optsB = TEAM_LIST.filter(t => t !== TEAM_LIST[0]).map(t => `<option value="${t}">${t}</option>`).join("") + `<option value="NEW">NEW TEAM</option>`;
   
   showModal(`
     <div class="confirm-box">
       <h3 style="margin-top:0">Start New Series</h3>
       <select id="mTarget" class="neu-btn" style="width:100%; margin-bottom:15px;"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-      <select id="mTA" class="neu-btn" style="width:100%; margin-bottom:15px;" onchange="updateTeamBOptions()">${optsA}</select>
-      <select id="mTB" class="neu-btn" style="width:100%; margin-bottom:15px;">${optsB}</select>
+      
+      <select id="mTeam1" class="neu-btn" style="width:100%; margin-bottom:10px;" onchange="handleTeamChange(1)">${optsA}</select>
+      <div id="customTeam1Div" style="display:none;"><input type="text" id="mTA_custom" class="custom-input" placeholder="Enter Team 1 Name"></div>
+      
+      <select id="mTeam2" class="neu-btn" style="width:100%; margin-bottom:10px;" onchange="handleTeamChange(2)">${optsB}</select>
+      <div id="customTeam2Div" style="display:none;"><input type="text" id="mTB_custom" class="custom-input" placeholder="Enter Team 2 Name"></div>
+      
       <button class="neu-btn primary" style="width:100%; margin-bottom:8px" onclick="confirmStart()">Start 0 - 0</button>
       <button class="neu-btn small" style="width:100%" onclick="closeModal()">Cancel</button>
     </div>
@@ -289,9 +304,15 @@ window.startNewSeries = () => {
 };
 
 window.confirmStart = async () => {
-    const tA = document.getElementById('mTA').value;
-    const tB = document.getElementById('mTB').value;
-    if(tA === tB) return alert("Select different teams!");
+    const selA = document.getElementById('mTeam1').value;
+    const selB = document.getElementById('mTeam2').value;
+    
+    let tA = selA === "NEW" ? document.getElementById('mTA_custom').value.trim() : selA;
+    let tB = selB === "NEW" ? document.getElementById('mTB_custom').value.trim() : selB;
+
+    if (!tA || !tB) return alert("Please provide names for both teams!");
+    if (tA === tB) return alert("Teams cannot have the same name!");
+
     const sId = "s_" + Date.now();
     await addDoc(gamesRef, { 
         seriesId: sId, isInit: true, teamA: tA, teamB: tB, time: new Date().toISOString(), 
@@ -348,7 +369,7 @@ window.resetStats = async () => {
 
 window.shareToWhatsApp = () => {
     const { teamStats } = computeAggregates();
-    let msg = "🏆 Bluff Masters Standings\n\n";
+    let msg = "🏆 Bluff Masters Rankings\n\n";
     Object.entries(teamStats).forEach(([n, d]) => {
         msg += `${n}: ${d.wins} Wins\n`;
     });
