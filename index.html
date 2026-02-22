@@ -1,124 +1,22 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>Bluff Masters</title>
-<link rel="icon" href="blufffavicon.png" />
+<!-- Rest of index.html stays the same as your "Restoration" version -->
 <style>
-  :root {
-    --bg1:#061226; --bg2:#081b31; --card:#0e2336;
-    --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db;
+  /* ... existing styles ... */
+  .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+  
+  .neu-btn { 
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); 
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); 
+    padding: 10px 12px; color: #e6eef3; font-weight: 700; cursor: pointer; 
+    font-size: 12px; flex: 1; min-width: 80px;
   }
-  html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:800px;margin:22px auto;padding:20px;}
-  
-  /* Restored Original Header */
-  header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
-  .logo{width:62px;height:62px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
-  h1{margin:0;font-size:28px}
-  .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
-
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
-  
-  /* Hero Image Styling */
-  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-  /* Active Series Styling */
-  .series-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
-  .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .score-box { text-align: center; flex: 1; }
-  .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
-  
-  /* Progress Bar */
-  .p-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
-  .p-fill { height: 100%; transition: width 0.5s ease; }
-
-  /* Buttons */
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:10px; border:1px solid rgba(255,255,255,0.08); padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; justify-content: center; }
-  .neu-btn:active { transform: translateY(2px); }
   .neu-btn.primary { background: var(--accent); color: #061226; border: none; }
-  .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); }
-
-  /* Champion bar original look */
-  .champion-bar{padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;}
-  .trophy{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:22px;}
-
-  .badge-random { font-size: 9px; background: var(--info); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; }
-
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
-  .confirm-box { background: #0b1622; padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center; }
-
+  .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); flex: 0.6; min-width: 60px; }
+  .neu-btn.trash { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); flex: 0.4; min-width: 45px; }
+  
   @media (max-width: 600px) {
-    header { flex-direction: column; text-align: center; }
-    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .btn-stop-full { grid-column: span 2; }
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+    .mobile-wide { grid-column: span 1; }
+    .neu-btn.stop { grid-column: span 2; }
+    .neu-btn.trash { grid-column: span 1; }
   }
 </style>
-</head>
-<body>
-
-<div class="wrap">
-  <header>
-    <div class="logo">28</div>
-    <div>
-      <h1>Bluff Masters</h1>
-      <div class="subtitle">Track multiple active series, shared stats & celebrations</div>
-    </div>
-    <div style="flex:1"></div>
-    <button class="neu-btn" onclick="toggleView()" id="navBtn">📊 Stats</button>
-  </header>
-
-  <!-- HOME SECTION -->
-  <section id="homeSection">
-    <div class="card">
-      <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
-      
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2 style="margin:0; font-size:18px;">Active Series</h2>
-        <button class="neu-btn primary" onclick="startNewSeries()">➕ New Series</button>
-      </div>
-      
-      <div id="activeList"></div>
-      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted);">No active series. Start one to begin.</div>
-    </div>
-
-    <!-- Champion Bar -->
-    <div class="champion-bar">
-        <div class="trophy">🏆</div>
-        <div>
-            <div style="font-size:11px; color:var(--gold); text-transform:uppercase; letter-spacing:1px;">Current Champion</div>
-            <div id="championText" style="font-size:18px; font-weight:800;">—</div>
-        </div>
-    </div>
-  </section>
-
-  <!-- STATS SECTION -->
-  <section id="statsSection" style="display:none;">
-    <div class="card">
-        <h2 style="margin-top:0;">Statistics & Match History</h2>
-        <div id="statsContent"></div>
-        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap: wrap;">
-            <button class="neu-btn" onclick="shareToWhatsApp()">📤 Share Stats</button>
-            <button class="neu-btn" style="color:var(--danger)" onclick="resetStats()">⚠️ Reset Data</button>
-        </div>
-    </div>
-  </section>
-</div>
-
-<div id="modalContainer"></div>
-<script type="module" src="app.js"></script>
-<script>
-    window.toggleView = function() {
-        const home = document.getElementById('homeSection');
-        const stats = document.getElementById('statsSection');
-        const btn = document.getElementById('navBtn');
-        const isHome = home.style.display !== 'none';
-        home.style.display = isHome ? 'none' : 'block';
-        stats.style.display = isHome ? 'block' : 'none';
-        btn.innerText = isHome ? "🏠 Home" : "📊 Stats";
-        window.scrollTo(0,0);
-    }
-</script>
-</body>
-</html>
