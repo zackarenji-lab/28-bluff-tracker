@@ -29,11 +29,16 @@ function computeAggregates() {
     if (!seriesMap[g.seriesId]) {
       seriesMap[g.seriesId] = { 
         id: g.seriesId, target: g.seriesTarget || 5, wins: {}, games: [], 
-        startedAt: g.seriesStartedAt || g.time, isRandom: false 
+        startedAt: g.seriesStartedAt || g.time, isRandom: false,
+        teamA: g.teamA || "", teamB: g.teamB || "" 
       };
     }
     const s = seriesMap[g.seriesId];
-    if (g.manualEnd) {
+    
+    if (g.isInit) {
+        s.teamA = g.teamA;
+        s.teamB = g.teamB;
+    } else if (g.manualEnd) {
         s.isRandom = true;
     } else {
         s.games.push(g);
@@ -50,9 +55,16 @@ function computeAggregates() {
   Object.values(seriesMap).forEach(s => {
     const reachedTarget = Object.values(s.wins).some(w => w >= s.target);
     s.isFinished = s.isRandom || reachedTarget;
+    
+    if(!s.teamA || !s.teamB) {
+        const names = Array.from(new Set(s.games.flatMap(g => [g.winner, g.loser])));
+        s.teamA = names[0] || "Team 1";
+        s.teamB = names[1] || "Team 2";
+    }
+
     if (s.isFinished) {
       const teams = Object.keys(s.wins);
-      s.winner = teams.length > 0 ? teams.reduce((a, b) => s.wins[a] > s.wins[b] ? a : b, teams[0]) : "No Games Played";
+      s.winner = teams.length > 0 ? teams.reduce((a, b) => s.wins[a] > s.wins[b] ? a : b, teams[0]) : "Aborted";
       if(!s.isRandom && teamStats[s.winner]) teamStats[s.winner].series++;
       finished.push(s);
     } else { active.push(s); }
@@ -69,27 +81,25 @@ function renderUI() {
   list.innerHTML = "";
 
   active.forEach(s => {
-    const teams = Array.from(new Set(s.games.flatMap(g => [g.winner, g.loser])));
-    const tA = teams[0] || "Team A";
-    const tB = teams[1] || "Team B";
-    const wA = s.wins[tA] || 0;
-    const wB = s.wins[tB] || 0;
+    const wA = s.wins[s.teamA] || 0;
+    const wB = s.wins[s.teamB] || 0;
     
     list.innerHTML += `
       <div class="series-card">
         <div class="score-row">
-          <div class="score-box"><strong>${tA}</strong><div class="score-val">${wA}</div></div>
+          <div class="score-box"><strong>${s.teamA}</strong><div class="score-val">${wA}</div></div>
           <div style="font-size:10px; color:var(--muted)">VS</div>
-          <div class="score-box"><strong>${tB}</strong><div class="score-val">${wB}</div></div>
+          <div class="score-box"><strong>${s.teamB}</strong><div class="score-val">${wB}</div></div>
         </div>
         <div class="p-bar-bg">
           <div class="p-fill" style="width:${(wA/s.target)*100}%; background:var(--accent)"></div>
           <div class="p-fill" style="width:${(wB/s.target)*100}%; background:var(--gold); margin-left:auto"></div>
         </div>
-        <div class="btn-group" style="display:flex; gap:8px; margin-top:10px;">
-          <button class="neu-btn primary" style="flex:1" onclick="addWin('${s.id}', '${tA}', '${tB}')">Win: ${tA.split(' ')[0]}</button>
-          <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="addWin('${s.id}', '${tB}', '${tA}')">Win: ${tB.split(' ')[0]}</button>
-          <button class="neu-btn stop btn-stop-full" onclick="endSeriesEarly('${s.id}')">STOP</button>
+        <div class="btn-group">
+          <button class="neu-btn primary mobile-wide" onclick="addWin('${s.id}', '${s.teamA}', '${s.teamB}')">Win: ${s.teamA.split(' ')[0]}</button>
+          <button class="neu-btn primary mobile-wide" style="background:var(--gold)" onclick="addWin('${s.id}', '${s.teamB}', '${s.teamA}')">Win: ${s.teamB.split(' ')[0]}</button>
+          <button class="neu-btn stop" onclick="endSeriesEarly('${s.id}')">STOP</button>
+          <button class="neu-btn trash" onclick="deleteSeriesConfirm('${s.id}')">🗑️</button>
         </div>
       </div>
     `;
@@ -100,26 +110,44 @@ function renderUI() {
   updateStatsPage();
 }
 
+// Password protected STOP
 window.endSeriesEarly = async (sId) => {
-    if(confirm("End this series now? Individual wins are saved, but the series target is ignored.")) {
+    if(prompt("Enter password to STOP series:") !== SECRET_KEY) return alert("Wrong password.");
+    if(confirm("End this series now? It will be saved as a 'Random Game' in your history.")) {
         await addDoc(gamesRef, { seriesId: sId, manualEnd: true, time: new Date().toISOString(), secret: SECRET_KEY });
     }
 };
 
-window.addWin = async (sId, winner, loser) => {
-  const s = computeAggregates().active.find(x => x.id === sId);
-  await addDoc(gamesRef, { seriesId: sId, winner, loser, seriesTarget: s.target, time: new Date().toISOString(), secret: SECRET_KEY });
+// Password protected DELETE
+window.deleteSeriesConfirm = async (sId) => {
+    if(prompt("Enter password to DELETE series:") !== SECRET_KEY) return alert("Wrong password.");
+    if(confirm("Permanently delete this series and all its records?")) {
+        const qS = query(gamesRef, where("seriesId", "==", sId));
+        const snap = await getDocs(qS);
+        snap.forEach(d => deleteDoc(d.ref));
+    }
+};
+
+// Start New Series Logic
+window.updateTeamBOptions = () => {
+    const tA = document.getElementById('mTA').value;
+    const tB = document.getElementById('mTB');
+    const prevB = tB.value;
+    tB.innerHTML = TEAM_LIST.filter(t => t !== tA).map(t => `<option value="${t}">${t}</option>`).join("");
+    if (prevB !== tA) tB.value = prevB;
 };
 
 window.startNewSeries = () => {
-  const opts = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join("");
+  const optsA = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join("");
+  const optsB = TEAM_LIST.filter(t => t !== TEAM_LIST[0]).map(t => `<option value="${t}">${t}</option>`).join("");
+  
   showModal(`
     <div class="confirm-box">
       <h3 style="margin-top:0">Start New Series</h3>
-      <select id="mTarget" class="neu-btn" style="width:100%; margin-bottom:10px;"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-      <select id="mTA" class="neu-btn" style="width:100%; margin-bottom:10px;">${opts}</select>
-      <select id="mTB" class="neu-btn" style="width:100%; margin-bottom:10px;">${opts}</select>
-      <button class="neu-btn primary" style="width:100%; margin-bottom:8px" onclick="confirmStart()">Start Now</button>
+      <select id="mTarget" class="neu-btn" style="width:100%; margin-bottom:15px;"><option value="5">First to 5</option><option value="10">First to 10</option></select>
+      <select id="mTA" class="neu-btn" style="width:100%; margin-bottom:15px;" onchange="updateTeamBOptions()">${optsA}</select>
+      <select id="mTB" class="neu-btn" style="width:100%; margin-bottom:15px;">${optsB}</select>
+      <button class="neu-btn primary" style="width:100%; margin-bottom:8px" onclick="confirmStart()">Start 0 - 0</button>
       <button class="neu-btn" style="width:100%" onclick="closeModal()">Cancel</button>
     </div>
   `);
@@ -128,10 +156,18 @@ window.startNewSeries = () => {
 window.confirmStart = async () => {
     const tA = document.getElementById('mTA').value;
     const tB = document.getElementById('mTB').value;
-    if(tA === tB) return alert("Select different teams!");
     const sId = "s_" + Date.now();
-    await addDoc(gamesRef, { seriesId: sId, winner: tA, loser: tB, time: new Date().toISOString(), seriesTarget: parseInt(document.getElementById('mTarget').value), secret: SECRET_KEY });
+    await addDoc(gamesRef, { 
+        seriesId: sId, isInit: true, teamA: tA, teamB: tB, time: new Date().toISOString(), 
+        seriesTarget: parseInt(document.getElementById('mTarget').value), secret: SECRET_KEY 
+    });
     closeModal();
+};
+
+window.addWin = async (sId, winner, loser) => {
+  const agg = computeAggregates();
+  const s = agg.active.find(x => x.id === sId);
+  await addDoc(gamesRef, { seriesId: sId, winner, loser, seriesTarget: s.target, time: new Date().toISOString(), secret: SECRET_KEY });
 };
 
 function updateStatsPage() {
@@ -140,7 +176,7 @@ function updateStatsPage() {
     if(!cont) return;
     
     let html = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-        <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Total Wins</small><div style="font-size:20px; font-weight:800">${gameData.games.filter(g=>!g.manualEnd).length}</div></div>
+        <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Total Wins</small><div style="font-size:20px; font-weight:800">${gameData.games.filter(g=>!g.manualEnd && !g.isInit).length}</div></div>
         <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Series Won</small><div style="font-size:20px; font-weight:800">${finished.filter(s=>!s.isRandom).length}</div></div>
     </div>`;
 
@@ -155,11 +191,11 @@ function updateStatsPage() {
     html += `<h3 style="margin-top:25px">Series History</h3>`;
     finished.slice().reverse().forEach(s => {
         const typeLabel = s.isRandom ? `<span class="badge-random">Random Game</span>` : `<span style="font-size:9px; color:var(--accent); margin-left:8px;">COMPETITIVE</span>`;
-        const teams = Object.keys(s.wins);
-        const scoreStr = teams.length > 1 ? `${s.wins[teams[0]]} - ${s.wins[teams[1]]}` : "Series Aborted";
+        const scoreA = s.wins[s.teamA] || 0;
+        const scoreB = s.wins[s.teamB] || 0;
         html += `<div style="font-size:12px; margin-bottom:12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
             <strong>${s.winner}</strong> won ${typeLabel}<br>
-            <span style="color:var(--muted)">${scoreStr}</span>
+            <span style="color:var(--muted)">${scoreA} - ${scoreB}</span>
         </div>`;
     });
     cont.innerHTML = html;
@@ -177,7 +213,7 @@ window.resetStats = async () => {
     if(prompt("Reset all stats? Enter Password:") === SECRET_KEY) {
         const snap = await getDocs(gamesRef);
         snap.forEach(d => deleteDoc(d.ref));
-    }
+    } else { alert("Wrong password."); }
 };
 
 window.shareToWhatsApp = () => {
