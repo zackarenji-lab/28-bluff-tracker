@@ -1,22 +1,350 @@
-<!-- Rest of index.html stays the same as your "Restoration" version -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+<title>Bluff Masters</title>
+<link rel="icon" href="blufffavicon.png" />
 <style>
-  /* ... existing styles ... */
-  .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-  
-  .neu-btn { 
-    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); 
-    border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); 
-    padding: 10px 12px; color: #e6eef3; font-weight: 700; cursor: pointer; 
-    font-size: 12px; flex: 1; min-width: 80px;
+  :root {
+    --bg1:#061226; --bg2:#081b31; --card:#0e2336;
+    --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db;
   }
+  html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:800px;margin:22px auto;padding:20px;}
+  
+  /* ORIGINAL UI HEADER */
+  header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+  .logo{width:62px;height:62px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
+  h1{margin:0;font-size:28px}
+  .subtitle{color:var(--muted);font-size:13px;margin-top:6px}
+
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
+  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+  /* SERIES CARD & PROGRESS BAR */
+  .series-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+  .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .score-box { text-align: center; flex: 1; }
+  .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
+  
+  .p-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
+  .p-fill { height: 100%; transition: width 0.5s ease; }
+
+  /* BUTTONS */
+  .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:10px; border:1px solid rgba(255,255,255,0.08); padding:10px 12px; color:#e6eef3; font-weight:700; cursor:pointer; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; justify-content: center; flex: 1; min-width: 80px;}
+  .neu-btn:active { transform: translateY(2px); }
   .neu-btn.primary { background: var(--accent); color: #061226; border: none; }
   .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); flex: 0.6; min-width: 60px; }
   .neu-btn.trash { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); flex: 0.4; min-width: 45px; }
-  
+  .neu-btn.trash:hover { color: var(--danger); border-color: var(--danger); }
+
+  /* CHAMPION BAR */
+  .champion-bar{padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;}
+  .trophy{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:22px;}
+
+  .badge-random { font-size: 9px; background: var(--info); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
+  .confirm-box { background: #0b1622; padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center; }
+
   @media (max-width: 600px) {
+    header { flex-direction: column; text-align: center; }
     .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; }
     .mobile-wide { grid-column: span 1; }
     .neu-btn.stop { grid-column: span 2; }
     .neu-btn.trash { grid-column: span 1; }
   }
 </style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="logo">28</div>
+    <div>
+      <h1>Bluff Masters</h1>
+      <div class="subtitle">Track multiple active series, shared stats & celebrations</div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="neu-btn" onclick="toggleView()" id="navBtn">📊 Stats</button>
+  </header>
+
+  <!-- HOME SECTION -->
+  <section id="homeSection">
+    <div class="card">
+      <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
+      
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h2 style="margin:0; font-size:18px;">Active Series</h2>
+        <button class="neu-btn primary" onclick="startNewSeries()">➕ New Series</button>
+      </div>
+      
+      <div id="activeList"></div>
+      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted);">No active series.</div>
+    </div>
+
+    <div class="champion-bar">
+        <div class="trophy">🏆</div>
+        <div>
+            <div style="font-size:11px; color:var(--gold); text-transform:uppercase; letter-spacing:1px;">Current Champion</div>
+            <div id="championText" style="font-size:18px; font-weight:800;">—</div>
+        </div>
+    </div>
+  </section>
+
+  <!-- STATS SECTION -->
+  <section id="statsSection" style="display:none;">
+    <div class="card">
+        <h2 style="margin-top:0;">Statistics & History</h2>
+        <div id="statsContent"></div>
+        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap: wrap;">
+            <button class="neu-btn" onclick="shareToWhatsApp()">📤 Share Stats</button>
+            <button class="neu-btn" style="color:var(--danger)" onclick="resetStats()">⚠️ Reset Data</button>
+        </div>
+    </div>
+  </section>
+</div>
+
+<div id="modalContainer"></div>
+
+<!-- FIREBASE & APP LOGIC -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, onSnapshot, query, orderBy,
+  getDocs, deleteDoc, limit, where, updateDoc
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const FIREBASE_CONF = {
+  apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc",
+  authDomain: "bluff-tracker-7542e.firebaseapp.com",
+  projectId: "bluff-tracker-7542e",
+  storageBucket: "bluff-tracker-7542e.appspot.com",
+  messagingSenderId: "280965687037",
+  appId: "1:280965687037:web:be0b05da36ef653ab68094"
+};
+const SECRET_KEY = "zachariahrenji";
+const TEAM_LIST = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
+
+const app = initializeApp(FIREBASE_CONF);
+const db = getFirestore(app);
+const gamesRef = collection(db, "games");
+
+let gameData = { games: [] };
+
+function computeAggregates() {
+  const seriesMap = {};
+  const teamStats = {};
+
+  gameData.games.forEach(g => {
+    if (!seriesMap[g.seriesId]) {
+      seriesMap[g.seriesId] = { 
+        id: g.seriesId, target: g.seriesTarget || 5, wins: {}, games: [], 
+        startedAt: g.seriesStartedAt || g.time, isRandom: false,
+        teamA: g.teamA || "", teamB: g.teamB || "" 
+      };
+    }
+    const s = seriesMap[g.seriesId];
+    
+    if (g.isInit) {
+        s.teamA = g.teamA;
+        s.teamB = g.teamB;
+    } else if (g.manualEnd) {
+        s.isRandom = true;
+    } else {
+        s.games.push(g);
+        s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+        if(!teamStats[g.winner]) teamStats[g.winner] = { wins: 0, losses: 0, series: 0 };
+        if(!teamStats[g.loser]) teamStats[g.loser] = { wins: 0, losses: 0, series: 0 };
+        teamStats[g.winner].wins++;
+        teamStats[g.loser].losses++;
+    }
+  });
+
+  const active = [];
+  const finished = [];
+  Object.values(seriesMap).forEach(s => {
+    const reachedTarget = Object.values(s.wins).some(w => w >= s.target);
+    s.isFinished = s.isRandom || reachedTarget;
+    
+    if(!s.teamA || !s.teamB) {
+        const names = Array.from(new Set(s.games.flatMap(g => [g.winner, g.loser])));
+        s.teamA = names[0] || "Team 1";
+        s.teamB = names[1] || "Team 2";
+    }
+
+    if (s.isFinished) {
+      const teams = Object.keys(s.wins);
+      s.winner = teams.length > 0 ? teams.reduce((a, b) => s.wins[a] > s.wins[b] ? a : b, teams[0]) : "Aborted";
+      if(!s.isRandom && teamStats[s.winner]) teamStats[s.winner].series++;
+      finished.push(s);
+    } else { active.push(s); }
+  });
+  return { active, finished, teamStats };
+}
+
+function renderUI() {
+  const { active, teamStats } = computeAggregates();
+  const list = document.getElementById("activeList");
+  if(!list) return;
+
+  document.getElementById("noActive").style.display = active.length ? "none" : "block";
+  list.innerHTML = "";
+
+  active.forEach(s => {
+    const wA = s.wins[s.teamA] || 0;
+    const wB = s.wins[s.teamB] || 0;
+    
+    list.innerHTML += `
+      <div class="series-card">
+        <div class="score-row">
+          <div class="score-box"><strong>${s.teamA}</strong><div class="score-val">${wA}</div></div>
+          <div style="font-size:10px; color:var(--muted)">VS</div>
+          <div class="score-box"><strong>${s.teamB}</strong><div class="score-val">${wB}</div></div>
+        </div>
+        <div class="p-bar-bg">
+          <div class="p-fill" style="width:${(wA/s.target)*100}%; background:var(--accent)"></div>
+          <div class="p-fill" style="width:${(wB/s.target)*100}%; background:var(--gold); margin-left:auto"></div>
+        </div>
+        <div class="btn-group">
+          <button class="neu-btn primary mobile-wide" onclick="addWin('${s.id}', '${s.teamA}', '${s.teamB}')">Win: ${s.teamA.split(' ')[0]}</button>
+          <button class="neu-btn primary mobile-wide" style="background:var(--gold)" onclick="addWin('${s.id}', '${s.teamB}', '${s.teamA}')">Win: ${s.teamB.split(' ')[0]}</button>
+          <button class="neu-btn stop" onclick="endSeriesEarly('${s.id}')">STOP</button>
+          <button class="neu-btn trash" onclick="deleteSeriesConfirm('${s.id}')">🗑️</button>
+        </div>
+      </div>
+    `;
+  });
+
+  const sortedTeams = Object.keys(teamStats).sort((a,b) => teamStats[b].wins - teamStats[a].wins);
+  document.getElementById("championText").innerText = sortedTeams[0] || "Waiting for data...";
+  updateStatsPage();
+}
+
+window.toggleView = function() {
+    const home = document.getElementById('homeSection');
+    const stats = document.getElementById('statsSection');
+    const btn = document.getElementById('navBtn');
+    const isHome = home.style.display !== 'none';
+    home.style.display = isHome ? 'none' : 'block';
+    stats.style.display = isHome ? 'block' : 'none';
+    btn.innerText = isHome ? "🏠 Home" : "📊 Stats";
+    window.scrollTo(0,0);
+}
+
+window.addWin = async (sId, winner, loser) => {
+  const agg = computeAggregates();
+  const s = agg.active.find(x => x.id === sId);
+  await addDoc(gamesRef, { seriesId: sId, winner, loser, seriesTarget: s.target, time: new Date().toISOString(), secret: SECRET_KEY });
+};
+
+window.endSeriesEarly = async (sId) => {
+    if(prompt("Enter password to STOP series:") !== SECRET_KEY) return alert("Wrong password.");
+    if(confirm("End this series now? It will be saved as a 'Random Game' in your history.")) {
+        await addDoc(gamesRef, { seriesId: sId, manualEnd: true, time: new Date().toISOString(), secret: SECRET_KEY });
+    }
+};
+
+window.deleteSeriesConfirm = async (sId) => {
+    if(prompt("Enter password to DELETE series:") !== SECRET_KEY) return alert("Wrong password.");
+    if(confirm("Permanently delete this series and all its points?")) {
+        const qS = query(gamesRef, where("seriesId", "==", sId));
+        const snap = await getDocs(qS);
+        snap.forEach(d => deleteDoc(d.ref));
+    }
+};
+
+window.updateTeamBOptions = () => {
+    const tA = document.getElementById('mTA').value;
+    const tB = document.getElementById('mTB');
+    const prevB = tB.value;
+    tB.innerHTML = TEAM_LIST.filter(t => t !== tA).map(t => `<option value="${t}">${t}</option>`).join("");
+    if (prevB !== tA) tB.value = prevB;
+};
+
+window.startNewSeries = () => {
+  const optsA = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join("");
+  const optsB = TEAM_LIST.filter(t => t !== TEAM_LIST[0]).map(t => `<option value="${t}">${t}</option>`).join("");
+  
+  showModal(`
+    <div class="confirm-box">
+      <h3 style="margin-top:0">Start New Series</h3>
+      <select id="mTarget" class="neu-btn" style="width:100%; margin-bottom:15px;"><option value="5">First to 5</option><option value="10">First to 10</option></select>
+      <select id="mTA" class="neu-btn" style="width:100%; margin-bottom:15px;" onchange="updateTeamBOptions()">${optsA}</select>
+      <select id="mTB" class="neu-btn" style="width:100%; margin-bottom:15px;">${optsB}</select>
+      <button class="neu-btn primary" style="width:100%; margin-bottom:8px" onclick="confirmStart()">Start 0 - 0</button>
+      <button class="neu-btn" style="width:100%" onclick="closeModal()">Cancel</button>
+    </div>
+  `);
+};
+
+window.confirmStart = async () => {
+    const tA = document.getElementById('mTA').value;
+    const tB = document.getElementById('mTB').value;
+    const sId = "s_" + Date.now();
+    await addDoc(gamesRef, { 
+        seriesId: sId, isInit: true, teamA: tA, teamB: tB, time: new Date().toISOString(), 
+        seriesTarget: parseInt(document.getElementById('mTarget').value), secret: SECRET_KEY 
+    });
+    closeModal();
+};
+
+function updateStatsPage() {
+    const { teamStats, finished } = computeAggregates();
+    const cont = document.getElementById("statsContent");
+    if(!cont) return;
+    
+    let html = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
+        <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Total Wins</small><div style="font-size:20px; font-weight:800">${gameData.games.filter(g=>!g.manualEnd && !g.isInit).length}</div></div>
+        <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Series Won</small><div style="font-size:20px; font-weight:800">${finished.filter(s=>!s.isRandom).length}</div></div>
+    </div>`;
+
+    html += `<h3>Global Leaderboard</h3>`;
+    Object.entries(teamStats).sort((a,b) => b[1].wins - a[1].wins).forEach(([name, data]) => {
+        html += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px;">
+            <span>${name}</span>
+            <span><strong>${data.wins}W</strong> - ${data.losses}L</span>
+        </div>`;
+    });
+
+    html += `<h3 style="margin-top:25px">Series History</h3>`;
+    finished.slice().reverse().forEach(s => {
+        const typeLabel = s.isRandom ? `<span class="badge-random">Random Game</span>` : `<span style="font-size:9px; color:var(--accent); margin-left:8px;">COMPETITIVE</span>`;
+        const scoreA = s.wins[s.teamA] || 0;
+        const scoreB = s.wins[s.teamB] || 0;
+        html += `<div style="font-size:12px; margin-bottom:12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+            <strong>${s.winner}</strong> won ${typeLabel}<br>
+            <span style="color:var(--muted)">${scoreA} - ${scoreB}</span>
+        </div>`;
+    });
+    cont.innerHTML = html;
+}
+
+function showModal(html) { document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`; }
+window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
+
+onSnapshot(query(gamesRef, orderBy("time")), snap => {
+  gameData.games = snap.docs.map(d => d.data());
+  renderUI();
+});
+
+window.resetStats = async () => {
+    if(prompt("Reset all stats? Enter Password:") === SECRET_KEY) {
+        const snap = await getDocs(gamesRef);
+        snap.forEach(d => deleteDoc(d.ref));
+    } else { alert("Wrong password."); }
+};
+
+window.shareToWhatsApp = () => {
+    const { teamStats } = computeAggregates();
+    let msg = "🏆 Bluff Masters Rankings\n\n";
+    Object.entries(teamStats).forEach(([n, d]) => {
+        msg += `${n}: ${d.wins} Wins\n`;
+    });
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
+};
+</script>
+</body>
+</html>
