@@ -19,14 +19,13 @@
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* GAME-WISE TILES */
+  /* OVERALL DASHBOARD TILES */
   .stats-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
   .stats-tile:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
   .st-icon { font-size: 24px; background: rgba(0,0,0,0.3); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
   .st-content { flex: 1; }
   .st-content h3 { margin: 0; font-size: 15px; color: #fff; }
   .st-content p { margin: 4px 0 0 0; font-size: 11px; color: var(--muted); }
-  .st-arrow { color: var(--gold); font-weight: 800; }
 
   /* ANALYTICS */
   .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
@@ -36,7 +35,6 @@
   .b-run { height: 100%; background: var(--info); }
   .b-last { height: 100%; background: var(--danger); }
 
-  /* GAME HUB GRID */
   .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
   .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
   .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
@@ -44,14 +42,16 @@
 
   .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
-  
+  .neu-btn.small { padding: 6px 10px; font-size: 10px; }
+
   select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
   
   .log-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; font-size: 12px; }
-  .log-date { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -82,16 +82,20 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h2 style="margin:0; font-size:16px;">Active Series</h2>
-        <button class="neu-btn primary small" onclick="startNewSeries()">➕ New Series</button>
+        <button class="neu-btn small" onclick="openDeepDive('28')">📊 Stats</button>
       </div>
       <div id="activeList"></div>
       <div id="noActive" style="text-align:center; padding:20px; color:var(--muted); font-size:12px;">No active games.</div>
+      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="startNewSeries()">➕ Start New Series</button>
     </div>
   </section>
 
   <section id="sectionIndiv" style="display:none;">
     <div class="card" id="indivSetup">
-        <h3 id="indivSetupTitle" style="margin:0 0 15px 0; font-size:16px;">Setup</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 id="indivSetupTitle" style="margin:0; font-size:16px;">Setup</h3>
+            <button class="neu-btn small" onclick="openDeepDive(currentMode)">📊 Stats</button>
+        </div>
         <select id="pCount" onchange="updateIndivInputs()"><option value="0" selected>Select Player Count</option><option value="3">3 Players</option><option value="4">4 Players</option><option value="5">5 Players</option></select>
         <div id="pNamesList"></div>
         <button id="startPlayBtn" class="neu-btn primary" style="width:100%; display:none;" onclick="startIndivPlay()">Start Playing</button>
@@ -106,26 +110,19 @@
   <section id="overallStatsSection" style="display:none;">
     <div class="card">
         <h2 style="margin:0 0 20px 0; font-size:18px; text-align:center;">Game Analytics</h2>
-        
         <div class="stats-tile" onclick="openDeepDive('28')">
             <div class="st-icon">🏏</div>
-            <div class="st-content"><h3>28 Card Game</h3><p id="stat-28-summary">Loading stats...</p></div>
-            <div class="st-arrow">➔</div>
+            <div class="st-content"><h3>28 Card Game</h3><p id="stat-28-summary">...</p></div>
         </div>
-
         <div class="stats-tile" onclick="openDeepDive('Bluff')">
             <div class="st-icon">🃏</div>
-            <div class="st-content"><h3>Bluff Game</h3><p id="stat-Bluff-summary">Loading stats...</p></div>
-            <div class="st-arrow">➔</div>
+            <div class="st-content"><h3>Bluff Game</h3><p id="stat-Bluff-summary">...</p></div>
         </div>
-
         <div class="stats-tile" onclick="openDeepDive('UNO')">
             <div class="st-icon">🌈</div>
-            <div class="st-content"><h3>UNO Game</h3><p id="stat-UNO-summary">Loading stats...</p></div>
-            <div class="st-arrow">➔</div>
+            <div class="st-content"><h3>UNO Game</h3><p id="stat-UNO-summary">...</p></div>
         </div>
-        
-        <button class="neu-btn small" style="width:100%; margin-top:10px; color:var(--danger)" onclick="resetStats()">⚠️ Reset All Data</button>
+        <button class="neu-btn small" style="width:100%; color:var(--danger)" onclick="resetStats()">⚠️ Reset All Data</button>
     </div>
   </section>
 </div>
@@ -165,22 +162,14 @@ window.launchOverallStats = () => {
 }
 
 function updateTileSummaries() {
-    const bluff = gameData.games.filter(g => g.gameType === 'Bluff' && g.winner).length;
-    const uno = gameData.games.filter(g => g.gameType === 'UNO' && g.winner).length;
-    const s28 = gameData.games.filter(g => (!g.gameType || g.gameType === '28') && g.winner).length;
-    
-    document.getElementById('stat-28-summary').innerText = `${s28} Series Recorded`;
-    document.getElementById('stat-Bluff-summary').innerText = `${bluff} Rounds Played`;
-    document.getElementById('stat-UNO-summary').innerText = `${uno} Rounds Played`;
+    const filterBy = (m) => gameData.games.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
+    document.getElementById('stat-28-summary').innerText = `${filterBy('28')} Series Recorded`;
+    document.getElementById('stat-Bluff-summary').innerText = `${filterBy('Bluff')} Rounds Played`;
+    document.getElementById('stat-UNO-summary').innerText = `${filterBy('UNO')} Rounds Played`;
 }
 
 window.openDeepDive = (mode) => {
-    const data = gameData.games.filter(g => {
-        if(mode === '28') return !g.gameType || g.gameType === '28';
-        return g.gameType === mode;
-    }).filter(g => g.winner);
-
-    // Calculate Leaderboard
+    const data = gameData.games.filter(g => (mode === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === mode) && g.winner);
     const st = {};
     data.forEach(g => {
         const win = g.winner; const lost = g.last || g.loser;
@@ -189,92 +178,27 @@ window.openDeepDive = (mode) => {
         (g.runnersUp || []).forEach(p => { st[p].r++; st[p].t++; });
     });
 
-    let h = `<div class="modal-box"><h2>${mode} Deep Dive</h2>`;
-    
-    // Performance Bars
-    h += `<div style="margin-bottom:20px;">`;
+    let h = `<div class="modal-box"><h2>${mode} Stats</h2>`;
     Object.entries(st).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
         const wP = (d.w / d.t) * 100, rP = (d.r / d.t) * 100, lP = (d.l / d.t) * 100;
         h += `<div class="analytics-row">
-            <div class="analytics-meta"><span><b>${n}</b></span><span>${d.w} Wins</span></div>
+            <div class="analytics-meta"><span><b>${n}</b></span><span>${d.w}W - ${d.l}L</span></div>
             <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-run" style="width:${rP}%"></div><div class="b-last" style="width:${lP}%"></div></div>
         </div>`;
     });
-    h += `</div>`;
-
-    // History Log
-    h += `<h3>Match History</h3>`;
-    data.slice().reverse().forEach(g => {
-        h += `<div class="log-item">
-                <div class="log-date">${new Date(g.time).toLocaleString('en-IN', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
-                <div>🏆 Winner: <b>${g.winner}</b> | 💩 Last: ${g.last||g.loser}</div>
-              </div>`;
+    h += `<h3 style="margin-top:20px;">Match History</h3>`;
+    data.slice(-15).reverse().forEach(g => {
+        h += `<div class="log-item"><div style="color:var(--muted); font-size:10px;">${new Date(g.time).toLocaleString()}</div>
+              🏆 <b>${g.winner}</b> vs 💩 ${g.last||g.loser}</div>`;
     });
-
     h += `<button class="neu-btn primary" style="width:100%; margin-top:20px;" onclick="closeModal()">Close</button></div>`;
     showModal(h);
 }
 
-// SETUP & SUBMIT LOGIC
+// SHARED LOGIC
 window.updateIndivInputs = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const container = document.getElementById('pNamesList');
     container.innerHTML = ''; if(count === 0) return document.getElementById('startPlayBtn').style.display = "none";
     for(let i=0; i<count; i++) {
-        container.innerHTML += `<div style="margin-bottom:10px;"><select id="pS${i}" onchange="refreshDropdowns()"><option value="" disabled selected>Player ${i+1}</option>${ALL_PLAYER_POOL.map(n => `<option value="${n}">${n}</option>`).join('')}<option value="Custom">Custom</option></select><input type="text" id="pO${i}" class="custom-input" style="display:none" placeholder="Name"></div>`;
-    }
-    document.getElementById('startPlayBtn').style.display = "inline-flex";
-}
-window.refreshDropdowns = () => {
-    const count = parseInt(document.getElementById('pCount').value); const sel = [];
-    for(let i=0; i<count; i++) {
-        const v = document.getElementById(`pS${i}`).value; if(v && v!=="Custom") sel.push(v);
-        document.getElementById(`pO${i}`).style.display = (v === "Custom") ? "block" : "none";
-    }
-    for(let i=0; i<count; i++) {
-        const s = document.getElementById(`pS${i}`);
-        Array.from(s.options).forEach(o => { if(o.value && o.value!=="Custom") o.style.display = (sel.includes(o.value) && s.value!==o.value) ? 'none' : 'block'; });
-    }
-}
-window.startIndivPlay = () => {
-    const count = parseInt(document.getElementById('pCount').value); const body = document.getElementById('indivTableBody'); body.innerHTML = '';
-    for(let i=0; i<count; i++) {
-        const sel = document.getElementById(`pS${i}`).value; const name = (sel === 'Custom') ? document.getElementById(`pO${i}`).value.trim() : sel;
-        if(!name) return alert("Assign all names"); body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="w" value="${name}"></td><td><input type="radio" name="l" value="${name}"></td></tr>`;
-    }
-    document.getElementById('indivSetup').style.display = 'none'; document.getElementById('indivPlay').style.display = 'block';
-}
-window.submitIndivResult = async () => {
-    const w = document.querySelector('input[name="w"]:checked')?.value; const l = document.querySelector('input[name="l"]:checked')?.value;
-    if(!w || !l || w===l) return alert("Select unique Winner & Last!");
-    const run = []; document.querySelectorAll('#indivTableBody tr').forEach(r => { const n = r.cells[0].innerText; if(n!==w && n!==l) run.push(n); });
-    await addDoc(gamesRef, { gameType: currentMode, winner: w, last: l, runnersUp: run, time: new Date().toISOString(), secret: SECRET_KEY }); location.reload();
-}
-
-// 28 ENGINE
-function compute28() {
-    const seriesMap = {};
-    gameData.games.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: g.teamA, teamB: g.teamB };
-        const s = seriesMap[g.seriesId]; if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; } else if (g.winner) { s.wins[g.winner] = (s.wins[g.winner] || 0) + 1; }
-    });
-    return { active: Object.values(seriesMap).filter(s => !Object.values(s.wins).some(w => w >= s.target)) };
-}
-window.renderUI = () => {
-    const { active } = compute28(); const list = document.getElementById("activeList"); if(!list || currentMode !== '28') return;
-    list.innerHTML = ""; document.getElementById("noActive").style.display = active.length ? "none" : "block";
-    active.forEach(s => {
-        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="series-card"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><div><b>${s.teamA}</b><div class="score-val">${wA}</div></div><div><b>${s.teamB}</b><div class="score-val">${wB}</div></div></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" onclick="addWin('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="background:var(--gold)" onclick="addWin('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button></div></div>`;
-    });
-}
-window.addWin = async (sId, winner, loser) => { await addDoc(gamesRef, { seriesId: sId, winner, loser, time: new Date().toISOString(), secret: SECRET_KEY }); };
-window.startNewSeries = () => { const opts = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join(""); showModal(`<div class="modal-box"><h3>New Series</h3><select id="m1" class="custom-input">${opts}</select><select id="m2" class="custom-input">${opts}</select><button class="neu-btn primary" style="width:100%" onclick="confirmStart()">Start</button></div>`); }
-window.confirmStart = async () => { const t1 = document.getElementById('m1').value, t2 = document.getElementById('m2').value; await addDoc(gamesRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, time: new Date().toISOString(), secret: SECRET_KEY }); closeModal(); }
-window.showModal = (html) => document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`;
-window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
-onSnapshot(query(gamesRef, orderBy("time")), snap => { gameData.games = snap.docs.map(d => d.data()); renderUI(); if(document.getElementById('overallStatsSection').style.display==='block') updateTileSummaries(); });
-window.resetStats = async () => { if(prompt("Pass:") === SECRET_KEY) { const snap = await getDocs(gamesRef); snap.forEach(d => deleteDoc(d.ref)); location.reload(); } };
-</script>
-</body>
-</html>
+        container.innerHTML += `<div style="margin-bottom:10px;"><select id="pS${i}" onchange="refreshDropdowns()"><option value="" disabled selected>Player ${i+1}</option>${ALL_PLAYER_POOL.map(n => `<option value="${n}">${n}</option>`).join('')}<option value="Custom">Custom</option></select><input type="text" id="pO${i}"
