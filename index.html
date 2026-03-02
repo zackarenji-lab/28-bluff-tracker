@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>Bluff Masters</title>
+<title>Game Night Hub</title>
 <link rel="icon" href="blufffavicon.png" />
 <style>
   :root {
@@ -12,107 +12,103 @@
   }
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:800px;margin:22px auto;padding:20px;}
-  
   header{display:flex;align-items:center;gap:15px;margin-bottom:18px}
   .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
   h1{margin:0;font-size:22px}
   .subtitle{color:var(--muted);font-size:11px;margin-top:2px}
-
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
-  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:1px solid rgba(255,255,255,0.08); padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; justify-content: center; }
-  .neu-btn.primary { background: var(--accent); color: #061226; border: none; }
-  .neu-btn.small { padding: 6px 12px; font-size: 11px; border-radius: 6px; }
-  .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); flex: 0.6; }
-  .neu-btn.trash { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); flex: 0.4; }
-
-  /* DROPDOWN & INPUT FIX: Black text on white */
-  select.neu-btn, input.custom-input {
-    background: #ffffff !important;
-    color: #000000 !important;
-    appearance: auto;
-    font-weight: 600;
-  }
-  input.custom-input {
-    width: 92%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--muted);
-    font-size: 13px;
-  }
-  select.neu-btn option { background: #ffffff; color: #000000; }
-
+  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:1px solid rgba(255,255,255,0.08); padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; justify-content: center; width: 100%; border: none; margin-top: 5px;}
+  .neu-btn.primary { background: var(--accent); color: #061226; }
+  .neu-btn.small { padding: 6px 12px; font-size: 11px; width: auto; }
+  .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); }
+  
+  /* Select and Input Fix */
+  select, input.custom-input { background: #ffffff !important; color: #000000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; }
+  
   .series-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
   .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .score-box { text-align: center; flex: 1; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
-  
   .p-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
   .p-fill { height: 100%; transition: width 0.5s ease; }
 
-  .champion-bar{padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;}
-  .trophy{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:20px;}
-
-  .badge-random { font-size: 9px; background: var(--info); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; margin-left: 8px; }
-
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
   .confirm-box { background: #0b1622; padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center; }
-
-  @media (max-width: 600px) {
-    header { flex-direction: column; text-align: center; }
-    .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .neu-btn.stop { grid-column: span 2; }
-    .neu-btn.trash { grid-column: span 1; }
-  }
+  
+  .module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+  .module-btn { padding: 30px 10px; border-radius: 15px; background: var(--card); border: 1px solid rgba(255,255,255,0.1); color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
+  .module-btn:hover { border-color: var(--accent); }
+  
+  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+  th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
 </style>
 </head>
 <body>
 
 <div class="wrap">
   <header>
-    <div class="logo">28</div>
+    <div class="logo" id="headerLogo">G</div>
     <div>
-      <h1>Bluff Masters</h1>
-      <div class="subtitle">Shared stats & live series tracking</div>
+      <h1 id="headerTitle">Game Hub</h1>
+      <div class="subtitle" id="headerSubtitle">Select a game to start</div>
     </div>
     <div style="flex:1"></div>
-    <div style="display:flex; gap:10px;">
-        <button class="neu-btn small" onclick="toggleView()" id="navBtn">📊 Stats</button>
-    </div>
+    <button class="neu-btn small" onclick="toggleMainView()" id="navBtn">📊 Stats</button>
   </header>
 
-  <section id="homeSection">
+  <section id="moduleSelection">
+    <div class="card" style="text-align: center;">
+      <h2 style="margin-top:0">Choose Module</h2>
+      <div class="module-grid">
+        <button class="module-btn" onclick="openModule('28')">🏏 28 Game</button>
+        <button class="module-btn" onclick="openModule('Bluff')">🃏 Bluff</button>
+        <button class="module-btn" onclick="openModule('UNO')">🌈 UNO</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="section28" style="display:none;">
     <div class="card">
-      <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
-      
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2 style="margin:0; font-size:18px;">Active Series</h2>
+        <h2 style="margin:0; font-size:18px;">Active 28 Series</h2>
         <button class="neu-btn primary small" onclick="startNewSeries()">➕ New Series</button>
       </div>
-      
       <div id="activeList"></div>
-      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted); font-size: 13px;">No active games.</div>
+      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted);">No active series.</div>
+    </div>
+  </section>
+
+  <section id="sectionIndividual" style="display:none;">
+    <div class="card" id="setupIndiv">
+        <h3>Game Setup</h3>
+        <label>Number of Players:</label>
+        <select id="indivPlayerCount" onchange="renderPlayerInputs()">
+            <option value="2">2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4" selected>4 Players</option>
+            <option value="5">5 Players</option>
+            <option value="6">6 Players</option>
+        </select>
+        <div id="playerInputsContainer"></div>
+        <button class="neu-btn primary" onclick="startIndivGame()">Start Game</button>
     </div>
 
-    <div class="champion-bar">
-        <div class="trophy">🏆</div>
-        <div>
-            <div style="font-size:10px; color:var(--gold); text-transform:uppercase; letter-spacing:1px;">Global Champion</div>
-            <div id="championText" style="font-size:16px; font-weight:800;">—</div>
-        </div>
+    <div class="card" id="scoringIndiv" style="display:none;">
+        <h3 id="indivGameNameDisplay">Scoring</h3>
+        <table>
+            <thead><tr><th>Player</th><th>Winner</th><th>Last</th></tr></thead>
+            <tbody id="indivScoringBody"></tbody>
+        </table>
+        <button class="neu-btn primary" style="margin-top:20px" onclick="saveIndivRound()">Save Round</button>
+        <button class="neu-btn stop small" onclick="cancelIndiv()">Cancel</button>
     </div>
   </section>
 
   <section id="statsSection" style="display:none;">
+    <div id="statsContent"></div>
     <div class="card">
-        <h2 style="margin-top:0; font-size:18px;">Statistics</h2>
-        <div id="statsContent"></div>
-        <div style="margin-top:20px; display:flex; gap:10px; flex-wrap: wrap;">
-            <button class="neu-btn small" onclick="shareToWhatsApp()">📤 Share Stats</button>
-            <button class="neu-btn small" style="color:var(--danger)" onclick="resetStats()">⚠️ Reset Data</button>
-        </div>
+        <button class="neu-btn small" onclick="shareToWhatsApp()">📤 Share Stats</button>
+        <button class="neu-btn small" style="color:var(--danger)" onclick="resetStats()">⚠️ Reset Data</button>
     </div>
   </section>
 </div>
@@ -121,10 +117,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, onSnapshot, query, orderBy,
-  getDocs, deleteDoc, limit, where, updateDoc
-} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, where } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const FIREBASE_CONF = {
   apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc",
@@ -136,245 +129,248 @@ const FIREBASE_CONF = {
 };
 const SECRET_KEY = "zachariahrenji";
 const TEAM_LIST = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
+const PLAYER_LIST = ["Rohan", "Roopa", "Annu", "Zach", "Rikku", "Megha", "Other"];
 
 const app = initializeApp(FIREBASE_CONF);
 const db = getFirestore(app);
 const gamesRef = collection(db, "games");
 
 let gameData = { games: [] };
+let activeModule = 'home'; 
+let indivPlayers = [];
 
-function computeAggregates() {
-  const seriesMap = {};
-  const teamStats = {};
-
-  gameData.games.forEach(g => {
-    if (!seriesMap[g.seriesId]) {
-      seriesMap[g.seriesId] = { 
-        id: g.seriesId, target: g.seriesTarget || 5, wins: {}, games: [], 
-        startedAt: g.seriesStartedAt || g.time, isRandom: false,
-        teamA: g.teamA || "", teamB: g.teamB || "" 
-      };
-    }
-    const s = seriesMap[g.seriesId];
-    if (g.isInit) {
-        s.teamA = g.teamA; s.teamB = g.teamB;
-    } else if (g.manualEnd) {
-        s.isRandom = true;
+// --- NAVIGATION ---
+window.openModule = (mode) => {
+    activeModule = mode;
+    document.getElementById('moduleSelection').style.display = 'none';
+    document.getElementById('headerLogo').innerText = mode[0];
+    document.getElementById('headerTitle').innerText = mode + " Mode";
+    
+    if(mode === '28') {
+        document.getElementById('section28').style.display = 'block';
     } else {
-        s.games.push(g);
-        s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
-        if(!teamStats[g.winner]) teamStats[g.winner] = { wins: 0, losses: 0, series: 0 };
-        if(!teamStats[g.loser]) teamStats[g.loser] = { wins: 0, losses: 0, series: 0 };
-        teamStats[g.winner].wins++;
-        teamStats[g.loser].losses++;
+        document.getElementById('sectionIndividual').style.display = 'block';
+        document.getElementById('setupIndiv').style.display = 'block';
+        document.getElementById('scoringIndiv').style.display = 'none';
+        renderPlayerInputs();
     }
-  });
-
-  const active = [];
-  const finished = [];
-  Object.values(seriesMap).forEach(s => {
-    const reachedTarget = Object.values(s.wins).some(w => w >= s.target);
-    s.isFinished = s.isRandom || reachedTarget;
-    if (s.isFinished) {
-      const teams = Object.keys(s.wins);
-      s.winner = teams.length > 0 ? teams.reduce((a, b) => s.wins[a] > s.wins[b] ? a : b, teams[0]) : "Aborted";
-      if(!s.isRandom && teamStats[s.winner]) teamStats[s.winner].series++;
-      finished.push(s);
-    } else { active.push(s); }
-  });
-  return { active, finished, teamStats };
 }
 
-function renderUI() {
-  const { active, teamStats } = computeAggregates();
-  const list = document.getElementById("activeList");
-  if(!list) return;
-
-  document.getElementById("noActive").style.display = active.length ? "none" : "block";
-  list.innerHTML = "";
-
-  active.forEach(s => {
-    const wA = s.wins[s.teamA] || 0;
-    const wB = s.wins[s.teamB] || 0;
+window.toggleMainView = () => {
+    const isStats = document.getElementById('statsSection').style.display === 'block';
+    document.querySelectorAll('section').forEach(s => s.style.display = 'none');
     
-    list.innerHTML += `
-      <div class="series-card">
-        <div class="score-row">
-          <div class="score-box"><strong>${s.teamA}</strong><div class="score-val">${wA}</div></div>
-          <div style="font-size:10px; color:var(--muted)">VS</div>
-          <div class="score-box"><strong>${s.teamB}</strong><div class="score-val">${wB}</div></div>
-        </div>
-        <div class="p-bar-bg">
-          <div class="p-fill" style="width:${(wA/s.target)*100}%; background:var(--accent)"></div>
-          <div class="p-fill" style="width:${(wB/s.target)*100}%; background:var(--gold); margin-left:auto"></div>
-        </div>
-        <div class="btn-group" style="display:flex; gap:8px; margin-top:10px;">
-          <button class="neu-btn primary mobile-wide" style="flex:2" onclick="addWin('${s.id}', '${s.teamA}', '${s.teamB}')">Win: ${s.teamA.split(' ')[0]}</button>
-          <button class="neu-btn primary mobile-wide" style="flex:2; background:var(--gold)" onclick="addWin('${s.id}', '${s.teamB}', '${s.teamA}')">Win: ${s.teamB.split(' ')[0]}</button>
-          <button class="neu-btn stop" onclick="endSeriesEarly('${s.id}')">STOP</button>
-          <button class="neu-btn trash" onclick="deleteSeriesConfirm('${s.id}')">🗑️</button>
-        </div>
-      </div>
-    `;
-  });
-
-  const sortedTeams = Object.keys(teamStats).sort((a,b) => teamStats[b].wins - teamStats[a].wins);
-  document.getElementById("championText").innerText = sortedTeams[0] || "No Data Yet";
-  updateStatsPage();
-}
-
-window.toggleView = function() {
-    const home = document.getElementById('homeSection');
-    const stats = document.getElementById('statsSection');
-    const btn = document.getElementById('navBtn');
-    const isHome = home.style.display !== 'none';
-    home.style.display = isHome ? 'none' : 'block';
-    stats.style.display = isHome ? 'block' : 'none';
-    btn.innerText = isHome ? "🏠 Home" : "📊 Stats";
-    window.scrollTo(0,0);
-}
-
-window.addWin = async (sId, winner, loser) => {
-  const agg = computeAggregates();
-  const s = agg.active.find(x => x.id === sId);
-  await addDoc(gamesRef, { seriesId: sId, winner, loser, seriesTarget: s.target, time: new Date().toISOString(), secret: SECRET_KEY });
-};
-
-window.endSeriesEarly = async (sId) => {
-    if(prompt("Enter password to STOP series:") !== SECRET_KEY) return alert("Wrong password.");
-    if(confirm("End this series now? Points are saved, but the series target is ignored.")) {
-        await addDoc(gamesRef, { seriesId: sId, manualEnd: true, time: new Date().toISOString(), secret: SECRET_KEY });
-    }
-};
-
-window.deleteSeriesConfirm = async (sId) => {
-    if(prompt("Enter password to DELETE series:") !== SECRET_KEY) return alert("Wrong password.");
-    if(confirm("Permanently delete this series and all its history?")) {
-        const qS = query(gamesRef, where("seriesId", "==", sId));
-        const snap = await getDocs(qS);
-        snap.forEach(d => deleteDoc(d.ref));
-    }
-};
-
-// HANDLER FOR "NEW TEAM" OPTION
-window.handleTeamChange = (teamNum) => {
-    const select = document.getElementById(`mTeam${teamNum}`);
-    const customDiv = document.getElementById(`customTeam${teamNum}Div`);
-    if (select.value === "NEW") {
-        customDiv.style.display = "block";
+    if(isStats) {
+        document.getElementById('moduleSelection').style.display = 'block';
+        document.getElementById('navBtn').innerText = "📊 Stats";
     } else {
-        customDiv.style.display = "none";
-        if (teamNum === 1) updateTeamBOptions();
+        document.getElementById('statsSection').style.display = 'block';
+        document.getElementById('navBtn').innerText = "🏠 Home";
+        renderStats();
     }
-};
+}
 
-window.updateTeamBOptions = () => {
-    const tA = document.getElementById('mTeam1').value;
-    const tB = document.getElementById('mTeam2');
-    const prevB = tB.value;
+// --- INDIVIDUAL GAME LOGIC (BLUFF / UNO) ---
+window.renderPlayerInputs = () => {
+    const count = document.getElementById('indivPlayerCount').value;
+    const container = document.getElementById('playerInputsContainer');
+    container.innerHTML = '';
+    for(let i=0; i<count; i++) {
+        container.innerHTML += `
+            <div style="display:flex; gap:10px; margin-bottom:5px;">
+                <select id="pSel${i}" onchange="toggleIndivOther(${i})">
+                    ${PLAYER_LIST.map(p => `<option value="${p}">${p}</option>`).join('')}
+                </select>
+                <input type="text" id="pOther${i}" class="custom-input" style="display:none" placeholder="Name">
+            </div>`;
+    }
+}
+window.toggleIndivOther = (i) => {
+    const sel = document.getElementById(`pSel${i}`).value;
+    document.getElementById(`pOther${i}`).style.display = (sel === 'Other') ? 'block' : 'none';
+}
+
+window.startIndivGame = () => {
+    indivPlayers = [];
+    const count = document.getElementById('indivPlayerCount').value;
+    for(let i=0; i<count; i++) {
+        const sel = document.getElementById(`pSel${i}`).value;
+        const name = (sel === 'Other') ? document.getElementById(`pOther${i}`).value : sel;
+        if(!name) return alert("Fill all names");
+        indivPlayers.push(name);
+    }
+    document.getElementById('setupIndiv').style.display = 'none';
+    document.getElementById('scoringIndiv').style.display = 'block';
+    document.getElementById('indivGameNameDisplay').innerText = activeModule + " Live Round";
     
-    // Team 2 can be "NEW" or any existing team except the one selected in Team 1
-    const availableTeams = TEAM_LIST.filter(t => t !== tA);
-    let optionsHtml = availableTeams.map(t => `<option value="${t}">${t}</option>`).join("");
-    optionsHtml += `<option value="NEW">NEW TEAM</option>`;
+    const body = document.getElementById('indivScoringBody');
+    body.innerHTML = '';
+    indivPlayers.forEach(p => {
+        body.innerHTML += `<tr>
+            <td><strong>${p}</strong></td>
+            <td><input type="radio" name="winner" value="${p}"></td>
+            <td><input type="radio" name="last" value="${p}"></td>
+        </tr>`;
+    });
+}
+
+window.saveIndivRound = async () => {
+    const win = document.querySelector('input[name="winner"]:checked')?.value;
+    const last = document.querySelector('input[name="last"]:checked')?.value;
+    if(!win || !last) return alert("Select Winner and Last!");
     
-    tB.innerHTML = optionsHtml;
-    if (prevB !== tA) tB.value = prevB;
-};
+    await addDoc(gamesRef, {
+        gameType: activeModule,
+        winner: win,
+        last: last,
+        players: indivPlayers,
+        time: new Date().toISOString(),
+        secret: SECRET_KEY
+    });
+    alert("Saved!");
+    location.reload();
+}
+
+window.cancelIndiv = () => location.reload();
+
+// --- 28 GAME LOGIC (CORE) ---
+function compute28() {
+    const series = {};
+    const stats = {};
+    gameData.games.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
+        if(!series[g.seriesId]) series[g.seriesId] = { id:g.seriesId, target:g.seriesTarget||5, wins:{}, teamA:g.teamA, teamB:g.teamB, isRandom:false };
+        const s = series[g.seriesId];
+        if(g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; }
+        else if(g.manualEnd) { s.isRandom = true; }
+        else {
+            s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+            if(!stats[g.winner]) stats[g.winner] = {w:0, l:0};
+            if(!stats[g.loser]) stats[g.loser] = {w:0, l:0};
+            stats[g.winner].w++; stats[g.loser].l++;
+        }
+    });
+    const active = [], finished = [];
+    Object.values(series).forEach(s => {
+        const reached = Object.values(s.wins).some(v => v >= s.target);
+        if(reached || s.isRandom) finished.push(s); else active.push(s);
+    });
+    return { active, finished, stats };
+}
+
+window.render28UI = () => {
+    const { active } = compute28();
+    const list = document.getElementById("activeList");
+    document.getElementById("noActive").style.display = active.length ? "none" : "block";
+    list.innerHTML = "";
+    active.forEach(s => {
+        const wA = s.wins[s.teamA] || 0;
+        const wB = s.wins[s.teamB] || 0;
+        list.innerHTML += `
+            <div class="series-card">
+                <div class="score-row">
+                    <div class="score-box"><strong>${s.teamA}</strong><div class="score-val">${wA}</div></div>
+                    <div class="score-box"><strong>${s.teamB}</strong><div class="score-val">${wB}</div></div>
+                </div>
+                <div class="p-bar-bg">
+                    <div class="p-fill" style="width:${(wA/s.target)*100}%; background:var(--accent)"></div>
+                    <div class="p-fill" style="width:${(wB/s.target)*100}%; background:var(--gold); margin-left:auto"></div>
+                </div>
+                <button class="neu-btn primary small" onclick="addWin28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
+                <button class="neu-btn primary small" style="background:var(--gold)" onclick="addWin28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
+                <button class="neu-btn stop small" onclick="stop28('${s.id}')">STOP</button>
+            </div>`;
+    });
+}
+
+window.addWin28 = async (sId, winner, loser) => {
+    const s = compute28().active.find(x => x.id === sId);
+    await addDoc(gamesRef, { seriesId: sId, winner, loser, gameType: '28', time: new Date().toISOString(), secret: SECRET_KEY });
+}
 
 window.startNewSeries = () => {
-  const optsA = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join("") + `<option value="NEW">NEW TEAM</option>`;
-  const optsB = TEAM_LIST.filter(t => t !== TEAM_LIST[0]).map(t => `<option value="${t}">${t}</option>`).join("") + `<option value="NEW">NEW TEAM</option>`;
-  
-  showModal(`
-    <div class="confirm-box">
-      <h3 style="margin-top:0">Start New Series</h3>
-      <select id="mTarget" class="neu-btn" style="width:100%; margin-bottom:15px;"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-      
-      <select id="mTeam1" class="neu-btn" style="width:100%; margin-bottom:10px;" onchange="handleTeamChange(1)">${optsA}</select>
-      <div id="customTeam1Div" style="display:none;"><input type="text" id="mTA_custom" class="custom-input" placeholder="Enter Team 1 Name"></div>
-      
-      <select id="mTeam2" class="neu-btn" style="width:100%; margin-bottom:10px;" onchange="handleTeamChange(2)">${optsB}</select>
-      <div id="customTeam2Div" style="display:none;"><input type="text" id="mTB_custom" class="custom-input" placeholder="Enter Team 2 Name"></div>
-      
-      <button class="neu-btn primary" style="width:100%; margin-bottom:8px" onclick="confirmStart()">Start 0 - 0</button>
-      <button class="neu-btn small" style="width:100%" onclick="closeModal()">Cancel</button>
-    </div>
-  `);
-};
-
-window.confirmStart = async () => {
-    const selA = document.getElementById('mTeam1').value;
-    const selB = document.getElementById('mTeam2').value;
-    
-    let tA = selA === "NEW" ? document.getElementById('mTA_custom').value.trim() : selA;
-    let tB = selB === "NEW" ? document.getElementById('mTB_custom').value.trim() : selB;
-
-    if (!tA || !tB) return alert("Please provide names for both teams!");
-    if (tA === tB) return alert("Teams cannot have the same name!");
-
-    const sId = "s_" + Date.now();
-    await addDoc(gamesRef, { 
-        seriesId: sId, isInit: true, teamA: tA, teamB: tB, time: new Date().toISOString(), 
-        seriesTarget: parseInt(document.getElementById('mTarget').value), secret: SECRET_KEY 
-    });
-    closeModal();
-};
-
-function updateStatsPage() {
-    const { teamStats, finished } = computeAggregates();
-    const cont = document.getElementById("statsContent");
-    if(!cont) return;
-    
-    let html = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;">
-        <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Total Wins</small><div style="font-size:20px; font-weight:800">${gameData.games.filter(g=>!g.manualEnd && !g.isInit).length}</div></div>
-        <div class="card" style="margin:0; text-align:center; padding:15px;"><small>Series Won</small><div style="font-size:20px; font-weight:800">${finished.filter(s=>!s.isRandom).length}</div></div>
-    </div>`;
-
-    html += `<h3>Leaderboard</h3>`;
-    Object.entries(teamStats).sort((a,b) => b[1].wins - a[1].wins).forEach(([name, data]) => {
-        html += `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px;">
-            <span>${name}</span>
-            <span><strong>${data.wins}W</strong> - ${data.losses}L</span>
-        </div>`;
-    });
-
-    html += `<h3 style="margin-top:25px">History</h3>`;
-    finished.slice().reverse().forEach(s => {
-        const typeLabel = s.isRandom ? `<span class="badge-random">Random Game</span>` : `<span style="font-size:9px; color:var(--accent); margin-left:8px;">COMPETITIVE</span>`;
-        const scoreA = s.wins[s.teamA] || 0;
-        const scoreB = s.wins[s.teamB] || 0;
-        html += `<div style="font-size:12px; margin-bottom:12px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
-            <strong>${s.winner}</strong> won ${typeLabel}<br>
-            <span style="color:var(--muted)">Final: ${scoreA} - ${scoreB}</span>
-        </div>`;
-    });
-    cont.innerHTML = html;
+    showModal(`
+        <div class="confirm-box">
+            <h3>New 28 Series</h3>
+            <select id="mTA">${TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+            <select id="mTB">${TEAM_LIST.slice(1).map(t => `<option value="${t}">${t}</option>`).join('')}</select>
+            <button class="neu-btn primary" onclick="confirm28()">Start</button>
+            <button class="neu-btn small" onclick="closeModal()">Cancel</button>
+        </div>`);
 }
+
+window.confirm28 = async () => {
+    const tA = document.getElementById('mTA').value, tB = document.getElementById('mTB').value;
+    const sId = "s_" + Date.now();
+    await addDoc(gamesRef, { seriesId: sId, isInit: true, teamA: tA, teamB: tB, gameType: '28', time: new Date().toISOString(), seriesTarget: 5, secret: SECRET_KEY });
+    closeModal();
+}
+
+window.stop28 = async (id) => {
+    if(prompt("Password:") === SECRET_KEY) await addDoc(gamesRef, { seriesId: id, manualEnd: true, gameType: '28', time: new Date().toISOString(), secret: SECRET_KEY });
+}
+
+// --- STATS RENDERING ---
+function renderStats() {
+    const container = document.getElementById('statsContent');
+    const { stats: s28 } = compute28();
+    
+    // Process Bluff/UNO
+    const processIndiv = (type) => {
+        const data = gameData.games.filter(g => g.gameType === type);
+        const counts = {};
+        data.forEach(g => {
+            if(!counts[g.winner]) counts[g.winner] = {w:0, l:0};
+            if(!counts[g.last]) counts[g.last] = {w:0, l:0};
+            counts[g.winner].w++; counts[g.last].l++;
+        });
+        return counts;
+    }
+
+    const bluffStats = processIndiv('Bluff');
+    const unoStats = processIndiv('UNO');
+
+    let html = `<h2>Statistics Hub</h2>`;
+
+    // 28 Table
+    html += `<div class="card"><h3>🏏 28 Leaderboard</h3>`;
+    Object.entries(s28).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
+        html += `<div class="score-row" style="font-size:13px"><span>${n}</span><span><b>${d.w}W</b> - ${d.l}L</span></div>`;
+    });
+    html += `</div>`;
+
+    // Bluff Table
+    html += `<div class="card"><h3>🃏 Bluff Stats (Max Lasts)</h3>`;
+    Object.entries(bluffStats).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
+        html += `<div class="score-row" style="font-size:13px"><span>${n}</span><span><b>${d.w} Wins</b> | <span style="color:var(--danger)">${d.l} Last</span></span></div>`;
+    });
+    html += `</div>`;
+
+    // UNO Table
+    html += `<div class="card"><h3>🌈 UNO Stats</h3>`;
+    Object.entries(unoStats).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
+        html += `<div class="score-row" style="font-size:13px"><span>${n}</span><span><b>${d.w} Wins</b> | <span style="color:var(--danger)">${d.l} Last</span></span></div>`;
+    });
+    html += `</div>`;
+
+    container.innerHTML = html;
+}
+
+// --- SYSTEM ---
+onSnapshot(query(gamesRef, orderBy("time")), snap => {
+    gameData.games = snap.docs.map(d => d.data());
+    if(activeModule === '28') render28UI();
+});
 
 function showModal(html) { document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`; }
 window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
 
-onSnapshot(query(gamesRef, orderBy("time")), snap => {
-  gameData.games = snap.docs.map(d => d.data());
-  renderUI();
-});
-
 window.resetStats = async () => {
-    if(prompt("Reset all data? Enter Password:") === SECRET_KEY) {
+    if(prompt("Password:") === SECRET_KEY) {
         const snap = await getDocs(gamesRef);
         snap.forEach(d => deleteDoc(d.ref));
+        location.reload();
     }
-};
-
-window.shareToWhatsApp = () => {
-    const { teamStats } = computeAggregates();
-    let msg = "🏆 Bluff Masters Rankings\n\n";
-    Object.entries(teamStats).forEach(([n, d]) => {
-        msg += `${n}: ${d.wins} Wins\n`;
-    });
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
-};
+}
 </script>
 </body>
 </html>
