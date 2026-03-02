@@ -19,13 +19,14 @@
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* POWER BI DASHBOARD TILES */
+  /* DASHBOARD TILES */
   .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-  .kpi-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; }
+  .kpi-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+  .kpi-tile:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
   .kpi-tile small { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; margin-bottom: 4px; }
   .kpi-tile .val { font-size: 16px; font-weight: 800; color: var(--gold); }
   
-  /* ANALYTICS HEATMAP */
+  /* ANALYTICS */
   .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
   .analytics-meta { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; }
   .bar-container { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: flex; }
@@ -44,13 +45,14 @@
 
   .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; justify-content: center; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
-  select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; }
   
-  .series-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
-  .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
+  .history-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0; font-size: 12px; }
+  .history-date { font-size: 10px; color: var(--muted); }
+
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
+  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -86,6 +88,7 @@
             <div class="game-name-overlay">UNO</div>
         </div>
       </div>
+      <button class="neu-btn primary" style="width:100%; margin-top:15px;" onclick="launchGlobalStats()">🌍 Global Dashboard</button>
     </div>
   </section>
 
@@ -154,12 +157,17 @@ window.launchGame = (mode) => {
     document.getElementById('homeHub').style.display = 'none';
     document.getElementById('homeBtn').style.display = 'block';
     document.getElementById('navBtn').style.display = 'inline-flex';
-    if(mode === '28') {
-        document.getElementById('section28').style.display = 'block';
-    } else {
-        document.getElementById('indivSetupTitle').innerText = mode + " Setup";
-        document.getElementById('sectionIndiv').style.display = 'block';
-    }
+    if(mode === '28') document.getElementById('section28').style.display = 'block';
+    else document.getElementById('sectionIndiv').style.display = 'block';
+}
+
+window.launchGlobalStats = () => {
+    currentMode = 'GLOBAL';
+    document.getElementById('homeHub').style.display = 'none';
+    document.getElementById('homeBtn').style.display = 'block';
+    document.getElementById('navBtn').style.display = 'none';
+    document.getElementById('statsSection').style.display = 'block';
+    updateStatsPage();
 }
 
 window.toggleView = () => {
@@ -173,85 +181,74 @@ window.toggleView = () => {
     if(!isStats) updateStatsPage();
 }
 
-// 28 GAME ENGINE (THE DATA RECOVERY PART)
-function compute28() {
-    const seriesMap = {}, teamStats = {};
-    // Ensure we are filtering for the original 28 game data properly
-    gameData.games.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: g.seriesTarget || 5, wins: {}, teamA: g.teamA, teamB: g.teamB, isRandom: false };
-        const s = seriesMap[g.seriesId];
-        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; }
-        else if (g.manualEnd) s.isRandom = true;
-        else if (g.winner) {
-            s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
-            if(!teamStats[g.winner]) teamStats[g.winner] = { wins: 0, losses: 0, total: 0 };
-            if(!teamStats[g.loser]) teamStats[g.loser] = { wins: 0, losses: 0, total: 0 };
-            teamStats[g.winner].wins++; teamStats[g.loser].losses++;
-            teamStats[g.winner].total++; teamStats[g.loser].total++;
-        }
+// FORMAT DATE
+function fmtDate(iso) {
+    if(!iso) return "Unknown";
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) + ", " + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+}
+
+// SHOW HISTORY MODAL
+window.showHistory = (mode) => {
+    const filtered = gameData.games.filter(g => {
+        if(mode === '28') return !g.gameType || g.gameType === '28';
+        if(mode === 'GLOBAL') return true;
+        return g.gameType === mode;
+    }).filter(g => g.winner); // Only show games that finished
+
+    let h = `<div class="modal-box"><h3>Game History (${mode})</h3>`;
+    if(filtered.length === 0) h += `<p style="color:var(--muted)">No games recorded yet.</p>`;
+    filtered.slice().reverse().forEach(g => {
+        const type = g.gameType || '28';
+        h += `<div class="history-item">
+                <div class="history-date">${fmtDate(g.time)} | ${type.toUpperCase()}</div>
+                <div>🏆 Winner: <b>${g.winner}</b></div>
+                <div style="color:var(--danger)">💩 Last: ${g.last || g.loser}</div>
+              </div>`;
     });
-    const active = [], finished = [];
-    Object.values(seriesMap).forEach(s => {
-        const reached = Object.values(s.wins).some(w => w >= s.target);
-        if (reached || s.isRandom) finished.push(s); else active.push(s);
-    });
-    return { active, finished, teamStats };
+    h += `<button class="neu-btn primary" style="width:100%; margin-top:15px;" onclick="closeModal()">Close</button></div>`;
+    showModal(h);
 }
 
 function updateStatsPage() {
     const cont = document.getElementById("statsContent");
-    if(currentMode === '28') {
-        const { teamStats } = compute28();
-        const sorted = Object.entries(teamStats).sort((a,b) => b[1].wins - a[1].wins);
-        const mvp = sorted[0]?.[0] || '—';
-        
-        let h = `<div class="card"><h2>28 Game Dashboard</h2>
-            <div class="dashboard-grid">
-                <div class="kpi-tile"><small>🏆 SERIES KING</small><div class="val">${mvp}</div></div>
-                <div class="kpi-tile"><small>🎮 TOTAL GAMES</small><div class="val">${gameData.games.filter(g => !g.gameType && g.winner).length}</div></div>
-            </div>`;
-        
-        sorted.forEach(([n, d]) => {
-            const wP = (d.wins / d.total) * 100;
-            const lP = (d.losses / d.total) * 100;
-            h += `<div class="analytics-row">
-                <div class="analytics-meta"><span><b>${n}</b></span><span>${d.wins}W - ${d.losses}L</span></div>
-                <div class="bar-container">
-                    <div class="b-win" style="width:${wP}%"></div>
-                    <div class="b-last" style="width:${lP}%"></div>
-                </div>
-            </div>`;
-        });
-        cont.innerHTML = h + `</div>`;
-    } else {
-        const data = gameData.games.filter(g => g.gameType === currentMode);
-        const st = {};
-        data.forEach(g => {
-            [g.winner, g.last, ...(g.runnersUp || [])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, r:0, t:0} });
-            st[g.winner].w++; st[g.last].l++; st[g.winner].t++; st[g.last].t++;
-            (g.runnersUp || []).forEach(p => { st[p].r++; st[p].t++; });
-        });
-        const mvp = Object.keys(st).sort((a,b) => st[b].w - st[a].w)[0] || '—';
-        const target = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
+    const modeData = gameData.games.filter(g => {
+        if(currentMode === 'GLOBAL') return true;
+        if(currentMode === '28') return !g.gameType || g.gameType === '28';
+        return g.gameType === currentMode;
+    });
 
-        let h = `<div class="card"><h2>${currentMode} Dashboard</h2>
-            <div class="dashboard-grid">
-                <div class="kpi-tile"><small>🥇 WIN KING</small><div class="val">${mvp}</div></div>
-                <div class="kpi-tile"><small>💩 LAST KING</small><div class="val">${target}</div></div>
-            </div>`;
-        
-        Object.entries(st).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
-            const wP = (d.w / d.t) * 100, rP = (d.r / d.t) * 100, lP = (d.l / d.t) * 100;
-            h += `<div class="analytics-row">
-                <div class="analytics-meta"><span><b>${n}</b></span><span>${Math.round(wP)}% Win Rate</span></div>
-                <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-run" style="width:${rP}%"></div><div class="b-last" style="width:${lP}%"></div></div>
-            </div>`;
-        });
-        cont.innerHTML = h + `</div>`;
-    }
+    const st = {};
+    modeData.forEach(g => {
+        const win = g.winner;
+        const lost = g.last || g.loser;
+        if(!win) return;
+        [win, lost, ...(g.runnersUp || [])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, r:0, t:0} });
+        st[win].w++; st[lost].l++; st[win].t++; st[lost].t++;
+        (g.runnersUp || []).forEach(p => { st[p].r++; st[p].t++; });
+    });
+    
+    const sortedW = Object.keys(st).sort((a,b) => st[b].w - st[a].w);
+    const mvp = sortedW[0] || '—';
+    const target = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
+
+    let h = `<div class="card"><h2>${currentMode} Analytics</h2>
+        <div class="dashboard-grid">
+            <div class="kpi-tile"><small>🥇 WIN KING</small><div class="val">${mvp}</div></div>
+            <div class="kpi-tile" onclick="showHistory('${currentMode}')"><small>🎮 TOTAL GAMES</small><div class="val">${modeData.filter(g=>g.winner).length} ℹ️</div></div>
+        </div>`;
+    
+    Object.entries(st).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
+        const wP = (d.w / d.t) * 100, rP = (d.r / d.t) * 100, lP = (d.l / d.t) * 100;
+        h += `<div class="analytics-row">
+            <div class="analytics-meta"><span><b>${n}</b></span><span>${d.w}W - ${d.l}L</span></div>
+            <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-run" style="width:${rP}%"></div><div class="b-last" style="width:${lP}%"></div></div>
+        </div>`;
+    });
+    cont.innerHTML = h + `</div>`;
 }
 
-// SETUP & SUBMIT LOGIC
+// SETUP & SUBMIT LOGIC (Simplified)
 window.updateIndivInputs = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const container = document.getElementById('pNamesList');
@@ -262,21 +259,18 @@ window.updateIndivInputs = () => {
     }
     document.getElementById('startPlayBtn').style.display = "inline-flex";
 }
-
 window.refreshDropdowns = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const sel = [];
     for(let i=0; i<count; i++) {
-        const val = document.getElementById(`pS${i}`).value;
-        if(val && val !== "Custom") sel.push(val);
-        document.getElementById(`pO${i}`).style.display = (val === "Custom") ? "block" : "none";
+        const v = document.getElementById(`pS${i}`).value; if(v && v!=="Custom") sel.push(v);
+        document.getElementById(`pO${i}`).style.display = (v === "Custom") ? "block" : "none";
     }
     for(let i=0; i<count; i++) {
-        const select = document.getElementById(`pS${i}`);
-        Array.from(select.options).forEach(o => { if(o.value && o.value !== "Custom") o.style.display = (sel.includes(o.value) && select.value !== o.value) ? 'none' : 'block'; });
+        const s = document.getElementById(`pS${i}`);
+        Array.from(s.options).forEach(o => { if(o.value && o.value!=="Custom") o.style.display = (sel.includes(o.value) && s.value!==o.value) ? 'none' : 'block'; });
     }
 }
-
 window.startIndivPlay = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const body = document.getElementById('indivTableBody');
@@ -290,42 +284,5 @@ window.startIndivPlay = () => {
     document.getElementById('indivSetup').style.display = 'none';
     document.getElementById('indivPlay').style.display = 'block';
 }
-
 window.submitIndivResult = async () => {
-    const w = document.querySelector('input[name="w"]:checked')?.value;
-    const l = document.querySelector('input[name="l"]:checked')?.value;
-    if(!w || !l) return alert("Select Winner & Last!");
-    const run = [];
-    document.querySelectorAll('#indivTableBody tr').forEach(r => {
-        const n = r.cells[0].innerText;
-        if(n !== w && n !== l) run.push(n);
-    });
-    await addDoc(gamesRef, { gameType: currentMode, winner: w, last: l, runnersUp: run, time: new Date().toISOString(), secret: SECRET_KEY });
-    location.reload();
-}
-
-window.renderUI = () => {
-    const { active } = compute28();
-    const list = document.getElementById("activeList");
-    if(!list || currentMode !== '28') return;
-    list.innerHTML = "";
-    document.getElementById("noActive").style.display = active.length ? "none" : "block";
-    active.forEach(s => {
-        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="series-card"><div class="score-row"><div><b>${s.teamA}</b><div class="score-val">${wA}</div></div><div><b>${s.teamB}</b><div class="score-val">${wB}</div></div></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" onclick="addWin('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="background:var(--gold)" onclick="addWin('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button></div></div>`;
-    });
-}
-
-// SHARED UTILS
-window.addWin = async (sId, winner, loser) => { const s = compute28().active.find(x => x.id === sId); await addDoc(gamesRef, { seriesId: sId, winner, loser, seriesTarget: s.target, time: new Date().toISOString(), secret: SECRET_KEY }); };
-window.startNewSeries = () => { const opts = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join(""); showModal(`<div class="confirm-box"><h3>New Series</h3><select id="mTeam1" class="neu-btn">${opts}</select><select id="mTeam2" class="neu-btn">${opts}</select><button class="neu-btn primary" style="width:100%" onclick="confirmStart()">Start</button></div>`); }
-window.confirmStart = async () => { const tA = document.getElementById('mTeam1').value, tB = document.getElementById('mTeam2').value; const sId = "s_" + Date.now(); await addDoc(gamesRef, { seriesId: sId, isInit: true, teamA: tA, teamB: tB, time: new Date().toISOString(), seriesTarget: 5, secret: SECRET_KEY }); closeModal(); }
-window.promptShare = () => { showModal(`<div class="confirm-box"><h3>Share</h3><button class="neu-btn primary" onclick="share('Bluff')">Bluff</button><button class="neu-btn primary" onclick="share('UNO')">UNO</button></div>`); }
-window.share = (m) => { let msg = `🏆 ${m} Stats\n\n`; const data = gameData.games.filter(g => g.gameType === m); const s = {}; data.forEach(g => { s[g.winner] = (s[g.winner] || 0) + 1; }); Object.entries(s).sort((a,b)=>b[1]-a[1]).forEach(([n, d]) => msg += `${n}: ${d} Wins\n`); window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank"); }
-window.showModal = (html) => document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`;
-window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
-onSnapshot(query(gamesRef, orderBy("time")), snap => { gameData.games = snap.docs.map(d => d.data()); renderUI(); });
-window.resetStats = async () => { if(prompt("Password:") === SECRET_KEY) { const snap = await getDocs(gamesRef); snap.forEach(d => deleteDoc(d.ref)); location.reload(); } };
-</script>
-</body>
-</html>
+    const w = document.querySelector('input
