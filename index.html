@@ -13,13 +13,12 @@
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:800px;margin:15px auto;padding:15px;}
   header{display:flex;align-items:center;gap:10px;margin-bottom:15px}
-  .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+  .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;}
   h1{margin:0;font-size:16px;flex:1}
   
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* TILES */
   .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
   .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
@@ -28,7 +27,6 @@
   .stats-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
   .st-icon { font-size: 20px; background: rgba(0,0,0,0.3); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
 
-  /* ANALYTICS */
   .analytics-row { margin-bottom: 10px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; }
   .analytics-meta { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; }
   .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; }
@@ -55,8 +53,8 @@
   <header>
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
-    <button id="overallBtn" class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
-    <button id="homeBtn" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
+    <button id="btn-overall" class="neu-btn small" onclick="showView('OVERALL')">📊 Overall Stat</button>
+    <button id="btn-home" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
   </header>
 
   <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img"/>
@@ -65,9 +63,9 @@
     <div class="card">
       <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid">
-        <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28" onerror="this.src='https://placehold.co/200?text=28'"><div class="game-name-overlay">28 Game</div></div>
-        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff" onerror="this.src='https://placehold.co/200?text=Bluff'"><div class="game-name-overlay">Bluff</div></div>
-        <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO" onerror="this.src='https://placehold.co/200?text=UNO'"><div class="game-name-overlay">UNO</div></div>
+        <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28"><div class="game-name-overlay">28 Game</div></div>
+        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff"><div class="game-name-overlay">Bluff</div></div>
+        <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO"><div class="game-name-overlay">UNO</div></div>
       </div>
     </div>
   </section>
@@ -75,33 +73,161 @@
   <section id="view-28" style="display:none;">
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h2 style="margin:0; font-size:16px;">28 Series</h2>
-        <button class="neu-btn small" onclick="openStats('28')">📊 Stats</button>
+        <h2 style="margin:0; font-size:16px;">Active Series</h2>
+        <button class="neu-btn small" onclick="openDeepStats('28')">📊 Stats</button>
       </div>
-      <div id="active28List"></div>
-      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="startNewSeries()">➕ Start New Series</button>
+      <div id="list-28"></div>
+      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="newSeries28()">➕ New Series</button>
     </div>
   </section>
 
   <section id="view-INDIV" style="display:none;">
-    <div class="card" id="setupIndiv">
+    <div class="card" id="pane-setup">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 id="indivTitle" style="margin:0; font-size:16px;">Setup</h3>
-            <button class="neu-btn small" onclick="openStats(currentMode)">📊 Stats</button>
+            <h3 id="indiv-title" style="margin:0; font-size:16px;">Setup</h3>
+            <button class="neu-btn small" onclick="openDeepStats(window.activeMode)">📊 Stats</button>
         </div>
-        <select id="pCount" onchange="createInputs()"><option value="0">Select Players</option><option value="3">3 Players</option><option value="4">4 Players</option><option value="5">5 Players</option></select>
+        <select id="pCnt" onchange="drawInputs()"><option value="0">Count?</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
         <div id="pInputs"></div>
-        <button id="startBtn" class="neu-btn primary" style="width:100%; display:none;" onclick="showScoring()">Start Playing</button>
+        <button id="btn-start" class="neu-btn primary" style="width:100%; display:none;" onclick="goPlay()">Start</button>
     </div>
-    <div class="card" id="playIndiv" style="display:none;">
-        <h3 style="font-size:16px; margin-bottom:10px;">Live Scoring</h3>
-        <table><thead><tr><th>Player</th><th>Win 🏆</th><th>Last 💩</th></tr></thead><tbody id="scoreTable"></tbody></table>
-        <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveResult()">Save Result</button>
+    <div class="card" id="pane-play" style="display:none;">
+        <h3 style="font-size:16px; margin-bottom:10px;">Scoring</h3>
+        <table><thead><tr><th>Player</th><th>W 🏆</th><th>L 💩</th></tr></thead><tbody id="table-score"></tbody></table>
+        <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveIndiv()">Save Round</button>
     </div>
   </section>
 
   <section id="view-OVERALL" style="display:none;">
     <div class="card">
         <h2 style="margin:0 0 15px 0; font-size:16px; text-align:center;">Analytics Hub</h2>
-        <div class="stats-tile" onclick="openStats('28')"><div class="st-icon">🏏</div><div><b>28 Card Game</b><p id="sum28" style="margin:0; font-size:10px; color:var(--muted)">-</p></div></div>
-        <div class="stats-tile" onclick="openStats('Bluff')"><div class="st-icon">🃏</div><div><b>Bluff Game</b><p id="sumBluff" style="margin:0; font-size:10px; color:var
+        <div class="stats-tile" onclick="openDeepStats('28')"><div class="st-icon">🏏</div><div><b>28 Game</b><p id="sum-28" style="margin:0; font-size:10px; color:var(--muted)">-</p></div></div>
+        <div class="stats-tile" onclick="openDeepStats('Bluff')"><div class="st-icon">🃏</div><div><b>Bluff Game</b><p id="sum-Bluff" style="margin:0; font-size:10px; color:var(--muted)">-</p></div></div>
+        <div class="stats-tile" onclick="openDeepStats('UNO')"><div class="st-icon">🌈</div><div><b>UNO Game</b><p id="sum-UNO" style="margin:0; font-size:10px; color:var(--muted)">-</p></div></div>
+    </div>
+  </section>
+</div>
+
+<div id="modal-container"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
+const SEC = "zachariahrenji";
+const PLRS = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
+const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
+
+const app = initializeApp(FIREBASE_CONF);
+const db = getFirestore(app);
+const gamesRef = collection(db, "games");
+let allData = [];
+window.activeMode = '';
+
+window.showView = (v) => {
+    ['HOME','28','INDIV','OVERALL'].forEach(x => document.getElementById('view-'+x).style.display = (x===v?'block':'none'));
+    document.getElementById('btn-home').style.display = (v==='HOME'?'none':'block');
+    document.getElementById('btn-overall').style.display = (v==='HOME'?'block':'none');
+    if(v==='OVERALL') updateSumms();
+};
+
+window.launchGame = (m) => { window.activeMode = m; showView(m==='28'?'28':'INDIV'); if(m!=='28') resetSetup(); };
+
+function resetSetup() {
+    document.getElementById('indiv-title').innerText = window.activeMode + ' Setup';
+    document.getElementById('pCnt').value = "0"; document.getElementById('pInputs').innerHTML = "";
+    document.getElementById('btn-start').style.display = "none";
+    document.getElementById('pane-setup').style.display = "block";
+    document.getElementById('pane-play').style.display = "none";
+}
+
+window.drawInputs = () => {
+    const c = parseInt(document.getElementById('pCnt').value);
+    const container = document.getElementById('pInputs'); container.innerHTML = "";
+    if(c < 1) { document.getElementById('btn-start').style.display="none"; return; }
+    for(let i=0; i<c; i++) {
+        container.innerHTML += `<select id="psel-${i}"><option value="" disabled selected>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}</select>`;
+    }
+    document.getElementById('btn-start').style.display="block";
+};
+
+window.goPlay = () => {
+    const c = parseInt(document.getElementById('pCnt').value); const body = document.getElementById('table-score'); body.innerHTML = "";
+    for(let i=0; i<c; i++) {
+        const name = document.getElementById(`psel-${i}`).value; if(!name) return alert("Select all");
+        body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="win" value="${name}"></td><td><input type="radio" name="lost" value="${name}"></td></tr>`;
+    }
+    document.getElementById('pane-setup').style.display="none"; document.getElementById('pane-play').style.display="block";
+};
+
+window.saveIndiv = async () => {
+    const w = document.querySelector('input[name="win"]:checked')?.value;
+    const l = document.querySelector('input[name="lost"]:checked')?.value;
+    if(!w || !l || w===l) return alert("Pick Win & Last");
+    const run = []; document.querySelectorAll('#table-score tr').forEach(r => { const n = r.cells[0].innerText; if(n!==w && n!==l) run.push(n); });
+    await addDoc(gamesRef, { gameType: activeMode, winner: w, last: l, runnersUp: run, time: new Date().toISOString(), secret: SEC });
+    location.reload();
+};
+
+window.openDeepStats = (m) => {
+    const filtered = allData.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
+    const st = {};
+    filtered.forEach(g => {
+        const w = g.winner, l = g.last || g.loser;
+        [w, l, ...(g.runnersUp || [])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, r:0, t:0} });
+        st[w].w++; st[l].l++; st[w].t++; st[l].t++; (g.runnersUp || []).forEach(p => { st[p].r++; st[p].t++; });
+    });
+    let h = `<div class="modal-box"><h3>${m} Analytics</h3>`;
+    Object.entries(st).sort((a,b)=>b[1].w-a[1].w).forEach(([n, d]) => {
+        const wP = (d.w/d.t)*100, rP = (d.r/d.t)*100, lP = (d.l/d.t)*100;
+        h += `<div class="analytics-row"><div class="analytics-meta"><span><b>${n}</b></span><span>${d.w} Wins</span></div>
+              <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-run" style="width:${rP}%"></div><div class="b-last" style="width:${lP}%"></div></div></div>`;
+    });
+    h += `<h4 style="margin:15px 0 5px 0">Match History</h4>`;
+    filtered.slice(-10).reverse().forEach(g => h += `<div style="font-size:10px; padding:5px 0; border-bottom:1px solid #ffffff10">🏆 ${g.winner} | 💩 ${g.last||g.loser}</div>`);
+    h += `<button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="document.getElementById('modal-container').innerHTML=''">Close</button></div>`;
+    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
+};
+
+function updateSumms() {
+    const f = (m) => allData.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
+    document.getElementById('sum-28').innerText = f('28') + " Sessions";
+    document.getElementById('sum-Bluff').innerText = f('Bluff') + " Rounds";
+    document.getElementById('sum-UNO').innerText = f('UNO') + " Rounds";
+}
+
+window.render28 = () => {
+    const series = {};
+    allData.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
+        if (!series[g.seriesId]) series[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: g.teamA, teamB: g.teamB };
+        if (g.isInit) { series[g.seriesId].teamA = g.teamA; series[g.seriesId].teamB = g.teamB; }
+        else if (g.winner) { series[g.seriesId].wins[g.winner] = (series[g.seriesId].wins[g.winner] || 0) + 1; }
+    });
+    const active = Object.values(series).filter(s => !Object.values(s.wins).some(w => w >= s.target));
+    const list = document.getElementById("list-28"); if(!list) return; list.innerHTML = "";
+    active.forEach(s => {
+        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
+        list.innerHTML += `<div class="card" style="margin-bottom:10px;"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><div><b>${s.teamA}</b><div class="score-val">${wA}</div></div><div><b>${s.teamB}</b><div class="score-val">${wB}</div></div></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" onclick="addW28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="background:var(--gold)" onclick="addW28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button></div></div>`;
+    });
+};
+
+window.addW28 = async (id, w, l) => { await addDoc(gamesRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: SEC }); };
+window.newSeries28 = () => { 
+    const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
+    const h = `<div class="modal-box"><h3>New 28 Series</h3><select id="m1">${o}</select><select id="m2">${o}</select><button class="neu-btn primary" style="width:100%" onclick="conf28()">Start</button></div>`;
+    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
+};
+window.conf28 = async () => {
+    const t1 = document.getElementById('m1').value, t2 = document.getElementById('m2').value;
+    await addDoc(gamesRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, time: new Date().toISOString(), secret: SEC });
+    document.getElementById('modal-container').innerHTML = "";
+};
+
+onSnapshot(query(gamesRef, orderBy("time")), snap => {
+    allData = snap.docs.map(d => d.data());
+    render28();
+});
+</script>
+</body>
+</html>
