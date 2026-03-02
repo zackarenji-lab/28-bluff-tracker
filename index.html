@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>Game Night Hub</title>
+<title>Gaming Zone</title>
 <link rel="icon" href="blufffavicon.png" />
 <style>
   :root {
@@ -12,23 +12,22 @@
   }
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:800px;margin:22px auto;padding:20px;}
+  
   header{display:flex;align-items:center;gap:15px;margin-bottom:18px}
   .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
   h1{margin:0;font-size:22px}
-  
-  /* GRID FOR SQUARE BOXES */
-  .game-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-    gap: 15px; 
-    margin-top: 20px; 
-  }
-  
+  .subtitle{color:var(--muted);font-size:11px;margin-top:2px}
+
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
+  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+
+  /* GAME GRID & BOXES (HORIZONTAL 3 SQUARES) */
+  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
   .game-box {
     aspect-ratio: 1 / 1;
     background: var(--card);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,48 +35,43 @@
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
-    padding: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    padding: 8px;
   }
-  
-  .game-box:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent);
-    background: rgba(46, 204, 113, 0.05);
-  }
+  .game-box:hover { transform: translateY(-3px); border-color: var(--accent); background: rgba(46, 204, 113, 0.05); }
+  .game-icon { font-size: 26px; margin-bottom: 6px; }
+  .game-name { font-weight: 700; font-size: 11px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
 
-  .game-icon { font-size: 32px; margin-bottom: 10px; }
-  .game-name { font-weight: 700; font-size: 14px; color: #fff; }
-
-  /* COMMON UI */
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
+  /* UI HELPERS */
   .neu-btn { background:var(--accent); border-radius:8px; border:none; padding:12px; color:#061226; font-weight:700; cursor:pointer; width: 100%; margin-top: 15px;}
-  select, input { background: #fff; color: #000; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; border:none; font-weight: 600;}
-  
+  select, input { background: #fff !important; color: #000 !important; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; border:none; font-weight: 600;}
   table { width: 100%; border-collapse: collapse; margin-top: 15px; }
   th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-  @media (max-width: 400px) {
-    .game-grid { grid-template-columns: 1fr 1fr; } /* Force 2 columns on tiny screens */
+  @media (max-width: 450px) {
+    .game-icon { font-size: 22px; }
+    .game-name { font-size: 9px; }
   }
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  <header id="mainHeader">
-    <div class="logo">G</div>
+  <header>
+    <div class="logo">GZ</div>
     <div>
-      <h1 id="topTitle">Game Night</h1>
-      <div id="topSubtitle" style="color:var(--muted); font-size:11px;">Track your victories</div>
+      <h1 id="topTitle">Gaming Zone</h1>
+      <div id="topSubtitle" style="color:var(--muted); font-size:11px;">Elite Victory Tracking</div>
     </div>
     <div style="flex:1"></div>
-    <button id="homeBtn" class="game-box" style="width:40px; height:40px; aspect-ratio:auto; border-radius:10px; display:none;" onclick="location.reload()">🏠</button>
+    <button id="homeBtn" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; display:none;" onclick="location.reload()">🏠</button>
   </header>
 
   <section id="homeHub">
     <div class="card">
-      <h2 style="margin:0; font-size:18px; text-align:center;">Choose Your Game</h2>
+      <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
+      
+      <h2 style="margin:0; font-size:16px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
+      
       <div class="game-grid">
         <div class="game-box" onclick="launchGame('28')">
           <div class="game-icon">🏏</div>
@@ -85,18 +79,17 @@
         </div>
         <div class="game-box" onclick="launchGame('Bluff')">
           <div class="game-icon">🃏</div>
-          <div class="game-name">Bluff Game</div>
+          <div class="game-name">Bluff</div>
         </div>
         <div class="game-box" onclick="launchGame('UNO')">
           <div class="game-icon">🌈</div>
-          <div class="game-name">UNO Game</div>
+          <div class="game-name">UNO</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="gameArea" style="display:none;">
-      </section>
+  <section id="gameArea" style="display:none;"></section>
 </div>
 
 <script type="module">
@@ -112,7 +105,7 @@ const FIREBASE_CONF = {
   appId: "1:280965687037:web:be0b05da36ef653ab68094"
 };
 const SECRET_KEY = "zachariahrenji";
-const PLAYERS = ["Rohan", "Roopa", "Annu", "Zach", "Rikku", "Megha", "Other"];
+const PLAYER_NAMES = ["Rohan", "Roopa", "Annu", "Zach", "Rikku", "Megha", "Other"];
 
 const app = initializeApp(FIREBASE_CONF);
 const db = getFirestore(app);
@@ -124,8 +117,8 @@ window.launchGame = (mode) => {
     currentMode = mode;
     document.getElementById('homeHub').style.display = 'none';
     document.getElementById('gameArea').style.display = 'block';
-    document.getElementById('homeBtn').style.display = 'flex';
-    document.getElementById('topTitle').innerText = mode + " Mode";
+    document.getElementById('homeBtn').style.display = 'block';
+    document.getElementById('topTitle').innerText = mode + " Zone";
     
     if(mode === '28') {
         render28Module();
@@ -138,8 +131,8 @@ function render28Module() {
     document.getElementById('gameArea').innerHTML = `
         <div class="card">
             <h3>28 Game Tracker</h3>
-            <p style="color:var(--muted); font-size:13px;">Your series logic will be active here.</p>
-            <button class="neu-btn" onclick="alert('Starting 28 series...')">New Series</button>
+            <p style="color:var(--muted); font-size:13px;">Team Series logic is live.</p>
+            <button class="neu-btn" onclick="alert('Proceeding to 28 Series...')">Open Series List</button>
         </div>`;
 }
 
@@ -148,25 +141,26 @@ function renderIndivSetup() {
         <div class="card">
             <h3>${currentMode} Setup</h3>
             <label>Players Count</label>
-            <select id="pCount" onchange="updatePlayerInputs()">
+            <select id="pCount" onchange="updateInputs()">
                 <option value="2">2</option><option value="3">3</option>
                 <option value="4" selected>4</option><option value="5">5</option>
+                <option value="6">6</option>
             </select>
             <div id="pNamesList"></div>
             <button class="neu-btn" onclick="startPlay()">Start Playing</button>
         </div>`;
-    updatePlayerInputs();
+    updateInputs();
 }
 
-window.updatePlayerInputs = () => {
+window.updateInputs = () => {
     const count = document.getElementById('pCount').value;
     const container = document.getElementById('pNamesList');
     container.innerHTML = '';
     for(let i=0; i<count; i++) {
         container.innerHTML += `
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px; margin-top:5px;">
                 <select id="sel${i}" onchange="checkOther(${i})">
-                    ${PLAYERS.map(p => `<option value="${p}">${p}</option>`).join('')}
+                    ${PLAYER_NAMES.map(p => `<option value="${p}">${p}</option>`).join('')}
                 </select>
                 <input type="text" id="oth${i}" style="display:none" placeholder="Name">
             </div>`;
@@ -201,24 +195,23 @@ window.startPlay = () => {
                         </tr>`).join('')}
                 </tbody>
             </table>
-            <button class="neu-btn" onclick="submitGame('${players.join(',')}')">Save Result</button>
+            <button class="neu-btn" onclick="submitGame()">Save Result</button>
         </div>`;
 }
 
-window.submitGame = async (playerList) => {
-    const winner = document.querySelector('input[name="winner"]:checked')?.value;
-    const loser = document.querySelector('input[name="loser"]:checked')?.value;
-    
-    if(!winner || !loser) return alert("Select winner and last!");
+window.submitGame = async () => {
+    const win = document.querySelector('input[name="winner"]:checked')?.value;
+    const lost = document.querySelector('input[name="loser"]:checked')?.value;
+    if(!win || !lost) return alert("Select winner and last!");
     
     await addDoc(gamesRef, {
         gameType: currentMode,
-        winner: winner,
-        last: loser,
+        winner: win,
+        last: lost,
         time: new Date().toISOString(),
         secret: SECRET_KEY
     });
-    alert("Saved! Winner: " + winner);
+    alert("Saved!");
     location.reload();
 }
 </script>
