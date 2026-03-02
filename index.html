@@ -11,47 +11,42 @@
     --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db;
   }
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:800px;margin:22px auto;padding:20px;}
-  header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
-  .logo{width:45px;height:45px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
-  h1{margin:0;font-size:18px}
+  .wrap{max-width:800px;margin:15px auto;padding:15px;}
+  header{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+  .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+  h1{margin:0;font-size:16px;flex:1}
   
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
-  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
+  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* OVERALL DASHBOARD TILES */
-  .stats-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
-  .stats-tile:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
-  .st-icon { font-size: 24px; background: rgba(0,0,0,0.3); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
-  .st-content { flex: 1; }
-  .st-content h3 { margin: 0; font-size: 15px; color: #fff; }
-  .st-content p { margin: 4px 0 0 0; font-size: 11px; color: var(--muted); }
+  /* TILES */
+  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
+  .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+  .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; text-align: center; }
+
+  .stats-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .st-icon { font-size: 20px; background: rgba(0,0,0,0.3); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; }
 
   /* ANALYTICS */
-  .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
-  .analytics-meta { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; }
+  .analytics-row { margin-bottom: 10px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; }
+  .analytics-meta { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; }
   .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; }
   .b-win { height: 100%; background: var(--accent); }
   .b-run { height: 100%; background: var(--info); }
   .b-last { height: 100%; background: var(--danger); }
 
-  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-  .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
-  .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-  .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; text-align: center; }
-
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
+  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
-  .neu-btn.small { padding: 6px 10px; font-size: 10px; }
+  .neu-btn.small { padding: 4px 8px; font-size: 9px; }
 
-  select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; }
-  .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; }
+  .score-val { font-size: 24px; font-weight: 800; color: var(--gold); }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
   
-  .log-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; font-size: 12px; }
   table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+  th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
 </style>
 </head>
 <body>
@@ -60,16 +55,15 @@
   <header>
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
-    <div style="flex:1"></div>
-    <button id="overallBtn" class="neu-btn small" onclick="launchOverallStats()">📊 Overall Stat</button>
-    <button id="homeBtn" style="background:none; border:none; color:white; font-size:20px; cursor:pointer; display:none;" onclick="location.reload()">🏠</button>
+    <button id="overallBtn" class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
+    <button id="homeBtn" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
   </header>
 
-  <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" id="mainHero"/>
+  <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img"/>
 
-  <section id="homeHub">
+  <section id="view-HOME">
     <div class="card">
-      <h2 style="margin:0 0 15px 0; font-size:13px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
+      <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid">
         <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28" onerror="this.src='https://placehold.co/200?text=28'"><div class="game-name-overlay">28 Game</div></div>
         <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff" onerror="this.src='https://placehold.co/200?text=Bluff'"><div class="game-name-overlay">Bluff</div></div>
@@ -78,127 +72,36 @@
     </div>
   </section>
 
-  <section id="section28" style="display:none;">
+  <section id="view-28" style="display:none;">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2 style="margin:0; font-size:16px;">Active Series</h2>
-        <button class="neu-btn small" onclick="openDeepDive('28')">📊 Stats</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h2 style="margin:0; font-size:16px;">28 Series</h2>
+        <button class="neu-btn small" onclick="openStats('28')">📊 Stats</button>
       </div>
-      <div id="activeList"></div>
-      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted); font-size:12px;">No active games.</div>
+      <div id="active28List"></div>
       <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="startNewSeries()">➕ Start New Series</button>
     </div>
   </section>
 
-  <section id="sectionIndiv" style="display:none;">
-    <div class="card" id="indivSetup">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 id="indivSetupTitle" style="margin:0; font-size:16px;">Setup</h3>
-            <button class="neu-btn small" onclick="openDeepDive(currentMode)">📊 Stats</button>
+  <section id="view-INDIV" style="display:none;">
+    <div class="card" id="setupIndiv">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 id="indivTitle" style="margin:0; font-size:16px;">Setup</h3>
+            <button class="neu-btn small" onclick="openStats(currentMode)">📊 Stats</button>
         </div>
-        <select id="pCount" onchange="updateIndivInputs()"><option value="0" selected>Select Player Count</option><option value="3">3 Players</option><option value="4">4 Players</option><option value="5">5 Players</option></select>
-        <div id="pNamesList"></div>
-        <button id="startPlayBtn" class="neu-btn primary" style="width:100%; display:none;" onclick="startIndivPlay()">Start Playing</button>
+        <select id="pCount" onchange="createInputs()"><option value="0">Select Players</option><option value="3">3 Players</option><option value="4">4 Players</option><option value="5">5 Players</option></select>
+        <div id="pInputs"></div>
+        <button id="startBtn" class="neu-btn primary" style="width:100%; display:none;" onclick="showScoring()">Start Playing</button>
     </div>
-    <div class="card" id="indivPlay" style="display:none;">
-        <h3 id="indivTitle" style="font-size:16px;">Live Scoring</h3>
-        <table><thead><tr><th>Player</th><th>Winner 🏆</th><th>Last 💩</th></tr></thead><tbody id="indivTableBody"></tbody></table>
-        <button class="neu-btn primary" style="width:100%; margin-top:20px" onclick="submitIndivResult()">Save Result</button>
+    <div class="card" id="playIndiv" style="display:none;">
+        <h3 style="font-size:16px; margin-bottom:10px;">Live Scoring</h3>
+        <table><thead><tr><th>Player</th><th>Win 🏆</th><th>Last 💩</th></tr></thead><tbody id="scoreTable"></tbody></table>
+        <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveResult()">Save Result</button>
     </div>
   </section>
 
-  <section id="overallStatsSection" style="display:none;">
+  <section id="view-OVERALL" style="display:none;">
     <div class="card">
-        <h2 style="margin:0 0 20px 0; font-size:18px; text-align:center;">Game Analytics</h2>
-        <div class="stats-tile" onclick="openDeepDive('28')">
-            <div class="st-icon">🏏</div>
-            <div class="st-content"><h3>28 Card Game</h3><p id="stat-28-summary">...</p></div>
-        </div>
-        <div class="stats-tile" onclick="openDeepDive('Bluff')">
-            <div class="st-icon">🃏</div>
-            <div class="st-content"><h3>Bluff Game</h3><p id="stat-Bluff-summary">...</p></div>
-        </div>
-        <div class="stats-tile" onclick="openDeepDive('UNO')">
-            <div class="st-icon">🌈</div>
-            <div class="st-content"><h3>UNO Game</h3><p id="stat-UNO-summary">...</p></div>
-        </div>
-        <button class="neu-btn small" style="width:100%; color:var(--danger)" onclick="resetStats()">⚠️ Reset All Data</button>
-    </div>
-  </section>
-</div>
-
-<div id="modalContainer"></div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
-const SECRET_KEY = "zachariahrenji";
-const TEAM_LIST = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
-const ALL_PLAYER_POOL = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
-
-const app = initializeApp(FIREBASE_CONF);
-const db = getFirestore(app);
-const gamesRef = collection(db, "games");
-let gameData = { games: [] };
-let currentMode = '';
-
-window.launchGame = (mode) => {
-    currentMode = mode;
-    document.getElementById('homeHub').style.display = 'none';
-    document.getElementById('homeBtn').style.display = 'block';
-    document.getElementById('overallBtn').style.display = 'none';
-    if(mode === '28') document.getElementById('section28').style.display = 'block';
-    else document.getElementById('sectionIndiv').style.display = 'block';
-}
-
-window.launchOverallStats = () => {
-    document.getElementById('homeHub').style.display = 'none';
-    document.getElementById('homeBtn').style.display = 'block';
-    document.getElementById('overallBtn').style.display = 'none';
-    document.getElementById('overallStatsSection').style.display = 'block';
-    updateTileSummaries();
-}
-
-function updateTileSummaries() {
-    const filterBy = (m) => gameData.games.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
-    document.getElementById('stat-28-summary').innerText = `${filterBy('28')} Series Recorded`;
-    document.getElementById('stat-Bluff-summary').innerText = `${filterBy('Bluff')} Rounds Played`;
-    document.getElementById('stat-UNO-summary').innerText = `${filterBy('UNO')} Rounds Played`;
-}
-
-window.openDeepDive = (mode) => {
-    const data = gameData.games.filter(g => (mode === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === mode) && g.winner);
-    const st = {};
-    data.forEach(g => {
-        const win = g.winner; const lost = g.last || g.loser;
-        [win, lost, ...(g.runnersUp || [])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, r:0, t:0} });
-        st[win].w++; st[lost].l++; st[win].t++; st[lost].t++;
-        (g.runnersUp || []).forEach(p => { st[p].r++; st[p].t++; });
-    });
-
-    let h = `<div class="modal-box"><h2>${mode} Stats</h2>`;
-    Object.entries(st).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
-        const wP = (d.w / d.t) * 100, rP = (d.r / d.t) * 100, lP = (d.l / d.t) * 100;
-        h += `<div class="analytics-row">
-            <div class="analytics-meta"><span><b>${n}</b></span><span>${d.w}W - ${d.l}L</span></div>
-            <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-run" style="width:${rP}%"></div><div class="b-last" style="width:${lP}%"></div></div>
-        </div>`;
-    });
-    h += `<h3 style="margin-top:20px;">Match History</h3>`;
-    data.slice(-15).reverse().forEach(g => {
-        h += `<div class="log-item"><div style="color:var(--muted); font-size:10px;">${new Date(g.time).toLocaleString()}</div>
-              🏆 <b>${g.winner}</b> vs 💩 ${g.last||g.loser}</div>`;
-    });
-    h += `<button class="neu-btn primary" style="width:100%; margin-top:20px;" onclick="closeModal()">Close</button></div>`;
-    showModal(h);
-}
-
-// SHARED LOGIC
-window.updateIndivInputs = () => {
-    const count = parseInt(document.getElementById('pCount').value);
-    const container = document.getElementById('pNamesList');
-    container.innerHTML = ''; if(count === 0) return document.getElementById('startPlayBtn').style.display = "none";
-    for(let i=0; i<count; i++) {
-        container.innerHTML += `<div style="margin-bottom:10px;"><select id="pS${i}" onchange="refreshDropdowns()"><option value="" disabled selected>Player ${i+1}</option>${ALL_PLAYER_POOL.map(n => `<option value="${n}">${n}</option>`).join('')}<option value="Custom">Custom</option></select><input type="text" id="pO${i}"
+        <h2 style="margin:0 0 15px 0; font-size:16px; text-align:center;">Analytics Hub</h2>
+        <div class="stats-tile" onclick="openStats('28')"><div class="st-icon">🏏</div><div><b>28 Card Game</b><p id="sum28" style="margin:0; font-size:10px; color:var(--muted)">-</p></div></div>
+        <div class="stats-tile" onclick="openStats('Bluff')"><div class="st-icon">🃏</div><div><b>Bluff Game</b><p id="sumBluff" style="margin:0; font-size:10px; color:var
