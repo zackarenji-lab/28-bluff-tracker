@@ -19,32 +19,39 @@
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* OVERALL DASHBOARD TILES */
-  .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
-  .tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 15px; border-radius: 12px; text-align: center; }
-  .tile small { display: block; color: var(--muted); font-size: 8px; text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
-  .tile .val { font-size: 15px; font-weight: 800; color: var(--gold); }
-  .tile.full { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+  /* GAME-WISE TILES */
+  .stats-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 18px; border-radius: 15px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; }
+  .stats-tile:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+  .st-icon { font-size: 24px; background: rgba(0,0,0,0.3); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+  .st-content { flex: 1; }
+  .st-content h3 { margin: 0; font-size: 15px; color: #fff; }
+  .st-content p { margin: 4px 0 0 0; font-size: 11px; color: var(--muted); }
+  .st-arrow { color: var(--gold); font-weight: 800; }
 
-  /* GAME SUMMARY CARDS */
-  .game-summary { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; border: 1px solid rgba(255,255,255,0.05); }
-  .gs-icon { font-size: 20px; background: rgba(0,0,0,0.3); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
-  .gs-info { flex: 1; }
-  .gs-info h4 { margin: 0; font-size: 12px; color: var(--muted); }
-  .gs-info p { margin: 2px 0 0 0; font-size: 13px; font-weight: 700; }
+  /* ANALYTICS */
+  .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
+  .analytics-meta { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; }
+  .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; }
+  .b-win { height: 100%; background: var(--accent); }
+  .b-run { height: 100%; background: var(--info); }
+  .b-last { height: 100%; background: var(--danger); }
 
+  /* GAME HUB GRID */
   .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
   .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
   .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
   .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; text-align: center; }
 
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
   
   select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  
+  .log-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px 0; font-size: 12px; }
+  .log-date { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
 </style>
 </head>
 <body>
@@ -54,7 +61,7 @@
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
     <div style="flex:1"></div>
-    <button id="globalStatBtn" class="neu-btn small" onclick="launchOverallDashboard()">📊 Overall Stat</button>
+    <button id="overallBtn" class="neu-btn small" onclick="launchOverallStats()">📊 Overall Stat</button>
     <button id="homeBtn" style="background:none; border:none; color:white; font-size:20px; cursor:pointer; display:none;" onclick="location.reload()">🏠</button>
   </header>
 
@@ -91,16 +98,34 @@
     </div>
     <div class="card" id="indivPlay" style="display:none;">
         <h3 id="indivTitle" style="font-size:16px;">Live Scoring</h3>
-        <table><thead><tr><th>Player</th><th>Win 🏆</th><th>Last 💩</th></tr></thead><tbody id="indivTableBody"></tbody></table>
+        <table><thead><tr><th>Player</th><th>Winner 🏆</th><th>Last 💩</th></tr></thead><tbody id="indivTableBody"></tbody></table>
         <button class="neu-btn primary" style="width:100%; margin-top:20px" onclick="submitIndivResult()">Save Result</button>
     </div>
   </section>
 
-  <section id="dashboardSection" style="display:none;">
-    <div id="dashboardContent"></div>
-    <div class="card" style="display:flex; gap:10px;">
-        <button class="neu-btn small" style="flex:1" onclick="location.reload()">🏠 Home</button>
-        <button class="neu-btn small" style="flex:1; color:var(--danger)" onclick="resetStats()">⚠️ Reset Data</button>
+  <section id="overallStatsSection" style="display:none;">
+    <div class="card">
+        <h2 style="margin:0 0 20px 0; font-size:18px; text-align:center;">Game Analytics</h2>
+        
+        <div class="stats-tile" onclick="openDeepDive('28')">
+            <div class="st-icon">🏏</div>
+            <div class="st-content"><h3>28 Card Game</h3><p id="stat-28-summary">Loading stats...</p></div>
+            <div class="st-arrow">➔</div>
+        </div>
+
+        <div class="stats-tile" onclick="openDeepDive('Bluff')">
+            <div class="st-icon">🃏</div>
+            <div class="st-content"><h3>Bluff Game</h3><p id="stat-Bluff-summary">Loading stats...</p></div>
+            <div class="st-arrow">➔</div>
+        </div>
+
+        <div class="stats-tile" onclick="openDeepDive('UNO')">
+            <div class="st-icon">🌈</div>
+            <div class="st-content"><h3>UNO Game</h3><p id="stat-UNO-summary">Loading stats...</p></div>
+            <div class="st-arrow">➔</div>
+        </div>
+        
+        <button class="neu-btn small" style="width:100%; margin-top:10px; color:var(--danger)" onclick="resetStats()">⚠️ Reset All Data</button>
     </div>
   </section>
 </div>
@@ -126,85 +151,71 @@ window.launchGame = (mode) => {
     currentMode = mode;
     document.getElementById('homeHub').style.display = 'none';
     document.getElementById('homeBtn').style.display = 'block';
-    document.getElementById('globalStatBtn').style.display = 'none';
+    document.getElementById('overallBtn').style.display = 'none';
     if(mode === '28') document.getElementById('section28').style.display = 'block';
     else document.getElementById('sectionIndiv').style.display = 'block';
 }
 
-window.launchOverallDashboard = () => {
+window.launchOverallStats = () => {
     document.getElementById('homeHub').style.display = 'none';
     document.getElementById('homeBtn').style.display = 'block';
-    document.getElementById('globalStatBtn').style.display = 'none';
-    document.getElementById('dashboardSection').style.display = 'block';
-    renderOverallDashboard();
+    document.getElementById('overallBtn').style.display = 'none';
+    document.getElementById('overallStatsSection').style.display = 'block';
+    updateTileSummaries();
 }
 
-function renderOverallDashboard() {
-    const cont = document.getElementById('dashboardContent');
-    const allGames = gameData.games.filter(g => g.winner);
+function updateTileSummaries() {
+    const bluff = gameData.games.filter(g => g.gameType === 'Bluff' && g.winner).length;
+    const uno = gameData.games.filter(g => g.gameType === 'UNO' && g.winner).length;
+    const s28 = gameData.games.filter(g => (!g.gameType || g.gameType === '28') && g.winner).length;
     
-    // Global KPI Calcs
-    const globalStats = {};
-    allGames.forEach(g => {
-        const win = g.winner; const last = g.last || g.loser;
-        if(!globalStats[win]) globalStats[win] = {w:0, l:0};
-        if(!globalStats[last]) globalStats[last] = {w:0, l:0};
-        globalStats[win].w++; globalStats[last].l++;
+    document.getElementById('stat-28-summary').innerText = `${s28} Series Recorded`;
+    document.getElementById('stat-Bluff-summary').innerText = `${bluff} Rounds Played`;
+    document.getElementById('stat-UNO-summary').innerText = `${uno} Rounds Played`;
+}
+
+window.openDeepDive = (mode) => {
+    const data = gameData.games.filter(g => {
+        if(mode === '28') return !g.gameType || g.gameType === '28';
+        return g.gameType === mode;
+    }).filter(g => g.winner);
+
+    // Calculate Leaderboard
+    const st = {};
+    data.forEach(g => {
+        const win = g.winner; const lost = g.last || g.loser;
+        [win, lost, ...(g.runnersUp || [])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, r:0, t:0} });
+        st[win].w++; st[lost].l++; st[win].t++; st[lost].t++;
+        (g.runnersUp || []).forEach(p => { st[p].r++; st[p].t++; });
     });
 
-    const mvp = Object.keys(globalStats).sort((a,b) => globalStats[b].w - globalStats[a].w)[0] || '—';
-    const target = Object.keys(globalStats).sort((a,b) => globalStats[b].l - globalStats[a].l)[0] || '—';
+    let h = `<div class="modal-box"><h2>${mode} Deep Dive</h2>`;
+    
+    // Performance Bars
+    h += `<div style="margin-bottom:20px;">`;
+    Object.entries(st).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
+        const wP = (d.w / d.t) * 100, rP = (d.r / d.t) * 100, lP = (d.l / d.t) * 100;
+        h += `<div class="analytics-row">
+            <div class="analytics-meta"><span><b>${n}</b></span><span>${d.w} Wins</span></div>
+            <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-run" style="width:${rP}%"></div><div class="b-last" style="width:${lP}%"></div></div>
+        </div>`;
+    });
+    h += `</div>`;
 
-    // Game Specific Summaries
-    const bluffWins = allGames.filter(g => g.gameType === 'Bluff');
-    const unoWins = allGames.filter(g => g.gameType === 'UNO');
-    const series28 = gameData.games.filter(g => !g.gameType || g.gameType === '28');
-
-    cont.innerHTML = `
-        <div class="card">
-            <h2 style="margin-top:0; font-size:16px;">Overall Dashboard</h2>
-            <div class="dash-grid">
-                <div class="tile"><small>👑 Global MVP</small><div class="val">${mvp}</div></div>
-                <div class="tile"><small>💩 Global Target</small><div class="val">${target}</div></div>
-                <div class="tile full"><small>🎮 Total Sessions Recorded</small><div class="val">${allGames.length}</div></div>
-            </div>
-
-            <h3 style="font-size:12px; color:var(--muted); text-transform:uppercase; margin:20px 0 10px 0;">Game Breakdowns</h3>
-            
-            <div class="game-summary">
-                <div class="gs-icon">🏏</div>
-                <div class="gs-info"><h4>28 Card Game</h4><p>${series28.length} Games played</p></div>
-            </div>
-
-            <div class="game-summary">
-                <div class="gs-icon">🃏</div>
-                <div class="gs-info"><h4>Bluff Game</h4><p>${bluffWins.length} Rounds won</p></div>
-            </div>
-
-            <div class="game-summary">
-                <div class="gs-icon">🌈</div>
-                <div class="gs-info"><h4>UNO Game</h4><p>${unoWins.length} Rounds won</p></div>
-            </div>
-            
-            <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="showGlobalHistory()">📜 View Full Game History</button>
-        </div>
-    `;
-}
-
-window.showGlobalHistory = () => {
-    const filtered = gameData.games.filter(g => g.winner).slice().reverse();
-    let h = `<div class="modal-box"><h3>Global History</h3>`;
-    filtered.forEach(g => {
-        h += `<div style="border-bottom:1px solid rgba(255,255,255,0.05); padding:8px 0; font-size:11px;">
-                <div style="color:var(--muted)">${new Date(g.time).toLocaleString()} | ${(g.gameType||'28').toUpperCase()}</div>
+    // History Log
+    h += `<h3>Match History</h3>`;
+    data.slice().reverse().forEach(g => {
+        h += `<div class="log-item">
+                <div class="log-date">${new Date(g.time).toLocaleString('en-IN', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
                 <div>🏆 Winner: <b>${g.winner}</b> | 💩 Last: ${g.last||g.loser}</div>
               </div>`;
     });
-    h += `<button class="neu-btn primary" style="width:100%; margin-top:15px;" onclick="closeModal()">Close</button></div>`;
+
+    h += `<button class="neu-btn primary" style="width:100%; margin-top:20px;" onclick="closeModal()">Close</button></div>`;
     showModal(h);
 }
 
-// SHARED UTILS
+// SETUP & SUBMIT LOGIC
 window.updateIndivInputs = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const container = document.getElementById('pNamesList');
@@ -262,7 +273,7 @@ window.startNewSeries = () => { const opts = TEAM_LIST.map(t => `<option value="
 window.confirmStart = async () => { const t1 = document.getElementById('m1').value, t2 = document.getElementById('m2').value; await addDoc(gamesRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, time: new Date().toISOString(), secret: SECRET_KEY }); closeModal(); }
 window.showModal = (html) => document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`;
 window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
-onSnapshot(query(gamesRef, orderBy("time")), snap => { gameData.games = snap.docs.map(d => d.data()); renderUI(); if(document.getElementById('dashboardSection').style.display==='block') renderOverallDashboard(); });
+onSnapshot(query(gamesRef, orderBy("time")), snap => { gameData.games = snap.docs.map(d => d.data()); renderUI(); if(document.getElementById('overallStatsSection').style.display==='block') updateTileSummaries(); });
 window.resetStats = async () => { if(prompt("Pass:") === SECRET_KEY) { const snap = await getDocs(gamesRef); snap.forEach(d => deleteDoc(d.ref)); location.reload(); } };
 </script>
 </body>
