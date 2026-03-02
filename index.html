@@ -12,47 +12,45 @@
   }
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:800px;margin:22px auto;padding:20px;}
-  header{display:flex;align-items:center;gap:15px;margin-bottom:18px}
-  .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
-  h1{margin:0;font-size:22px}
+  header{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+  .logo{width:45px;height:45px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+  h1{margin:0;font-size:18px}
   
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* DASHBOARD TILES */
-  .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-  .kpi-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
-  .kpi-tile:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
-  .kpi-tile small { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; margin-bottom: 4px; }
-  .kpi-tile .val { font-size: 16px; font-weight: 800; color: var(--gold); }
-  
-  /* ANALYTICS */
-  .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
-  .analytics-meta { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; }
-  .bar-container { height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; display: flex; }
-  .b-win { height: 100%; background: var(--accent); }
-  .b-run { height: 100%; background: var(--info); }
-  .b-last { height: 100%; background: var(--danger); }
-
   /* GAME HUB GRID */
-  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
   .game-box {
     aspect-ratio: 1 / 1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; text-align: center; overflow: hidden; position: relative;
   }
   .game-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; opacity: 0.8; }
-  .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); color: #fff; font-size: 9px; font-weight: 800; padding: 4px 0; text-transform: uppercase; }
+  .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; }
 
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; justify-content: center; }
-  .neu-btn.primary { background: var(--accent); color: #061226; }
+  /* DASHBOARD TILES */
+  .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+  .kpi-tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; }
+  .kpi-tile small { display: block; color: var(--muted); font-size: 8px; text-transform: uppercase; margin-bottom: 4px; }
+  .kpi-tile .val { font-size: 14px; font-weight: 800; color: var(--gold); }
   
-  .history-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0; font-size: 12px; }
-  .history-date { font-size: 10px; color: var(--muted); }
+  /* ANALYTICS HEATMAP */
+  .analytics-row { margin-bottom: 10px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; }
+  .analytics-meta { display: flex; justify-content: space-between; font-size: 10px; margin-bottom: 4px; }
+  .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; }
+  .b-win { height: 100%; background: var(--accent); }
+  .b-run { height: 100%; background: var(--info); }
+  .b-last { height: 100%; background: var(--danger); }
 
-  table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; justify-content: center; }
+  .neu-btn.primary { background: var(--accent); color: #061226; }
+  .neu-btn.small { padding: 5px 10px; font-size: 10px; }
+  
+  select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
-  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 70vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -62,18 +60,17 @@
     <div class="logo">GZ</div>
     <div>
       <h1 id="topTitle">Gaming Zone</h1>
-      <div id="topSubtitle" style="color:var(--muted); font-size:11px;">Elite Victory Tracking</div>
     </div>
     <div style="flex:1"></div>
-    <button id="navBtn" class="neu-btn small" onclick="toggleView()" style="display:none;">📊 Stats</button>
-    <button id="homeBtn" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; margin-left:10px; display:none;" onclick="location.reload()">🏠</button>
+    <button id="globalStatBtn" class="neu-btn small" onclick="launchGlobalStats()">🌍 Overall Stat</button>
+    <button id="homeBtn" style="background:none; border:none; color:white; font-size:20px; cursor:pointer; display:none;" onclick="location.reload()">🏠</button>
   </header>
 
   <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" id="mainHero"/>
 
   <section id="homeHub">
     <div class="card">
-      <h2 style="margin:0; font-size:16px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
+      <h2 style="margin:0 0 15px 0; font-size:14px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid">
         <div class="game-box" onclick="launchGame('28')">
             <img src="28 button.png" alt="28" onerror="this.src='https://placehold.co/200?text=28'">
@@ -88,26 +85,26 @@
             <div class="game-name-overlay">UNO</div>
         </div>
       </div>
-      <button class="neu-btn primary" style="width:100%; margin-top:15px;" onclick="launchGlobalStats()">🌍 Global Dashboard</button>
     </div>
   </section>
 
   <section id="section28" style="display:none;">
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2 style="margin:0; font-size:18px;">Active Series</h2>
+        <h2 style="margin:0; font-size:16px;">Active Series</h2>
         <button class="neu-btn primary small" onclick="startNewSeries()">➕ New Series</button>
       </div>
       <div id="activeList"></div>
-      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted);">No active games.</div>
+      <div id="noActive" style="text-align:center; padding:20px; color:var(--muted); font-size:12px;">No active games.</div>
     </div>
+    <button class="neu-btn" style="width:100%" onclick="toggleStats()">📊 28 Statistics</button>
   </section>
 
   <section id="sectionIndiv" style="display:none;">
     <div class="card" id="indivSetup">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 id="indivSetupTitle" style="margin:0">Setup</h3>
-            <button class="neu-btn small" onclick="toggleView()">📊 Stats</button>
+            <h3 id="indivSetupTitle" style="margin:0; font-size:16px;">Setup</h3>
+            <button class="neu-btn small" onclick="toggleStats()">📊 Stats</button>
         </div>
         <select id="pCount" onchange="updateIndivInputs()">
             <option value="0" selected>Select Player Count</option>
@@ -117,9 +114,9 @@
         <button id="startPlayBtn" class="neu-btn primary" style="width:100%; display:none;" onclick="startIndivPlay()">Start Playing</button>
     </div>
     <div class="card" id="indivPlay" style="display:none;">
-        <h3 id="indivTitle">Live Scoring</h3>
+        <h3 id="indivTitle" style="font-size:16px;">Live Scoring</h3>
         <table>
-            <thead><tr><th>Player</th><th>Winner 🏆</th><th>Last 💩</th></tr></thead>
+            <thead><tr><th>Player</th><th>Win 🏆</th><th>Last 💩</th></tr></thead>
             <tbody id="indivTableBody"></tbody>
         </table>
         <button class="neu-btn primary" style="width:100%; margin-top:20px" onclick="submitIndivResult()">Save Result</button>
@@ -128,9 +125,9 @@
 
   <section id="statsSection" style="display:none;">
     <div id="statsContent"></div>
-    <div class="card">
-        <button class="neu-btn small" onclick="promptShare()">📤 Share</button>
-        <button class="neu-btn small" style="color:var(--danger)" onclick="resetStats()">⚠️ Reset</button>
+    <div class="card" style="display:flex; gap:10px;">
+        <button class="neu-btn small" style="flex:1" onclick="promptShare()">📤 Share</button>
+        <button class="neu-btn small" style="flex:1; color:var(--danger)" onclick="resetStats()">⚠️ Reset</button>
     </div>
   </section>
 </div>
@@ -139,7 +136,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, where } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
 const SECRET_KEY = "zachariahrenji";
@@ -156,7 +153,7 @@ window.launchGame = (mode) => {
     currentMode = mode;
     document.getElementById('homeHub').style.display = 'none';
     document.getElementById('homeBtn').style.display = 'block';
-    document.getElementById('navBtn').style.display = 'inline-flex';
+    document.getElementById('globalStatBtn').style.display = 'none';
     if(mode === '28') document.getElementById('section28').style.display = 'block';
     else document.getElementById('sectionIndiv').style.display = 'block';
 }
@@ -165,51 +162,69 @@ window.launchGlobalStats = () => {
     currentMode = 'GLOBAL';
     document.getElementById('homeHub').style.display = 'none';
     document.getElementById('homeBtn').style.display = 'block';
-    document.getElementById('navBtn').style.display = 'none';
+    document.getElementById('globalStatBtn').style.display = 'none';
     document.getElementById('statsSection').style.display = 'block';
     updateStatsPage();
 }
 
-window.toggleView = () => {
-    const s28 = document.getElementById('section28');
-    const sIndiv = document.getElementById('sectionIndiv');
-    const stats = document.getElementById('statsSection');
-    const isStats = stats.style.display === 'block';
-    stats.style.display = isStats ? 'none' : 'block';
-    if(currentMode === '28') s28.style.display = isStats ? 'block' : 'none';
-    else sIndiv.style.display = isStats ? 'block' : 'none';
+window.toggleStats = () => {
+    const isStats = document.getElementById('statsSection').style.display === 'block';
+    document.getElementById('statsSection').style.display = isStats ? 'none' : 'block';
+    if(currentMode === '28') document.getElementById('section28').style.display = isStats ? 'block' : 'none';
+    else document.getElementById('sectionIndiv').style.display = isStats ? 'block' : 'none';
     if(!isStats) updateStatsPage();
 }
 
-// FORMAT DATE
-function fmtDate(iso) {
-    if(!iso) return "Unknown";
-    const d = new Date(iso);
-    return d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' }) + ", " + d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+// SETUP LOGIC
+window.updateIndivInputs = () => {
+    const count = parseInt(document.getElementById('pCount').value);
+    const container = document.getElementById('pNamesList');
+    container.innerHTML = '';
+    if(count === 0) return document.getElementById('startPlayBtn').style.display = "none";
+    for(let i=0; i<count; i++) {
+        container.innerHTML += `<div style="margin-bottom:10px;"><select id="pS${i}" onchange="refreshDropdowns()"><option value="" disabled selected>Player ${i+1}</option>${ALL_PLAYER_POOL.map(n => `<option value="${n}">${n}</option>`).join('')}<option value="Custom">Custom</option></select><input type="text" id="pO${i}" class="custom-input" style="display:none" placeholder="Name"></div>`;
+    }
+    document.getElementById('startPlayBtn').style.display = "inline-flex";
 }
 
-// SHOW HISTORY MODAL
-window.showHistory = (mode) => {
-    const filtered = gameData.games.filter(g => {
-        if(mode === '28') return !g.gameType || g.gameType === '28';
-        if(mode === 'GLOBAL') return true;
-        return g.gameType === mode;
-    }).filter(g => g.winner); // Only show games that finished
-
-    let h = `<div class="modal-box"><h3>Game History (${mode})</h3>`;
-    if(filtered.length === 0) h += `<p style="color:var(--muted)">No games recorded yet.</p>`;
-    filtered.slice().reverse().forEach(g => {
-        const type = g.gameType || '28';
-        h += `<div class="history-item">
-                <div class="history-date">${fmtDate(g.time)} | ${type.toUpperCase()}</div>
-                <div>🏆 Winner: <b>${g.winner}</b></div>
-                <div style="color:var(--danger)">💩 Last: ${g.last || g.loser}</div>
-              </div>`;
-    });
-    h += `<button class="neu-btn primary" style="width:100%; margin-top:15px;" onclick="closeModal()">Close</button></div>`;
-    showModal(h);
+window.refreshDropdowns = () => {
+    const count = parseInt(document.getElementById('pCount').value);
+    const sel = [];
+    for(let i=0; i<count; i++) {
+        const v = document.getElementById(`pS${i}`).value; if(v && v!=="Custom") sel.push(v);
+        document.getElementById(`pO${i}`).style.display = (v === "Custom") ? "block" : "none";
+    }
+    for(let i=0; i<count; i++) {
+        const s = document.getElementById(`pS${i}`);
+        Array.from(s.options).forEach(o => { if(o.value && o.value!=="Custom") o.style.display = (sel.includes(o.value) && s.value!==o.value) ? 'none' : 'block'; });
+    }
 }
 
+window.startIndivPlay = () => {
+    const count = parseInt(document.getElementById('pCount').value);
+    const body = document.getElementById('indivTableBody');
+    body.innerHTML = '';
+    for(let i=0; i<count; i++) {
+        const sel = document.getElementById(`pS${i}`).value;
+        const name = (sel === 'Custom') ? document.getElementById(`pO${i}`).value.trim() : sel;
+        if(!name) return alert("Assign all names");
+        body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="w" value="${name}"></td><td><input type="radio" name="l" value="${name}"></td></tr>`;
+    }
+    document.getElementById('indivSetup').style.display = 'none';
+    document.getElementById('indivPlay').style.display = 'block';
+}
+
+window.submitIndivResult = async () => {
+    const w = document.querySelector('input[name="w"]:checked')?.value;
+    const l = document.querySelector('input[name="l"]:checked')?.value;
+    if(!w || !l || w===l) return alert("Select unique Winner & Last!");
+    const run = [];
+    document.querySelectorAll('#indivTableBody tr').forEach(r => { const n = r.cells[0].innerText; if(n!==w && n!==l) run.push(n); });
+    await addDoc(gamesRef, { gameType: currentMode, winner: w, last: l, runnersUp: run, time: new Date().toISOString(), secret: SECRET_KEY });
+    location.reload();
+}
+
+// ANALYTICS
 function updateStatsPage() {
     const cont = document.getElementById("statsContent");
     const modeData = gameData.games.filter(g => {
@@ -230,12 +245,12 @@ function updateStatsPage() {
     
     const sortedW = Object.keys(st).sort((a,b) => st[b].w - st[a].w);
     const mvp = sortedW[0] || '—';
-    const target = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
+    const totalG = modeData.filter(g=>g.winner).length;
 
     let h = `<div class="card"><h2>${currentMode} Analytics</h2>
         <div class="dashboard-grid">
             <div class="kpi-tile"><small>🥇 WIN KING</small><div class="val">${mvp}</div></div>
-            <div class="kpi-tile" onclick="showHistory('${currentMode}')"><small>🎮 TOTAL GAMES</small><div class="val">${modeData.filter(g=>g.winner).length} ℹ️</div></div>
+            <div class="kpi-tile" onclick="showHistory('${currentMode}')"><small>🎮 TOTAL</small><div class="val">${totalG} ℹ️</div></div>
         </div>`;
     
     Object.entries(st).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
@@ -248,41 +263,55 @@ function updateStatsPage() {
     cont.innerHTML = h + `</div>`;
 }
 
-// SETUP & SUBMIT LOGIC (Simplified)
-window.updateIndivInputs = () => {
-    const count = parseInt(document.getElementById('pCount').value);
-    const container = document.getElementById('pNamesList');
-    container.innerHTML = '';
-    if(count === 0) return document.getElementById('startPlayBtn').style.display = "none";
-    for(let i=0; i<count; i++) {
-        container.innerHTML += `<div style="margin-bottom:10px;"><select id="pS${i}" onchange="refreshDropdowns()"><option value="" disabled selected>Player ${i+1}</option>${ALL_PLAYER_POOL.map(n => `<option value="${n}">${n}</option>`).join('')}<option value="Custom">Custom</option></select><input type="text" id="pO${i}" class="custom-input" style="display:none" placeholder="Name"></div>`;
-    }
-    document.getElementById('startPlayBtn').style.display = "inline-flex";
+window.showHistory = (mode) => {
+    const filtered = gameData.games.filter(g => {
+        if(mode === '28') return !g.gameType || g.gameType === '28';
+        if(mode === 'GLOBAL') return true;
+        return g.gameType === mode;
+    }).filter(g => g.winner).slice().reverse();
+
+    let h = `<div class="modal-box"><h3>Game History</h3>`;
+    filtered.forEach(g => {
+        h += `<div style="border-bottom:1px solid rgba(255,255,255,0.05); padding:8px 0; font-size:11px;">
+                <div style="color:var(--muted)">${new Date(g.time).toLocaleString()} | ${(g.gameType||'28').toUpperCase()}</div>
+                <div>🏆 Winner: <b>${g.winner}</b> | 💩 Last: ${g.last||g.loser}</div>
+              </div>`;
+    });
+    h += `<button class="neu-btn primary" style="width:100%; margin-top:15px;" onclick="closeModal()">Close</button></div>`;
+    showModal(h);
 }
-window.refreshDropdowns = () => {
-    const count = parseInt(document.getElementById('pCount').value);
-    const sel = [];
-    for(let i=0; i<count; i++) {
-        const v = document.getElementById(`pS${i}`).value; if(v && v!=="Custom") sel.push(v);
-        document.getElementById(`pO${i}`).style.display = (v === "Custom") ? "block" : "none";
-    }
-    for(let i=0; i<count; i++) {
-        const s = document.getElementById(`pS${i}`);
-        Array.from(s.options).forEach(o => { if(o.value && o.value!=="Custom") o.style.display = (sel.includes(o.value) && s.value!==o.value) ? 'none' : 'block'; });
-    }
+
+// CORE 28 (KEPT INTACT)
+function compute28() {
+    const seriesMap = {};
+    gameData.games.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
+        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: g.teamA, teamB: g.teamB };
+        const s = seriesMap[g.seriesId];
+        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; }
+        else if (g.winner) { s.wins[g.winner] = (s.wins[g.winner] || 0) + 1; }
+    });
+    return { active: Object.values(seriesMap).filter(s => !Object.values(s.wins).some(w => w >= s.target)) };
 }
-window.startIndivPlay = () => {
-    const count = parseInt(document.getElementById('pCount').value);
-    const body = document.getElementById('indivTableBody');
-    body.innerHTML = '';
-    for(let i=0; i<count; i++) {
-        const sel = document.getElementById(`pS${i}`).value;
-        const name = (sel === 'Custom') ? document.getElementById(`pO${i}`).value.trim() : sel;
-        if(!name) return alert("Missing name");
-        body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="w" value="${name}"></td><td><input type="radio" name="l" value="${name}"></td></tr>`;
-    }
-    document.getElementById('indivSetup').style.display = 'none';
-    document.getElementById('indivPlay').style.display = 'block';
+window.renderUI = () => {
+    const { active } = compute28();
+    const list = document.getElementById("activeList");
+    if(!list || currentMode !== '28') return;
+    list.innerHTML = "";
+    document.getElementById("noActive").style.display = active.length ? "none" : "block";
+    active.forEach(s => {
+        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
+        list.innerHTML += `<div class="series-card"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><div><b>${s.teamA}</b><div class="score-val">${wA}</div></div><div><b>${s.teamB}</b><div class="score-val">${wB}</div></div></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" onclick="addWin('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="background:var(--gold)" onclick="addWin('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button></div></div>`;
+    });
 }
-window.submitIndivResult = async () => {
-    const w = document.querySelector('input
+window.addWin = async (sId, winner, loser) => { await addDoc(gamesRef, { seriesId: sId, winner, loser, time: new Date().toISOString(), secret: SECRET_KEY }); };
+window.startNewSeries = () => { const opts = TEAM_LIST.map(t => `<option value="${t}">${t}</option>`).join(""); showModal(`<div class="modal-box"><h3>New Series</h3><select id="m1" class="custom-input">${opts}</select><select id="m2" class="custom-input">${opts}</select><button class="neu-btn primary" style="width:100%" onclick="confirmStart()">Start</button></div>`); }
+window.confirmStart = async () => { const t1 = document.getElementById('m1').value, t2 = document.getElementById('m2').value; await addDoc(gamesRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, time: new Date().toISOString(), secret: SECRET_KEY }); closeModal(); }
+window.promptShare = () => { showModal(`<div class="modal-box"><h3>Share</h3><button class="neu-btn primary" onclick="share('Bluff')">Bluff</button><button class="neu-btn primary" onclick="share('UNO')">UNO</button></div>`); }
+window.share = (m) => { let msg = `🏆 ${m} Stats\n\n`; const data = gameData.games.filter(g => g.gameType === m); const s = {}; data.forEach(g => { s[g.winner] = (s[g.winner] || 0) + 1; }); Object.entries(s).sort((a,b)=>b[1]-a[1]).forEach(([n, d]) => msg += `${n}: ${d} Wins\n`); window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank"); }
+window.showModal = (html) => document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`;
+window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
+onSnapshot(query(gamesRef, orderBy("time")), snap => { gameData.games = snap.docs.map(d => d.data()); renderUI(); if(document.getElementById('statsSection').style.display==='block') updateStatsPage(); });
+window.resetStats = async () => { if(prompt("Pass:") === SECRET_KEY) { const snap = await getDocs(gamesRef); snap.forEach(d => deleteDoc(d.ref)); location.reload(); } };
+</script>
+</body>
+</html>
