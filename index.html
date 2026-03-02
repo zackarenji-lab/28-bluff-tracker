@@ -27,12 +27,9 @@
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .score-val { font-size: 24px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
-  .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; margin-top: 5px; }
-  .b-win { height: 100%; background: var(--accent); }
-  .b-last { height: 100%; background: var(--danger); }
 </style>
 </head>
 <body>
@@ -60,12 +57,12 @@
 
   <section id="view-28" style="display:none;">
     <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h2 style="margin:0; font-size:16px;">28 Active Series</h2>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h2 style="margin:0; font-size:16px;">Active Series</h2>
         <button class="neu-btn small" onclick="openStats('28')">📊 Stats</button>
       </div>
       <div id="list-28"></div>
-      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="newSeries28()">➕ Start New Series</button>
+      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="newSeries28()">➕ New Series</button>
     </div>
   </section>
 
@@ -99,7 +96,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
 const PASS = "zachariahrenji";
@@ -129,7 +126,7 @@ function resetSetup() {
     document.getElementById('pane-play').style.display = "none";
 }
 
-// UNO / BLUFF PLAYER SELECTION (EXCLUSION LOGIC)
+// CONFLICT LOGIC (UNO/BLUFF)
 window.drawPlayerInputs = () => {
     const val = document.getElementById('pCnt').value;
     const cnt = parseInt(val);
@@ -137,26 +134,24 @@ window.drawPlayerInputs = () => {
     container.innerHTML = "";
     if(!val || cnt < 3 || cnt > 10) { document.getElementById('btn-start').style.display="none"; return; }
     for(let i=0; i<cnt; i++) {
-        container.innerHTML += `<select id="s${i}" onchange="refreshPlayerLists()"><option value="" selected disabled>Select Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="Custom">Custom Name</option></select><input type="text" id="custom-${i}" style="display:none" placeholder="Enter Name...">`;
+        container.innerHTML += `<select id="s${i}" onchange="refreshExclusion()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="Custom">Custom Name</option></select><input type="text" id="cust-${i}" style="display:none" placeholder="Enter Name...">`;
     }
     document.getElementById('btn-start').style.display="block";
 };
 
-window.refreshPlayerLists = () => {
+window.refreshExclusion = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
-    const selected = [];
+    const used = [];
     for(let i=0; i<cnt; i++) {
-        const val = document.getElementById(`s${i}`).value;
-        if(val && val !== "Custom") selected.push(val);
-        document.getElementById(`custom-${i}`).style.display = (val === "Custom" ? "block" : "none");
+        const v = document.getElementById(`s${i}`).value;
+        if(v && v !== "Custom") used.push(v);
+        document.getElementById(`cust-${i}`).style.display = (v === "Custom" ? "block" : "none");
     }
     for(let i=0; i<cnt; i++) {
-        const select = document.getElementById(`s${i}`);
-        const current = select.value;
-        Array.from(select.options).forEach(opt => {
-            if(opt.value && opt.value !== "Custom") {
-                opt.disabled = selected.includes(opt.value) && current !== opt.value;
-            }
+        const sel = document.getElementById(`s${i}`);
+        const current = sel.value;
+        Array.from(sel.options).forEach(opt => {
+            if(opt.value && opt.value !== "Custom") opt.disabled = used.includes(opt.value) && current !== opt.value;
         });
     }
 };
@@ -166,7 +161,7 @@ window.goScoring = () => {
     const body = document.getElementById('table-score'); body.innerHTML = "";
     for(let i=0; i<cnt; i++) {
         const sel = document.getElementById(`s${i}`).value;
-        const name = (sel === 'Custom' ? document.getElementById(`custom-${i}`).value : sel);
+        const name = (sel === 'Custom' ? document.getElementById(`cust-${i}`).value : sel);
         if(!name) return alert("Fill all names");
         body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="win" value="${name}"></td><td><input type="radio" name="lost" value="${name}"></td></tr>`;
     }
@@ -176,7 +171,7 @@ window.goScoring = () => {
 window.saveIndiv = async () => {
     const w = document.querySelector('input[name="win"]:checked')?.value;
     const l = document.querySelector('input[name="lost"]:checked')?.value;
-    if(!w || !l || w===l) return alert("Pick unique Winner & Last");
+    if(!w || !l || w===l) return alert("Select unique Win & Last");
     const run = []; document.querySelectorAll('#table-score tr').forEach(r => {
         const n = r.cells[0].innerText; if(n!==w && n!==l) run.push(n);
     });
@@ -184,26 +179,25 @@ window.saveIndiv = async () => {
     location.reload();
 };
 
-// 28 SERIES (EXCLUSION LOGIC)
+// 28 SERIES (INIT & CONFLICT LOGIC)
 window.newSeries28 = () => {
     const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
     const h = `<div class="modal-box"><h3>28 Setup</h3>
         <select id="mTarget"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-        <select id="mT1" onchange="refreshT2()"><option value="" selected disabled>Team 1</option>${o}</select>
+        <select id="mT1" onchange="filterT2()"><option value="" selected disabled>Team 1</option>${o}</select>
         <select id="mT2"><option value="" selected disabled>Team 2</option>${o}</select>
         <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="confirm28()">Start</button>
         <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeModal()">Close</button></div>`;
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
-window.refreshT2 = () => {
+window.filterT2 = () => {
     const t1 = document.getElementById('mT1').value;
     const t2Sel = document.getElementById('mT2');
     const members = t1.split(' & ');
     Array.from(t2Sel.options).forEach(opt => {
         if(!opt.value) return;
-        const conflict = members.some(m => opt.value.includes(m));
-        opt.disabled = conflict;
+        opt.disabled = members.some(m => opt.value.includes(m));
     });
 };
 
@@ -215,30 +209,35 @@ window.confirm28 = async () => {
 };
 
 window.render28 = () => {
-    const series = {};
+    const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!series[g.seriesId]) series[g.seriesId] = { id: g.seriesId, target: g.seriesTarget || 5, wins: {}, teamA: g.teamA, teamB: g.teamB, stop: false };
-        if (g.isInit) { series[g.seriesId].teamA = g.teamA; series[g.seriesId].teamB = g.teamB; series[g.seriesId].target = g.seriesTarget || 5; }
-        else if (g.manualEnd) series[g.seriesId].stop = true;
-        else if (g.winner) series[g.seriesId].wins[g.winner] = (series[g.seriesId].wins[g.winner] || 0) + 1;
+        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
+        const s = seriesMap[g.seriesId];
+        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget || 5; }
+        else if (g.manualEnd) s.stop = true;
+        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
     });
-    const active = Object.values(series).filter(s => !s.stop && !Object.values(s.wins).some(w => w >= s.target));
-    const container = document.getElementById('list-28'); if(!container) return; container.innerHTML = "";
+
+    const active = Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target));
+    const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
     active.forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        container.innerHTML += `<div class="card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <div><b>${s.teamA}</b><div class="score-val">${wA}</div></div><div><b>${s.teamB}</b><div class="score-val">${wB}</div></div>
+        list.innerHTML += `<div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+                <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div></div>
+                <div style="font-weight:900; color:var(--muted); padding:0 10px;">VS</div>
+                <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div></div>
             </div>
             <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" onclick="win28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="background:var(--gold)" onclick="win28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
+                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
+                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
                 <button class="neu-btn danger" onclick="stop28('${s.id}')">STOP</button>
             </div></div>`;
     });
 };
-window.win28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
-window.stop28 = async (id) => { if(prompt("Pass:")===PASS) await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }); };
+
+window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
+window.stop28 = async (id) => { if(prompt("Password:")===PASS) await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }); };
 
 // STATS
 window.openStats = (m) => {
@@ -249,23 +248,20 @@ window.openStats = (m) => {
         [w, l, ...(g.runnersUp || [])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, t:0} });
         st[w].w++; st[l].l++; st[w].t++; st[l].t++; (g.runnersUp || []).forEach(p => st[p].t++);
     });
-    let h = `<div class="modal-box"><h3>${m} Analytics</h3>`;
+    let h = `<div class="modal-box"><h3>${m} Analysis</h3>`;
     Object.entries(st).sort((a,b)=>b[1].w-a[1].w).forEach(([n, d]) => {
-        h += `<div class="analytics-row"><div style="display:flex; justify-content:space-between; font-size:11px"><b>${n}</b><span>${d.w} Wins</span></div>
-              <div class="bar-container"><div class="b-win" style="width:${(d.w/d.t)*100}%"></div><div class="b-last" style="width:${(d.l/d.t)*100}%" style="margin-left:auto"></div></div></div>`;
+        h += `<div class="card" style="padding:10px; margin-bottom:8px"><b>${n}</b><br><small>${d.w}W - ${d.l}L</small></div>`;
     });
-    h += `<h4 style="margin:15px 0 5px 0">Match History</h4>`;
-    data.slice(-10).reverse().forEach(g => h += `<div style="font-size:10px; padding:5px 0; border-bottom:1px solid #ffffff10">🏆 ${g.winner} | 💩 ${g.last||g.loser}</div>`);
-    h += `<button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="closeModal()">Close</button></div>`;
+    h += `<button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="closeModal()">Close</button></div>`;
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
 window.renderGlobalTiles = () => {
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
     document.getElementById('summary-tiles').innerHTML = `
-        <div class="card" onclick="openStats('28')">🏏 <b>28</b> - ${f('28')} Series Logged</div>
-        <div class="card" onclick="openStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds Won</div>
-        <div class="card" onclick="openStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds Won</div>`;
+        <div class="card" onclick="openStats('28')">🏏 28 Card - ${f('28')} Series Logged</div>
+        <div class="card" onclick="openStats('Bluff')">🃏 Bluff - ${f('Bluff')} Rounds Played</div>
+        <div class="card" onclick="openStats('UNO')">🌈 UNO - ${f('UNO')} Rounds Played</div>`;
 };
 
 window.closeModal = () => document.getElementById('modal-container').innerHTML = "";
