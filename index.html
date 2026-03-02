@@ -34,13 +34,13 @@
   select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; }
   
   .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .champion-bar{padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;}
   .trophy{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:20px;}
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
   .confirm-box { background: #0b1622; padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center; }
   table { width: 100%; border-collapse: collapse; margin-top: 15px; }
   th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .stat-icon { font-size: 1.2em; }
 </style>
 </head>
 <body>
@@ -105,7 +105,7 @@
     <div class="card" id="indivPlay" style="display:none;">
         <h3 id="indivTitle">Live Scoring</h3>
         <table>
-            <thead><tr><th>Player</th><th>Win</th><th>Last</th></tr></thead>
+            <thead><tr><th>Player</th><th>Winner 🏆</th><th>Last (Losser) 💩</th></tr></thead>
             <tbody id="indivTableBody"></tbody>
         </table>
         <button class="neu-btn primary" style="width:100%; margin-top:20px" onclick="submitIndivResult()">Save Result</button>
@@ -167,7 +167,6 @@ window.toggleView = () => {
     if(!isStats) updateStatsPage();
 }
 
-// INDIVIDUAL LOGIC
 window.updateIndivInputs = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const container = document.getElementById('pNamesList');
@@ -223,8 +222,8 @@ window.submitIndivResult = async () => {
     const winner = document.querySelector('input[name="w"]:checked')?.value;
     const last = document.querySelector('input[name="l"]:checked')?.value;
     if(!winner || !last) return alert("Select Winner & Last!");
+    if(winner === last) return alert("Winner and Last cannot be the same person!");
     
-    // Remaining players are automatically Runners Up
     const runnersUp = [];
     document.querySelectorAll('#indivTableBody tr').forEach(row => {
         const pName = row.cells[0].innerText;
@@ -236,7 +235,6 @@ window.submitIndivResult = async () => {
     location.reload();
 }
 
-// STATS CALCULATION
 function updateStatsPage() {
     const cont = document.getElementById("statsContent");
     if(currentMode === '28') {
@@ -253,16 +251,24 @@ function updateStatsPage() {
             stats[g.last].l++;
             (g.runnersUp || []).forEach(p => stats[p].r++);
         });
-        let h = `<h2>${currentMode} Stats</h2><p>Total Games: <b>${data.length}</b></p><table><thead><tr><th>Name</th><th>🏆</th><th>💩 (Last)</th><th>🏃 (Runner)</th></tr></thead><tbody>`;
+        
+        const sortedWinners = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
+        const sortedLasts = Object.keys(stats).sort((a,b) => stats[b].l - stats[a].l);
+        const maxWinner = sortedWinners[0];
+        const maxLast = sortedLasts[0];
+
+        let h = `<h2>${currentMode} Stats</h2><p>Total Games: <b>${data.length}</b></p><table><thead><tr><th>Name</th><th>🏆 (Win)</th><th>💩 (Last)</th><th>🏃 (Runner)</th></tr></thead><tbody>`;
         Object.entries(stats).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
-            h += `<tr><td>${n}</td><td>${d.w}</td><td>${d.l}</td><td>${d.r}</td></tr>`;
+            let icons = '';
+            if(n === maxWinner && d.w > 0) icons += ' 🏆';
+            if(n === maxLast && d.l > 0) icons += ' 💩';
+            h += `<tr><td>${n}${icons}</td><td>${d.w}</td><td>${d.l}</td><td>${d.r}</td></tr>`;
         });
         h += `</tbody></table>`;
         cont.innerHTML = h;
     }
 }
 
-// SHARE LOGIC
 window.promptShare = () => {
     showModal(`<div class="confirm-box"><h3>Share Stats</h3><p>Select game to share:</p>
         <button class="neu-btn primary" onclick="share('28')">28 Game</button>
@@ -279,16 +285,13 @@ window.share = (mode) => {
     } else {
         const data = gameData.games.filter(g => g.gameType === mode);
         const s = {};
-        data.forEach(g => {
-            s[g.winner] = (s[g.winner] || 0) + 1;
-        });
+        data.forEach(g => { s[g.winner] = (s[g.winner] || 0) + 1; });
         Object.entries(s).sort((a,b)=>b[1]-a[1]).forEach(([n, d]) => msg += `${n}: ${d} Wins\n`);
     }
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
     closeModal();
 }
 
-// 28 ENGINE (UNCHANGED)
 function compute28() {
     const seriesMap = {}, teamStats = {};
     gameData.games.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
