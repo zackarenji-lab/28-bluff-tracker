@@ -32,12 +32,9 @@
   .neu-btn.small { padding: 6px 12px; font-size: 11px; }
   .neu-btn.stop { color: var(--danger); border: 1px solid rgba(255, 107, 107, 0.3); }
   select, input.custom-input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; }
-  .series-card { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
+  
   .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .score-box { text-align: center; flex: 1; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
-  .p-bar-bg { height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
-  .p-fill { height: 100%; transition: width 0.5s ease; }
   .champion-bar{padding:18px;border-radius:12px;background:linear-gradient(90deg,#3b2b03,#4b2f05);color:#fff;display:flex;align-items:center;gap:12px;}
   .trophy{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ffd36d,#ffb84d);display:flex;align-items:center;justify-content:center;font-size:20px;}
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); padding: 20px; }
@@ -93,7 +90,10 @@
 
   <section id="sectionIndiv" style="display:none;">
     <div class="card" id="indivSetup">
-        <h3 id="indivSetupTitle">Game Setup</h3>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 id="indivSetupTitle" style="margin:0">Game Setup</h3>
+            <button class="neu-btn small" onclick="toggleView()">📊 Stats</button>
+        </div>
         <label>Players Count</label>
         <select id="pCount" onchange="updateIndivInputs()">
             <option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
@@ -114,10 +114,9 @@
 
   <section id="statsSection" style="display:none;">
     <div class="card">
-        <h2 style="margin-top:0; font-size:18px;">Statistics</h2>
         <div id="statsContent"></div>
         <div style="margin-top:20px; display:flex; gap:10px; flex-wrap: wrap;">
-            <button class="neu-btn small" onclick="shareToWhatsApp()">📤 Share Stats</button>
+            <button class="neu-btn small" onclick="promptShare()">📤 Share Stats</button>
             <button class="neu-btn small" style="color:var(--danger)" onclick="resetStats()">⚠️ Reset Data</button>
         </div>
     </div>
@@ -141,7 +140,6 @@ const gamesRef = collection(db, "games");
 let gameData = { games: [] };
 let currentMode = '';
 
-// NAVIGATION
 window.launchGame = (mode) => {
     currentMode = mode;
     document.getElementById('homeHub').style.display = 'none';
@@ -158,59 +156,47 @@ window.launchGame = (mode) => {
 
 window.toggleView = () => {
     const s28 = document.getElementById('section28');
+    const sIndiv = document.getElementById('sectionIndiv');
     const stats = document.getElementById('statsSection');
     const isStats = stats.style.display === 'block';
-    s28.style.display = isStats ? 'block' : 'none';
+
     stats.style.display = isStats ? 'none' : 'block';
-    document.getElementById('navBtn').innerText = isStats ? "📊 Stats" : "🏠 Back";
+    if(currentMode === '28') s28.style.display = isStats ? 'block' : 'none';
+    else sIndiv.style.display = isStats ? 'block' : 'none';
+    
+    if(!isStats) updateStatsPage();
 }
 
-// DYNAMIC FILTERED INPUTS
+// INDIVIDUAL LOGIC
 window.updateIndivInputs = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const container = document.getElementById('pNamesList');
     container.innerHTML = '';
-
     for(let i=0; i<count; i++) {
         container.innerHTML += `
             <div style="margin-bottom:12px;">
-                <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">PLAYER ${i+1}</div>
                 <select id="pS${i}" onchange="refreshDropdowns()">
-                    <option value="" disabled selected>Select Name</option>
+                    <option value="" disabled selected>Select Player ${i+1}</option>
                     ${ALL_PLAYER_POOL.map(n => `<option value="${n}">${n}</option>`).join('')}
                     <option value="Custom">Custom Name</option>
                 </select>
-                <input type="text" id="pO${i}" class="custom-input" style="display:none" placeholder="Enter Custom Name">
+                <input type="text" id="pO${i}" class="custom-input" style="display:none" placeholder="Enter Name">
             </div>`;
     }
 }
 
-// Logic to filter out selected names and handle Custom field
 window.refreshDropdowns = () => {
     const count = parseInt(document.getElementById('pCount').value);
-    const selectedNames = [];
-
-    // First pass: collect chosen names
+    const selected = [];
     for(let i=0; i<count; i++) {
         const val = document.getElementById(`pS${i}`).value;
-        if(val && val !== "Custom") selectedNames.push(val);
-        // Toggle custom input visibility
+        if(val && val !== "Custom") selected.push(val);
         document.getElementById(`pO${i}`).style.display = (val === "Custom") ? "block" : "none";
     }
-
-    // Second pass: update available options for each dropdown
     for(let i=0; i<count; i++) {
         const select = document.getElementById(`pS${i}`);
-        const currentVal = select.value;
-        
         Array.from(select.options).forEach(opt => {
-            if(opt.value === "" || opt.value === "Custom") return;
-            // Hide if it's selected in another box (but not the current one)
-            if(selectedNames.includes(opt.value) && opt.value !== currentVal) {
-                opt.style.display = 'none';
-            } else {
-                opt.style.display = 'block';
-            }
+            if(opt.value && opt.value !== "Custom") opt.style.display = (selected.includes(opt.value) && select.value !== opt.value) ? 'none' : 'block';
         });
     }
 }
@@ -219,36 +205,90 @@ window.startIndivPlay = () => {
     const count = parseInt(document.getElementById('pCount').value);
     const body = document.getElementById('indivTableBody');
     body.innerHTML = '';
-    
+    let players = [];
     for(let i=0; i<count; i++) {
         const sel = document.getElementById(`pS${i}`).value;
         const name = (sel === 'Custom') ? document.getElementById(`pO${i}`).value.trim() : sel;
-        
-        if(!name) return alert(`Please assign a name for Player ${i+1}`);
-        
-        body.innerHTML += `
-            <tr>
-                <td><b>${name}</b></td>
-                <td><input type="radio" name="w" value="${name}"></td>
-                <td><input type="radio" name="l" value="${name}"></td>
-            </tr>`;
+        if(!name) return alert("Assign all names");
+        players.push(name);
     }
+    players.forEach(p => {
+        body.innerHTML += `<tr><td><b>${p}</b></td><td><input type="radio" name="w" value="${p}"></td><td><input type="radio" name="l" value="${p}"></td></tr>`;
+    });
     document.getElementById('indivSetup').style.display = 'none';
     document.getElementById('indivPlay').style.display = 'block';
 }
 
 window.submitIndivResult = async () => {
-    const w = document.querySelector('input[name="w"]:checked')?.value;
-    const l = document.querySelector('input[name="l"]:checked')?.value;
-    if(!w || !l) return alert("Select Win/Last");
-    if(w === l) return alert("Winner and Last cannot be the same person!");
+    const winner = document.querySelector('input[name="w"]:checked')?.value;
+    const last = document.querySelector('input[name="l"]:checked')?.value;
+    if(!winner || !last) return alert("Select Winner & Last!");
+    
+    // Remaining players are automatically Runners Up
+    const runnersUp = [];
+    document.querySelectorAll('#indivTableBody tr').forEach(row => {
+        const pName = row.cells[0].innerText;
+        if(pName !== winner && pName !== last) runnersUp.push(pName);
+    });
 
-    await addDoc(gamesRef, { gameType: currentMode, winner: w, last: l, time: new Date().toISOString(), secret: SECRET_KEY });
+    await addDoc(gamesRef, { gameType: currentMode, winner, last, runnersUp, time: new Date().toISOString(), secret: SECRET_KEY });
     alert("Result Saved!");
     location.reload();
 }
 
-// --- ORIGINAL 28 LOGIC RETAINED ---
+// STATS CALCULATION
+function updateStatsPage() {
+    const cont = document.getElementById("statsContent");
+    if(currentMode === '28') {
+        const { teamStats } = compute28();
+        let h = `<h2>28 Game Stats</h2><h3>Leaderboard</h3>`;
+        Object.entries(teamStats).sort((a,b) => b[1].wins - a[1].wins).forEach(([n, d]) => h += `<div class="score-row"><span>${n}</span><span>${d.wins}W - ${d.losses}L</span></div>`);
+        cont.innerHTML = h;
+    } else {
+        const data = gameData.games.filter(g => g.gameType === currentMode);
+        const stats = {};
+        data.forEach(g => {
+            [g.winner, g.last, ...(g.runnersUp || [])].forEach(p => { if(!stats[p]) stats[p] = {w:0, l:0, r:0} });
+            stats[g.winner].w++;
+            stats[g.last].l++;
+            (g.runnersUp || []).forEach(p => stats[p].r++);
+        });
+        let h = `<h2>${currentMode} Stats</h2><p>Total Games: <b>${data.length}</b></p><table><thead><tr><th>Name</th><th>🏆</th><th>💩 (Last)</th><th>🏃 (Runner)</th></tr></thead><tbody>`;
+        Object.entries(stats).sort((a,b) => b[1].w - a[1].w).forEach(([n, d]) => {
+            h += `<tr><td>${n}</td><td>${d.w}</td><td>${d.l}</td><td>${d.r}</td></tr>`;
+        });
+        h += `</tbody></table>`;
+        cont.innerHTML = h;
+    }
+}
+
+// SHARE LOGIC
+window.promptShare = () => {
+    showModal(`<div class="confirm-box"><h3>Share Stats</h3><p>Select game to share:</p>
+        <button class="neu-btn primary" onclick="share('28')">28 Game</button>
+        <button class="neu-btn primary" onclick="share('Bluff')">Bluff</button>
+        <button class="neu-btn primary" onclick="share('UNO')">UNO</button>
+        <button class="neu-btn small" onclick="closeModal()">Cancel</button></div>`);
+}
+
+window.share = (mode) => {
+    let msg = `🏆 ${mode} Rankings\n\n`;
+    if(mode === '28') {
+        const { teamStats } = compute28();
+        Object.entries(teamStats).forEach(([n, d]) => msg += `${n}: ${d.wins} Wins\n`);
+    } else {
+        const data = gameData.games.filter(g => g.gameType === mode);
+        const s = {};
+        data.forEach(g => {
+            s[g.winner] = (s[g.winner] || 0) + 1;
+        });
+        Object.entries(s).sort((a,b)=>b[1]-a[1]).forEach(([n, d]) => msg += `${n}: ${d} Wins\n`);
+    }
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
+    closeModal();
+}
+
+// 28 ENGINE (UNCHANGED)
 function compute28() {
     const seriesMap = {}, teamStats = {};
     gameData.games.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
@@ -279,11 +319,10 @@ window.renderUI = () => {
     document.getElementById("noActive").style.display = active.length ? "none" : "block";
     active.forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="series-card"><div class="score-row"><div class="score-box"><strong>${s.teamA}</strong><div class="score-val">${wA}</div></div><div class="score-box"><strong>${s.teamB}</strong><div class="score-val">${wB}</div></div></div><div class="p-bar-bg"><div class="p-fill" style="width:${(wA/s.target)*100}%; background:var(--accent)"></div><div class="p-fill" style="width:${(wB/s.target)*100}%; background:var(--gold); margin-left:auto"></div></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" style="flex:2" onclick="addWin('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="flex:2; background:var(--gold)" onclick="addWin('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button><button class="neu-btn stop" onclick="endSeriesEarly('${s.id}')">STOP</button></div></div>`;
+        list.innerHTML += `<div class="series-card"><div class="score-row"><div class="score-box"><strong>${s.teamA}</strong><div class="score-val">${wA}</div></div><div class="score-box"><strong>${s.teamB}</strong><div class="score-val">${wB}</div></div></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" style="flex:2" onclick="addWin('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="flex:2; background:var(--gold)" onclick="addWin('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button><button class="neu-btn stop" onclick="endSeriesEarly('${s.id}')">STOP</button></div></div>`;
     });
     const sorted = Object.keys(teamStats).sort((a,b) => teamStats[b].wins - teamStats[a].wins);
     document.getElementById("championText").innerText = sorted[0] || "—";
-    updateStatsPage();
 }
 
 window.addWin = async (sId, winner, loser) => {
@@ -307,13 +346,6 @@ window.endSeriesEarly = async (id) => {
     if(prompt("Password:") === SECRET_KEY) await addDoc(gamesRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: SECRET_KEY });
 }
 
-function updateStatsPage() {
-    const { teamStats } = compute28();
-    let h = `<h3>Leaderboard</h3>`;
-    Object.entries(teamStats).sort((a,b) => b[1].wins - a[1].wins).forEach(([n, d]) => h += `<div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.1)"><span>${n}</span><span>${d.wins}W - ${d.losses}L</span></div>`);
-    document.getElementById("statsContent").innerHTML = h;
-}
-
 window.showModal = (html) => document.getElementById("modalContainer").innerHTML = `<div class="overlay">${html}</div>`;
 window.closeModal = () => document.getElementById("modalContainer").innerHTML = "";
 
@@ -323,13 +355,6 @@ onSnapshot(query(gamesRef, orderBy("time")), snap => {
 });
 
 window.resetStats = async () => { if(prompt("Password:") === SECRET_KEY) { const snap = await getDocs(gamesRef); snap.forEach(d => deleteDoc(d.ref)); location.reload(); } };
-
-window.shareToWhatsApp = () => {
-    const { teamStats } = compute28();
-    let msg = "🏆 Rankings\n\n";
-    Object.entries(teamStats).forEach(([n, d]) => msg += `${n}: ${d.wins} Wins\n`);
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
-};
 </script>
 </body>
 </html>
