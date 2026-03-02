@@ -15,7 +15,6 @@
   header{display:flex;align-items:center;gap:15px;margin-bottom:18px}
   .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;box-shadow:0 8px 28px rgba(0,0,0,0.6)}
   h1{margin:0;font-size:22px}
-  .subtitle{color:var(--muted);font-size:11px;margin-top:2px}
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:20px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 20px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
@@ -29,7 +28,7 @@
   .game-icon { font-size: 26px; margin-bottom: 6px; }
   .game-name { font-weight: 700; font-size: 10px; color: #fff; text-transform: uppercase; }
 
-  /* ORIGINAL 28 STYLES */
+  /* BUTTONS & UI */
   .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 14px; color:#e6eef3; font-weight:700; cursor:pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; justify-content: center; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
   .neu-btn.small { padding: 6px 12px; font-size: 11px; }
@@ -63,9 +62,10 @@
     <button id="homeBtn" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; margin-left:10px; display:none;" onclick="location.reload()">🏠</button>
   </header>
 
+  <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
+
   <section id="homeHub">
     <div class="card">
-      <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img" onerror="this.style.display='none'"/>
       <h2 style="margin:0; font-size:16px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid">
         <div class="game-box" onclick="launchGame('28')"><div class="game-icon">🏏</div><div class="game-name">28 Game</div></div>
@@ -95,7 +95,7 @@
 
   <section id="sectionIndiv" style="display:none;">
     <div class="card" id="indivSetup">
-        <h3>Game Setup</h3>
+        <h3 id="indivSetupTitle">Game Setup</h3>
         <label>Players Count</label>
         <select id="pCount" onchange="updateIndivInputs()">
             <option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
@@ -151,6 +151,7 @@ window.launchGame = (mode) => {
         document.getElementById('section28').style.display = 'block';
         document.getElementById('navBtn').style.display = 'inline-flex';
     } else {
+        document.getElementById('indivSetupTitle').innerText = mode + " Setup";
         document.getElementById('sectionIndiv').style.display = 'block';
         updateIndivInputs();
     }
