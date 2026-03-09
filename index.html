@@ -18,13 +18,18 @@
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* TILES */
+  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
+  .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+  .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; text-align: center; }
+
+  /* DASHBOARD TILES */
   .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
   .tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; }
   .tile small { display: block; color: var(--muted); font-size: 7px; text-transform: uppercase; margin-bottom: 4px; }
   .tile .val { font-size: 13px; font-weight: 800; color: var(--gold); }
 
-  .analytics-row { margin-bottom: 10px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; }
+  .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
   .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; margin-top: 5px; }
   .b-win { height: 100%; background: var(--accent); }
   .b-last { height: 100%; background: var(--danger); }
@@ -34,12 +39,13 @@
   .neu-btn.danger { color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
   .neu-btn.small { padding: 4px 8px; font-size: 9px; }
 
-  select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; }
+  select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .score-val { font-size: 24px; font-weight: 800; color: var(--gold); }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+  .log-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff10; padding: 10px 0; }
 </style>
 </head>
 <body>
@@ -57,10 +63,10 @@
   <section id="view-HOME">
     <div class="card">
       <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
-      <div class="game-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-        <div class="game-box" onclick="launchGame('28')" style="aspect-ratio:1/1; background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:14px; position:relative; overflow:hidden; cursor:pointer;"><img src="28 button.png" alt="28" style="width:100%"><div class="game-name-overlay">28 Game</div></div>
-        <div class="game-box" onclick="launchGame('Bluff')" style="aspect-ratio:1/1; background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:14px; position:relative; overflow:hidden; cursor:pointer;"><img src="bluff button.png" alt="Bluff" style="width:100%"><div class="game-name-overlay">Bluff</div></div>
-        <div class="game-box" onclick="launchGame('UNO')" style="aspect-ratio:1/1; background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:14px; position:relative; overflow:hidden; cursor:pointer;"><img src="uno button.png" alt="UNO" style="width:100%"><div class="game-name-overlay">UNO</div></div>
+      <div class="game-grid">
+        <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28"><div class="game-name-overlay">28 Game</div></div>
+        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff"><div class="game-name-overlay">Bluff</div></div>
+        <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO"><div class="game-name-overlay">UNO</div></div>
       </div>
     </div>
   </section>
@@ -82,7 +88,7 @@
             <h3 id="indiv-title" style="margin:0; font-size:16px;">Setup</h3>
             <button class="neu-btn small" onclick="openDeepStats(window.activeMode)">📊 Stats</button>
         </div>
-        <input type="number" id="pCnt" min="3" max="10" placeholder="Number of players (3-10)" oninput="drawInputs()">
+        <input type="number" id="pCnt" min="3" max="10" placeholder="Players (3-10)" oninput="drawInputs()">
         <div id="pInputs"></div>
         <button id="btn-start" class="neu-btn primary" style="width:100%; display:none; margin-top:10px" onclick="goScoring()">Enter Tournament</button>
     </div>
@@ -97,7 +103,7 @@
     <div class="card">
         <h2 style="margin:0 0 15px 0; font-size:16px; text-align:center;">Analytics Hub</h2>
         <div id="summary-tiles"></div>
-        <button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('ALL')">⚠️ Emergency Reset</button>
+        <button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('ALL')">⚠️ Emergency Reset All Data</button>
     </div>
   </section>
 </div>
@@ -120,7 +126,7 @@ let allG = [];
 window.activeMode = '';
 
 window.switchView = (v) => {
-    ['HOME','28','INDIV','OVERALL'].forEach(id => document.getElementById('view-'+id).style.display = (id === v ? 'block' : 'none'));
+    ['HOME','28','INDIV','OVERALL'].forEach(x => document.getElementById('view-'+x).style.display = (x===v?'block':'none'));
     document.getElementById('btn-home').style.display = (v === 'HOME' ? 'none' : 'block');
     if(v === 'OVERALL') renderGlobalTiles();
 };
@@ -149,8 +155,7 @@ window.refreshExclusion = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     const used = [];
     for(let i=0; i<cnt; i++) {
-        const v = document.getElementById(`ps-${i}`).value;
-        if(v && v !== "C") used.push(v);
+        const v = document.getElementById(`ps-${i}`).value; if(v && v !== "C") used.push(v);
         document.getElementById(`pc-${i}`).style.display = (v === "C" ? "block" : "none");
     }
     for(let i=0; i<cnt; i++) {
@@ -192,14 +197,11 @@ window.saveWeightedResult = async () => {
         else if(rank === 0) { pts = 0; lost = name; }
         results.push({ name, rank, pts });
     });
-    if(!win || !lost) return alert("Select 1st and Last!");
+    if(!win || !lost) return alert("Identify 1st and Last!");
 
-    // SAVE DATA
     await addDoc(gRef, { gameType: activeMode, pCount: cnt, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
     
-    // TOURNAMENT LOOP LOGIC
-    if(confirm("Match Saved! Start another match in this tournament?")) {
-        // Just reset the ranks to "Other"
+    if(confirm("Saved! Record another match for these players?")) {
         document.querySelectorAll('.rank-sel').forEach(sel => sel.value = "99");
     } else {
         resetSetup();
@@ -247,16 +249,14 @@ window.render28 = () => {
             <div style="display:flex; gap:8px;">
                 <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
                 <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="stop28('${s.id}')">STOP</button>
-                <button class="neu-btn danger" onclick="resetSystem('SERIES', '${s.id}')">🗑️</button>
+                <button class="neu-btn danger" onclick="resetSystem('SERIES', '${s.id}')">STOP</button>
             </div></div>`;
     });
 };
 
 window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
-window.stop28 = async (id) => { if(prompt("Password:")===PASS) await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }); };
 
-// STATS
+// DEEP DIVE DASHBOARD
 window.openDeepStats = (m, pSize = 'ALL') => {
     const is28 = m === '28';
     let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
@@ -278,23 +278,37 @@ window.openDeepStats = (m, pSize = 'ALL') => {
 
     const sorted = Object.keys(st).sort((a,b) => is28 ? st[b].w - st[a].w : st[b].pts - st[a].pts);
     const mvp = sorted[0] || '—';
+    const tgt = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
 
     let h = `<div class="modal-box"><h3>${m} Dashboard</h3>
         <select onchange="openDeepStats('${m}', this.value)" style="margin-bottom:15px">
-            <option value="ALL">All Tournaments</option>
-            ${[3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${pSize==''+n?'selected':''}>${n} Player Tournament</option>`).join('')}
+            <option value="ALL">Combined Stats</option>
+            ${[3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${pSize==''+n?'selected':''}>${n} Player Tourney</option>`).join('')}
         </select>
         <div class="dash-grid">
             <div class="tile"><small>${is28?'WIN KING':'POINTS KING'}</small><div class="val">${mvp}</div></div>
-            <div class="tile"><small>🎮 TOTAL GAMES</small><div class="val">${data.length}</div></div>
+            <div class="tile"><small>💩 LAST KING</small><div class="val">${tgt}</div></div>
+            <div class="tile" style="grid-column: span 2"><small>🎮 SESSIONS RECORDED</small><div class="val">${data.length}</div></div>
         </div>`;
 
     sorted.forEach(n => {
-        const d = st[n];
+        const d = st[n]; const wP = (d.w/d.t)*100, lP = (d.l/d.t)*100;
         h += `<div class="analytics-row"><div style="display:flex; justify-content:space-between; font-size:10px"><b>${n}</b><span>${is28 ? d.w+' Wins' : d.pts+' Pts'}</span></div>
-              <div class="bar-container"><div class="b-win" style="width:${(d.w/d.t)*100}%"></div><div class="b-last" style="width:${(d.l/d.t)*100}%"></div></div></div>`;
+              <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-last" style="width:${lP}%"></div></div></div>`;
     });
-    h += `<button class="neu-btn primary" style="width:100%; margin-top:20px" onclick="closeM()">Close</button></div>`;
+
+    h += `<h4 style="margin-top:15px">History (Tap 🗑️ to delete)</h4>`;
+    data.slice(-8).reverse().forEach(g => h += `
+        <div class="log-item">
+            <div style="font-size:10px;">${new Date(g.time).toLocaleString()}<br>🏆 ${g.winner} | 💩 ${g.last||g.loser}</div>
+            <button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}', '${m}')">🗑️</button>
+        </div>`);
+    
+    h += `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;">
+            <button class="neu-btn" style="flex:1" onclick="shareStats('${m}', '${pSize}')">📤 Share</button>
+            <button class="neu-btn danger" style="flex:1" onclick="resetSystem('GAME', '${m}')">⚠️ Reset ${m}</button>
+            <button class="neu-btn primary" style="width:100%" onclick="closeM()">Close</button>
+          </div></div>`;
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
@@ -306,12 +320,44 @@ window.renderGlobalTiles = () => {
         <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
 };
 
-window.resetSystem = async (type, id = '') => {
-    if(prompt(`Password:`) !== PASS) return;
-    const q = type === 'ALL' ? query(gRef) : query(gRef, where("seriesId", "==", id));
-    const snap = await getDocs(q);
-    snap.forEach(async d => await deleteDoc(d.ref));
-    location.reload();
+window.resetSystem = async (type, id, gameMode = '') => {
+    if(prompt(`Password to ${type}:`) !== PASS) return;
+    let snap;
+    if(type === 'ALL') snap = await getDocs(gRef);
+    else if(type === 'GAME') snap = await getDocs(query(gRef, where("gameType", "==", id)));
+    else if(type === 'ROUND') snap = await getDocs(query(gRef, where("time", "==", id)));
+    else if(type === 'SERIES') {
+        const sSnap = await getDocs(query(gRef, where("seriesId", "==", id)));
+        sSnap.forEach(async d => await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }));
+        return;
+    }
+    
+    const deleteOps = [];
+    snap.forEach(d => deleteOps.push(deleteDoc(d.ref)));
+    await Promise.all(deleteOps);
+    
+    if(type === 'ROUND' || type === 'GAME') {
+        const up = await getDocs(query(gRef, orderBy("time")));
+        allG = up.docs.map(d => d.data());
+        if(type === 'ROUND') openDeepStats(gameMode); else openDeepStats(id);
+    } else {
+        location.reload();
+    }
+};
+
+window.shareStats = (m, pSize) => {
+    const is28 = m === '28';
+    let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
+    if(pSize !== 'ALL') data = data.filter(g => g.pCount === parseInt(pSize));
+    const st = {};
+    data.forEach(g => {
+        if(is28) { if(!st[g.winner]) st[g.winner] = {w:0}; st[g.winner].w++; }
+        else { g.players.forEach(p => { if(!st[p.name]) st[p.name] = {pts:0}; st[p.name].pts += p.pts; }); }
+    });
+    const sorted = Object.keys(st).sort((a,b) => is28 ? st[b].w - st[a].w : st[b].pts - st[a].pts);
+    let msg = `🏆 ${m} ${pSize==='ALL'?'Overall':pSize+'P'} Leaderboard\n\n`;
+    sorted.forEach((n, i) => msg += `${i+1}. ${n}: ${is28 ? st[n].w+' Wins' : st[n].pts+' Pts'}\n`);
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
 };
 
 window.closeM = () => document.getElementById('modal-container').innerHTML = "";
