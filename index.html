@@ -18,25 +18,29 @@
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   
-  /* DASHBOARD */
+  /* TILES */
   .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
   .tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; }
   .tile small { display: block; color: var(--muted); font-size: 7px; text-transform: uppercase; margin-bottom: 4px; }
   .tile .val { font-size: 13px; font-weight: 800; color: var(--gold); }
+
   .analytics-row { margin-bottom: 10px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 8px; }
   .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; margin-top: 5px; }
-  .b-win { background: var(--accent); }
-  .b-last { background: var(--danger); }
+  .b-win { height: 100%; background: var(--accent); }
+  .b-last { height: 100%; background: var(--danger); }
 
   .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
   .neu-btn.danger { color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
+  .neu-btn.small { padding: 4px 8px; font-size: 9px; }
+
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
   .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 450px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
-  .tourney-badge { background: var(--info); color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+  .log-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff10; padding: 8px 0; }
 </style>
 </head>
 <body>
@@ -55,9 +59,9 @@
     <div class="card">
       <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-        <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28" style="width:100%"><div class="game-name-overlay">28 Game</div></div>
-        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff" style="width:100%"><div class="game-name-overlay">Bluff</div></div>
-        <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO" style="width:100%"><div class="game-name-overlay">UNO</div></div>
+        <div class="game-box" onclick="launchGame('28')" style="aspect-ratio:1/1; background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:14px; position:relative; overflow:hidden; cursor:pointer;"><img src="28 button.png" alt="28" style="width:100%"><div class="game-name-overlay">28 Game</div></div>
+        <div class="game-box" onclick="launchGame('Bluff')" style="aspect-ratio:1/1; background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:14px; position:relative; overflow:hidden; cursor:pointer;"><img src="bluff button.png" alt="Bluff" style="width:100%"><div class="game-name-overlay">Bluff</div></div>
+        <div class="game-box" onclick="launchGame('UNO')" style="aspect-ratio:1/1; background:var(--card); border:1px solid rgba(255,255,255,0.08); border-radius:14px; position:relative; overflow:hidden; cursor:pointer;"><img src="uno button.png" alt="UNO" style="width:100%"><div class="game-name-overlay">UNO</div></div>
       </div>
     </div>
   </section>
@@ -81,12 +85,10 @@
         </div>
         <input type="number" id="pCnt" min="3" max="10" placeholder="Number of players (3-10)" oninput="drawInputs()">
         <div id="pInputs"></div>
-        <button id="btn-start" class="neu-btn primary" style="width:100%; display:none;" onclick="goScoring()">Enter Tournament</button>
+        <button id="btn-start" class="neu-btn primary" style="width:100%; display:none; margin-top:10px" onclick="goScoring()">Enter Tournament</button>
     </div>
     <div class="card" id="pane-play" style="display:none;">
-        <div id="tourneyLabel" class="tourney-badge"></div>
-        <h3 style="font-size:14px; margin-bottom:10px;">Identify Podium & Last</h3>
-        <p style="font-size:10px; color:var(--muted); margin-bottom:10px;">Unselected players will default to "Other" (1 Point).</p>
+        <h3 style="font-size:14px; margin-bottom:10px;">Finish Order</h3>
         <table><thead><tr><th>Player</th><th>Position</th></tr></thead><tbody id="table-score-body"></tbody></table>
         <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveWeightedResult()">Finish Tournament</button>
     </div>
@@ -96,7 +98,7 @@
     <div class="card">
         <h2 style="margin:0 0 15px 0; font-size:16px; text-align:center;">Analytics Hub</h2>
         <div id="summary-tiles"></div>
-        <button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('ALL')">⚠️ Emergency Reset</button>
+        <button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('ALL')">⚠️ Emergency Reset All Data</button>
     </div>
   </section>
 </div>
@@ -160,12 +162,11 @@ window.refreshExclusion = () => {
 
 window.goScoring = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
-    document.getElementById('tourneyLabel').innerText = `${cnt} Player ${activeMode} Tournament`;
     const body = document.getElementById('table-score-body'); body.innerHTML = "";
     for(let i=0; i<cnt; i++) {
         const sel = document.getElementById(`ps-${i}`).value;
         const name = (sel === 'C' ? document.getElementById(`pc-${i}`).value : sel);
-        if(!name) return alert("Fill all names");
+        if(!name) return alert("Fill all player names");
         body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}">
             <option value="99" selected>Other (1 Pt)</option>
             <option value="1">1st (10 Pts)</option>
@@ -179,31 +180,23 @@ window.goScoring = () => {
 
 window.saveWeightedResult = async () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
-    const rows = document.querySelectorAll('.rank-sel');
     const results = [];
-    let wName = '', lName = '', rCounts = {};
-
-    rows.forEach(sel => {
-        const name = sel.getAttribute('data-player');
+    let wName = '', lName = '';
+    document.querySelectorAll('.rank-sel').forEach(sel => {
         const rank = parseInt(sel.value);
+        const name = sel.getAttribute('data-player');
         let pts = 1;
         if(rank === 1) { pts = 10; wName = name; }
         else if(rank === 2) pts = 5;
         else if(rank === 3) pts = 3;
         else if(rank === 0) { pts = 0; lName = name; }
-        
-        if(rank !== 99) rCounts[rank] = (rCounts[rank] || 0) + 1;
         results.push({ name, rank, pts });
     });
-
-    if(!wName || !lName) return alert("Identify 1st and Last!");
-    if(Object.values(rCounts).some(c => c > 1)) return alert("Position overlap detected. Each rank (1st, 2nd, 3rd, Last) can only be one person.");
-
+    if(!wName || !lName) return alert("Pick 1st and Last!");
     await addDoc(gRef, { gameType: activeMode, pCount: cnt, players: results, winner: wName, last: lName, time: new Date().toISOString(), secret: PASS });
     location.reload();
 };
 
-// 28 GAME RENDER
 window.newSeries28 = () => {
     const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
     const h = `<div class="modal-box"><h3>28 Setup</h3>
@@ -222,7 +215,6 @@ window.filterTMS = () => {
 
 window.conf28 = async () => {
     const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
-    if(!t1 || !t2) return alert("Select teams");
     await addDoc(gRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS });
     closeM();
 };
@@ -231,10 +223,9 @@ window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
         if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
-        const s = seriesMap[g.seriesId];
-        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; }
-        else if (g.manualEnd) s.stop = true;
-        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+        if (g.isInit) { seriesMap[g.seriesId].teamA = g.teamA; seriesMap[g.seriesId].teamB = g.teamB; seriesMap[g.seriesId].target = g.seriesTarget; }
+        else if (g.manualEnd) seriesMap[g.seriesId].stop = true;
+        else if (g.winner) seriesMap[g.seriesId].wins[g.winner] = (seriesMap[g.seriesId].wins[g.winner] || 0) + 1;
     });
     const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
     Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
@@ -246,15 +237,14 @@ window.render28 = () => {
             <div style="display:flex; gap:8px;">
                 <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
                 <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="stop28('${s.id}')">STOP</button>
+                <button class="neu-btn danger" onclick="resetSystem('SERIES', '${s.id}')">STOP</button>
             </div></div>`;
     });
 };
 
 window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
-window.stop28 = async (id) => { if(prompt("Password:")===PASS) await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }); };
 
-// STATS LOGIC
+// POWER BI STATS & RESET CONTROL
 window.openDeepStats = (m, pSize = 'ALL') => {
     const is28 = m === '28';
     let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
@@ -263,9 +253,8 @@ window.openDeepStats = (m, pSize = 'ALL') => {
     const st = {};
     data.forEach(g => {
         if(is28) {
-            const w = g.winner, l = g.loser;
-            [w, l].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, pts:0, t:0} });
-            st[w].w++; st[l].l++; st[w].t++; st[l].t++;
+            [g.winner, g.loser].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, pts:0, t:0} });
+            st[g.winner].w++; st[g.loser].l++; st[g.winner].t++; st[g.loser].t++;
         } else if(g.players) {
             g.players.forEach(p => {
                 if(!st[p.name]) st[p.name] = {w:0, l:0, pts:0, t:0};
@@ -279,15 +268,15 @@ window.openDeepStats = (m, pSize = 'ALL') => {
     const mvp = sorted[0] || '—';
     const tgt = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
 
-    let h = `<div class="modal-box"><h3>${m} - ${pSize === 'ALL' ? 'Overall' : pSize+'P Tourney'}</h3>
+    let h = `<div class="modal-box"><h3>${m} Dashboard</h3>
         <select onchange="openDeepStats('${m}', this.value)" style="margin-bottom:15px">
-            <option value="ALL" ${pSize==='ALL'?'selected':''}>All Tournaments</option>
+            <option value="ALL" ${pSize==='ALL'?'selected':''}>Combined All Tourneys</option>
             ${[3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${pSize==''+n?'selected':''}>${n} Player Tournament</option>`).join('')}
         </select>
         <div class="dash-grid">
-            <div class="tile"><small>${is28?'SERIES KING':'POINTS KING'}</small><div class="val">${mvp}</div></div>
+            <div class="tile"><small>${is28?'WIN KING':'POINTS KING'}</small><div class="val">${mvp}</div></div>
             <div class="tile"><small>💩 LAST KING</small><div class="val">${tgt}</div></div>
-            <div class="tile full" style="grid-column: span 2;"><small>🎮 SESSIONS RECORDED</small><div class="val">${data.length}</div></div>
+            <div class="tile" style="grid-column: span 2"><small>🎮 GAMES RECORDED</small><div class="val">${data.length}</div></div>
         </div>`;
 
     sorted.forEach(n => {
@@ -296,10 +285,13 @@ window.openDeepStats = (m, pSize = 'ALL') => {
               <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-last" style="width:${lP}%"></div></div></div>`;
     });
 
-    h += `<h4 style="margin-top:15px">Match History (Tap 🗑️)</h4>`;
-    data.slice(-5).reverse().forEach(g => h += `<div class="log-item"><div style="font-size:10px">${new Date(g.time).toLocaleDateString()} - 🏆 ${g.winner}</div><button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}')">🗑️</button></div>`);
+    h += `<h4 style="margin-top:15px">History (Tap 🗑️ to delete)</h4>`;
+    data.slice(-10).reverse().forEach(g => h += `<div class="log-item"><div style="font-size:10px">${new Date(g.time).toLocaleDateString()} - 🏆 ${g.winner}</div><button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}')">🗑️</button></div>`);
     
-    h += `<button class="neu-btn primary" style="width:100%; margin-top:20px" onclick="closeM()">Close</button></div>`;
+    h += `<div style="display:flex; gap:10px; margin-top:20px;">
+            <button class="neu-btn danger" style="flex:1" onclick="resetSystem('GAME', '${m}')">⚠️ Reset ${m}</button>
+            <button class="neu-btn primary" style="flex:1" onclick="closeM()">Close</button>
+          </div></div>`;
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
@@ -307,16 +299,25 @@ window.renderGlobalTiles = () => {
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
     document.getElementById('summary-tiles').innerHTML = `
         <div class="card" onclick="openDeepStats('28')">🏏 <b>28</b> - ${f('28')} Series</div>
-        <div class="card" onclick="openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Sessions</div>
-        <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Sessions</div>`;
+        <div class="card" onclick="openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
+        <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
 };
 
 window.resetSystem = async (type, id = '') => {
-    if(prompt(`Password:`) !== PASS) return;
-    const q = type === 'ALL' ? query(gRef) : query(gRef, where("time", "==", id));
+    if(prompt(`Enter Password to ${type}:`) !== PASS) return;
+    let q;
+    if(type === 'ALL') q = query(gRef);
+    else if(type === 'GAME') q = query(gRef, where("gameType", "==", id));
+    else if(type === 'SERIES') {
+        const snap = await getDocs(query(gRef, where("seriesId", "==", id)));
+        snap.forEach(async d => await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }));
+        return;
+    }
+    else if(type === 'ROUND') q = query(gRef, where("time", "==", id));
+    
     const snap = await getDocs(q);
     snap.forEach(async d => await deleteDoc(d.ref));
-    location.reload();
+    if(type !== 'ROUND') location.reload(); else closeM();
 };
 
 window.closeM = () => document.getElementById('modal-container').innerHTML = "";
