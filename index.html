@@ -13,27 +13,52 @@ const gRef = collection(db, "games");
 let allG = [];
 window.activeMode = '';
 
+// --- NAVIGATION ---
 window.switchView = (v) => {
-    ['HOME','28','INDIV','OVERALL'].forEach(x => document.getElementById('view-'+x).style.display = (x===v?'block':'none'));
-    document.getElementById('btn-home').style.display = (v === 'HOME' ? 'none' : 'block');
-    document.getElementById('btn-global').style.display = (v === 'HOME' ? 'block' : 'none');
+    const views = ['HOME','28','INDIV','OVERALL'];
+    views.forEach(x => {
+        const el = document.getElementById('view-'+x);
+        if(el) el.style.display = (x===v ? 'block' : 'none');
+    });
+    const btnHome = document.getElementById('btn-home');
+    const btnGlobal = document.getElementById('btn-global');
+    if(btnHome) btnHome.style.display = (v === 'HOME' ? 'none' : 'block');
+    if(btnGlobal) btnGlobal.style.display = (v === 'HOME' ? 'block' : 'none');
     if(v === 'OVERALL') renderGlobalTiles();
 };
 
-window.launchGame = (m) => { window.activeMode = m; switchView(m==='28'?'28':'INDIV'); if(m!=='28') resetSetup(); };
+window.launchGame = (m) => { 
+    window.activeMode = m; 
+    switchView(m==='28'?'28':'INDIV'); 
+    if(m!=='28') resetSetup(); 
+};
 
 function resetSetup() {
-    document.getElementById('indiv-title').innerText = window.activeMode + ' Setup';
-    document.getElementById('pCnt').value = ""; document.getElementById('pInputs').innerHTML = "";
-    document.getElementById('btn-start').style.display = "none";
-    document.getElementById('indiv-setup').style.display = "block";
-    document.getElementById('indiv-play').style.display = "none";
+    const title = document.getElementById('indiv-title');
+    if(title) title.innerText = window.activeMode + ' Setup';
+    const pCnt = document.getElementById('pCnt');
+    const pIn = document.getElementById('pInputs');
+    if(pCnt) pCnt.value = ""; 
+    if(pIn) pIn.innerHTML = "";
+    const btnStart = document.getElementById('btn-start');
+    if(btnStart) btnStart.style.display = "none";
+    const setup = document.getElementById('indiv-setup');
+    const play = document.getElementById('indiv-play');
+    if(setup) setup.style.display = "block";
+    if(play) play.style.display = "none";
 }
 
+// --- PLAYER INPUTS ---
 window.drawInputs = () => {
-    const val = document.getElementById('pCnt').value; const cnt = parseInt(val);
-    const container = document.getElementById('pInputs'); container.innerHTML = "";
-    if(!val || cnt < 3 || cnt > 10) { document.getElementById('btn-start').style.display="none"; return; }
+    const val = document.getElementById('pCnt').value; 
+    const cnt = parseInt(val);
+    const container = document.getElementById('pInputs'); 
+    if(!container) return;
+    container.innerHTML = "";
+    if(!val || cnt < 3 || cnt > 10) { 
+        document.getElementById('btn-start').style.display="none"; 
+        return; 
+    }
     for(let i=0; i<cnt; i++) {
         container.innerHTML += `<select id="ps-${i}" onchange="filterPlayers()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
     }
@@ -41,23 +66,41 @@ window.drawInputs = () => {
 };
 
 window.filterPlayers = () => {
-    const cnt = parseInt(document.getElementById('pCnt').value); const selected = [];
+    const pCntEl = document.getElementById('pCnt');
+    if(!pCntEl) return;
+    const cnt = parseInt(pCntEl.value); 
+    const selected = [];
     for(let i=0; i<cnt; i++) {
-        const v = document.getElementById(`ps-${i}`).value; if(v && v !== "C") selected.push(v);
-        document.getElementById(`pc-${i}`).style.display = (v === "C" ? "block" : "none");
+        const selEl = document.getElementById(`ps-${i}`);
+        if(!selEl) continue;
+        const v = selEl.value; 
+        if(v && v !== "C") selected.push(v);
+        const custIn = document.getElementById(`pc-${i}`);
+        if(custIn) custIn.style.display = (v === "C" ? "block" : "none");
     }
     for(let i=0; i<cnt; i++) {
-        const s = document.getElementById(`ps-${i}`); const cur = s.value;
-        Array.from(s.options).forEach(o => { if(o.value && o.value !== "C") o.disabled = selected.includes(o.value) && cur !== o.value; });
+        const s = document.getElementById(`ps-${i}`);
+        if(!s) continue;
+        const cur = s.value;
+        Array.from(s.options).forEach(o => { 
+            if(o.value && o.value !== "C") o.disabled = selected.includes(o.value) && cur !== o.value; 
+        });
     }
 };
 
 window.startPlay = () => {
-    const cnt = parseInt(document.getElementById('pCnt').value); const body = document.getElementById('scoreTable'); body.innerHTML = "";
+    const pCntEl = document.getElementById('pCnt');
+    if(!pCntEl) return;
+    const cnt = parseInt(pCntEl.value); 
+    const body = document.getElementById('scoreTable'); 
+    if(!body) return;
+    body.innerHTML = "";
     const isPoints = window.activeMode === 'UNO' || window.activeMode === 'Bluff';
 
     for(let i=0; i<cnt; i++) {
-        const sel = document.getElementById(`ps-${i}`).value; const name = (sel === 'C' ? document.getElementById(`pc-${i}`).value : sel);
+        const selVal = document.getElementById(`ps-${i}`).value; 
+        const custVal = document.getElementById(`pc-${i}`).value;
+        const name = (selVal === 'C' ? custVal : selVal);
         if(!name) return alert("Fill all players");
         
         if(isPoints) {
@@ -66,9 +109,11 @@ window.startPlay = () => {
             body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="w" value="${name}"></td><td><input type="radio" name="l" value="${name}"></td></tr>`;
         }
     }
-    document.getElementById('indiv-setup').style.display="none"; document.getElementById('indiv-play').style.display="block";
+    document.getElementById('indiv-setup').style.display="none"; 
+    document.getElementById('indiv-play').style.display="block";
 };
 
+// --- SAVE & CLOUD ---
 window.saveIndiv = async () => {
     const isPoints = window.activeMode === 'UNO' || window.activeMode === 'Bluff';
     let payload = { gameType: window.activeMode, time: new Date().toISOString(), secret: SEC };
@@ -82,10 +127,11 @@ window.saveIndiv = async () => {
         payload.winner = Object.keys(ranks).find(k => ranks[k] === '1');
         payload.last = Object.keys(ranks).find(k => ranks[k] === 'last');
     } else {
-        const w = document.querySelector('input[name="w"]:checked')?.value;
-        const l = document.querySelector('input[name="l"]:checked')?.value;
-        if(!w || !l || w===l) return alert("Pick unique Win & Last");
-        payload.winner = w; payload.last = l;
+        const winCheck = document.querySelector('input[name="w"]:checked');
+        const lastCheck = document.querySelector('input[name="l"]:checked');
+        if(!winCheck || !lastCheck || winCheck.value === lastCheck.value) return alert("Pick unique Win & Last");
+        payload.winner = winCheck.value; 
+        payload.last = lastCheck.value;
     }
     await addDoc(gRef, payload);
     location.reload();
@@ -99,12 +145,19 @@ window.newSeries28 = () => {
         <select id="mT2"><option value="" selected disabled>Team 2</option>${o}</select>
         <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="conf28()">Start</button>
         <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Close</button></div>`;
-    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
+    const container = document.getElementById('modal-container');
+    if(container) container.innerHTML = `<div class="overlay">${h}</div>`;
 };
 
 window.filterTMS = () => {
-    const t1 = document.getElementById('mT1').value; const members = t1.split(' & ');
-    Array.from(document.getElementById('mT2').options).forEach(o => { if(o.value) o.disabled = members.some(m => o.value.includes(m)); });
+    const t1El = document.getElementById('mT1');
+    const t2El = document.getElementById('mT2');
+    if(!t1El || !t2El) return;
+    const t1 = t1El.value; 
+    const members = t1.split(' & ');
+    Array.from(t2El.options).forEach(o => { 
+        if(o.value) o.disabled = members.some(m => o.value.includes(m)); 
+    });
 };
 
 window.conf28 = async () => {
@@ -115,6 +168,8 @@ window.conf28 = async () => {
 };
 
 window.render28 = () => {
+    const list = document.getElementById('list-28'); 
+    if(!list) return; 
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
         if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
@@ -123,7 +178,8 @@ window.render28 = () => {
         else if (g.manualEnd) s.stop = true;
         else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
     });
-    const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
+    
+    list.innerHTML = "";
     Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
         list.innerHTML += `<div class="card">
@@ -145,6 +201,7 @@ window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner
 window.stop28 = async (id) => {
     const series = allG.filter(g => g.seriesId === id);
     const init = series.find(g=>g.isInit);
+    if(!init) return;
     const rounds = series.filter(g=>g.winner && !g.isInit);
     let sA=0, sB=0; rounds.forEach(r => r.winner===init.teamA?sA++:sB++);
     if(prompt("Stop Series Password:")===SEC) {
@@ -160,10 +217,12 @@ window.resetSystem = async (type, id = '') => {
     else if(type === '28_ONLY') q = query(gRef, where("gameType", "==", ""));
     else if(type === 'SERIES') q = query(gRef, where("seriesId", "==", id));
     else if(type === 'ROUND') q = query(gRef, where("time", "==", id));
-    const snap = await getDocs(q); snap.forEach(async (d) => await deleteDoc(d.ref));
+    const snap = await getDocs(q); 
+    for(const d of snap.docs) { await deleteDoc(d.ref); }
     if(type !== 'ROUND') location.reload(); else closeM();
 };
 
+// --- ANALYTICS ---
 window.openDeepStats = (m) => {
     const is28 = m === '28', isPts = m === 'UNO' || m === 'Bluff';
     const data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && (g.winner || g.ranks));
@@ -178,11 +237,13 @@ window.openDeepStats = (m) => {
                 else if(r==='2') st[p].pts+=5;
                 else if(r==='3') st[p].pts+=3;
                 else if(r==='none') st[p].pts+=1;
+                else if(r==='last') st[p].pts+=0;
             });
         } else if(g.winner) {
             const w=g.winner, l=g.last||g.loser;
             [w, l, ...(g.runnersUp||[])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, t:0, pts:0} });
-            st[w].w++; st[l].l++; st[w].t++; st[l].t++; (g.runnersUp||[]).forEach(p => st[p].t++);
+            st[w].w++; if(l) st[l].l++; st[w].t++; if(l) st[l].t++; 
+            (g.runnersUp||[]).forEach(p => { if(st[p]) st[p].t++; });
         }
     });
 
@@ -197,10 +258,12 @@ window.openDeepStats = (m) => {
         </div>`;
 
     sorted.forEach(n => {
-        const d = st[n]; const val = isPts ? `${d.pts} pts` : `${d.w} Wins`;
+        const d = st[n]; 
+        const val = isPts ? `${d.pts} pts` : `${d.w} Wins`;
         const ppg = isPts ? `<span style="opacity:0.6; margin-left:5px">(${ (d.pts/d.t).toFixed(1) } PPG)</span>` : '';
+        const barW = isPts ? (d.pts/(data.length*10))*100 : (d.w/d.t)*100;
         h += `<div class="analytics-row"><div style="display:flex; justify-content:space-between; font-size:10px"><b>${n}</b><span>${val}${ppg}</span></div>
-              <div class="bar-container"><div class="b-win" style="width:${isPts ? (d.pts/(data.length*10))*100 : (d.w/d.t)*100}%"></div></div></div>`;
+              <div class="bar-container"><div class="b-win" style="width:${barW}%"></div></div></div>`;
     });
 
     if(randoms.length) {
@@ -212,22 +275,32 @@ window.openDeepStats = (m) => {
     data.slice(-5).reverse().forEach(g => h += `<div class="log-item"><div style="font-size:9px;">${new Date(g.time).toLocaleDateString()} | 🏆 ${g.winner}</div><button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}')">🗑️</button></div>`);
     h += `<button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('${is28 ? '28_ONLY' : 'GAME'}', '${m}')">⚠️ Reset ${m}</button>
           <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="closeM()">Close</button></div>`;
-    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
+    const container = document.getElementById('modal-container');
+    if(container) container.innerHTML = `<div class="overlay">${h}</div>`;
 };
 
 window.renderGlobalTiles = () => {
+    const tilesEl = document.getElementById('global-tiles');
+    if(!tilesEl) return;
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && (g.winner || g.ranks)).length;
-    document.getElementById('global-tiles').innerHTML = `
+    tilesEl.innerHTML = `
         <div class="card" onclick="openDeepStats('28')">🏏 <b>28</b> - ${f('28')} Series</div>
         <div class="card" onclick="openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
         <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
 };
 
-window.closeM = () => document.getElementById('modal-container').innerHTML = "";
+window.closeM = () => {
+    const container = document.getElementById('modal-container');
+    if(container) container.innerHTML = "";
+};
 
-onSnapshot(query(gRef, orderBy("time")), snap => {
-    allG = snap.docs.map(d => d.data());
-    render28();
-    if(document.getElementById('view-OVERALL').style.display === 'block') renderGlobalTiles();
+// --- STARTUP ---
+document.addEventListener('DOMContentLoaded', () => {
+    onSnapshot(query(gRef, orderBy("time")), snap => {
+        allG = snap.docs.map(d => d.data());
+        render28();
+        const overallView = document.getElementById('view-OVERALL');
+        if(overallView && overallView.style.display === 'block') renderGlobalTiles();
+    });
 });
 </script>
