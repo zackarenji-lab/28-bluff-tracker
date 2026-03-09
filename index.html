@@ -13,125 +13,89 @@ const gRef = collection(db, "games");
 let allG = [];
 window.activeMode = '';
 
-// --- NAVIGATION ---
+// --- ALL FUNCTIONS ATTACHED TO WINDOW TO PREVENT ERRORS ---
 window.switchView = (v) => {
-    const views = ['HOME','28','INDIV','OVERALL'];
-    views.forEach(x => {
+    ['HOME','28','INDIV','OVERALL'].forEach(x => {
         const el = document.getElementById('view-'+x);
-        if(el) el.style.display = (x===v ? 'block' : 'none');
+        if(el) el.style.display = (x===v?'block':'none');
     });
-    const btnHome = document.getElementById('btn-home');
-    const btnGlobal = document.getElementById('btn-global');
-    if(btnHome) btnHome.style.display = (v === 'HOME' ? 'none' : 'block');
-    if(btnGlobal) btnGlobal.style.display = (v === 'HOME' ? 'block' : 'none');
+    const bh = document.getElementById('btn-home');
+    const bg = document.getElementById('btn-global');
+    if(bh) bh.style.display = (v === 'HOME' ? 'none' : 'block');
+    if(bg) bg.style.display = (v === 'HOME' ? 'block' : 'none');
     if(v === 'OVERALL') renderGlobalTiles();
 };
 
 window.launchGame = (m) => { 
     window.activeMode = m; 
-    switchView(m==='28'?'28':'INDIV'); 
+    window.switchView(m==='28'?'28':'INDIV'); 
     if(m!=='28') resetSetup(); 
 };
 
-function resetSetup() {
-    const title = document.getElementById('indiv-title');
-    if(title) title.innerText = window.activeMode + ' Setup';
-    const pCnt = document.getElementById('pCnt');
-    const pIn = document.getElementById('pInputs');
-    if(pCnt) pCnt.value = ""; 
-    if(pIn) pIn.innerHTML = "";
-    const btnStart = document.getElementById('btn-start');
-    if(btnStart) btnStart.style.display = "none";
-    const setup = document.getElementById('indiv-setup');
-    const play = document.getElementById('indiv-play');
-    if(setup) setup.style.display = "block";
-    if(play) play.style.display = "none";
-}
-
-// --- PLAYER INPUTS ---
 window.drawInputs = () => {
-    const val = document.getElementById('pCnt').value; 
+    const val = document.getElementById('pCnt').value;
     const cnt = parseInt(val);
-    const container = document.getElementById('pInputs'); 
+    const container = document.getElementById('pInputs');
     if(!container) return;
     container.innerHTML = "";
-    if(!val || cnt < 3 || cnt > 10) { 
-        document.getElementById('btn-start').style.display="none"; 
-        return; 
+    if(!val || cnt < 3 || cnt > 10) {
+        document.getElementById('btn-start').style.display="none";
+        return;
     }
     for(let i=0; i<cnt; i++) {
-        container.innerHTML += `<select id="ps-${i}" onchange="filterPlayers()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
+        container.innerHTML += `<select id="ps-${i}" onchange="window.filterPlayers()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none; margin-top:5px;" placeholder="Enter Name">`;
     }
     document.getElementById('btn-start').style.display="block";
 };
 
 window.filterPlayers = () => {
-    const pCntEl = document.getElementById('pCnt');
-    if(!pCntEl) return;
-    const cnt = parseInt(pCntEl.value); 
-    const selected = [];
-    for(let i=0; i<cnt; i++) {
-        const selEl = document.getElementById(`ps-${i}`);
-        if(!selEl) continue;
-        const v = selEl.value; 
-        if(v && v !== "C") selected.push(v);
-        const custIn = document.getElementById(`pc-${i}`);
-        if(custIn) custIn.style.display = (v === "C" ? "block" : "none");
-    }
-    for(let i=0; i<cnt; i++) {
+    const cnt = parseInt(document.getElementById('pCnt').value || 0);
+    for(let i=0; i<cnt; i++){
         const s = document.getElementById(`ps-${i}`);
-        if(!s) continue;
-        const cur = s.value;
-        Array.from(s.options).forEach(o => { 
-            if(o.value && o.value !== "C") o.disabled = selected.includes(o.value) && cur !== o.value; 
-        });
+        const c = document.getElementById(`pc-${i}`);
+        if(c) c.style.display = (s && s.value === "C" ? "block" : "none");
     }
 };
 
 window.startPlay = () => {
-    const pCntEl = document.getElementById('pCnt');
-    if(!pCntEl) return;
-    const cnt = parseInt(pCntEl.value); 
-    const body = document.getElementById('scoreTable'); 
+    const cnt = parseInt(document.getElementById('pCnt').value);
+    const body = document.getElementById('scoreTable');
     if(!body) return;
     body.innerHTML = "";
-    const isPoints = window.activeMode === 'UNO' || window.activeMode === 'Bluff';
+    const isPts = window.activeMode === 'UNO' || window.activeMode === 'Bluff';
 
     for(let i=0; i<cnt; i++) {
-        const selVal = document.getElementById(`ps-${i}`).value; 
-        const custVal = document.getElementById(`pc-${i}`).value;
-        const name = (selVal === 'C' ? custVal : selVal);
+        const s = document.getElementById(`ps-${i}`).value;
+        const name = (s === 'C' ? document.getElementById(`pc-${i}`).value : s);
         if(!name) return alert("Fill all players");
         
-        if(isPoints) {
+        if(isPts) {
             body.innerHTML += `<tr><td><b>${name}</b></td><td colspan="2"><select class="rank-sel" data-p="${name}"><option value="none">Others (1pt)</option><option value="1">1st (10pts)</option><option value="2">2nd (5pts)</option><option value="3">3rd (3pts)</option><option value="last">Last (0pts)</option></select></td></tr>`;
         } else {
             body.innerHTML += `<tr><td><b>${name}</b></td><td><input type="radio" name="w" value="${name}"></td><td><input type="radio" name="l" value="${name}"></td></tr>`;
         }
     }
-    document.getElementById('indiv-setup').style.display="none"; 
+    document.getElementById('indiv-setup').style.display="none";
     document.getElementById('indiv-play').style.display="block";
 };
 
-// --- SAVE & CLOUD ---
 window.saveIndiv = async () => {
-    const isPoints = window.activeMode === 'UNO' || window.activeMode === 'Bluff';
+    const isPts = window.activeMode === 'UNO' || window.activeMode === 'Bluff';
     let payload = { gameType: window.activeMode, time: new Date().toISOString(), secret: SEC };
 
-    if(isPoints) {
+    if(isPts) {
         const ranks = {};
         document.querySelectorAll('.rank-sel').forEach(s => ranks[s.getAttribute('data-p')] = s.value);
         const v = Object.values(ranks);
-        if(v.filter(x=>x==='1').length!==1 || v.filter(x=>x==='last').length!==1) return alert("Select exactly one 1st and one Last");
+        if(v.filter(x=>x==='1').length!==1 || v.filter(x=>x==='last').length!==1) return alert("Select 1st and Last");
         payload.ranks = ranks;
         payload.winner = Object.keys(ranks).find(k => ranks[k] === '1');
         payload.last = Object.keys(ranks).find(k => ranks[k] === 'last');
     } else {
-        const winCheck = document.querySelector('input[name="w"]:checked');
-        const lastCheck = document.querySelector('input[name="l"]:checked');
-        if(!winCheck || !lastCheck || winCheck.value === lastCheck.value) return alert("Pick unique Win & Last");
-        payload.winner = winCheck.value; 
-        payload.last = lastCheck.value;
+        const w = document.querySelector('input[name="w"]:checked')?.value;
+        const l = document.querySelector('input[name="l"]:checked')?.value;
+        if(!w || !l || w===l) return alert("Pick unique Win & Last");
+        payload.winner = w; payload.last = l;
     }
     await addDoc(gRef, payload);
     location.reload();
@@ -141,59 +105,25 @@ window.newSeries28 = () => {
     const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
     const h = `<div class="modal-box"><h3>28 Setup</h3>
         <select id="mTarget"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-        <select id="mT1" onchange="filterTMS()"><option value="" selected disabled>Team 1</option>${o}</select>
+        <select id="mT1" onchange="window.filterTMS()"><option value="" selected disabled>Team 1</option>${o}</select>
         <select id="mT2"><option value="" selected disabled>Team 2</option>${o}</select>
-        <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="conf28()">Start</button>
-        <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Close</button></div>`;
-    const container = document.getElementById('modal-container');
-    if(container) container.innerHTML = `<div class="overlay">${h}</div>`;
+        <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="window.conf28()">Start</button>
+        <button class="neu-btn" style="width:100%; margin-top:10px" onclick="window.closeM()">Close</button></div>`;
+    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
 window.filterTMS = () => {
-    const t1El = document.getElementById('mT1');
+    const t1 = document.getElementById('mT1').value;
     const t2El = document.getElementById('mT2');
-    if(!t1El || !t2El) return;
-    const t1 = t1El.value; 
     const members = t1.split(' & ');
-    Array.from(t2El.options).forEach(o => { 
-        if(o.value) o.disabled = members.some(m => o.value.includes(m)); 
-    });
+    Array.from(t2El.options).forEach(o => { if(o.value) o.disabled = members.some(m => o.value.includes(m)); });
 };
 
 window.conf28 = async () => {
     const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
     if(!t1 || !t2) return alert("Select teams");
     await addDoc(gRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: SEC });
-    closeM();
-};
-
-window.render28 = () => {
-    const list = document.getElementById('list-28'); 
-    if(!list) return; 
-    const seriesMap = {};
-    allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
-        const s = seriesMap[g.seriesId];
-        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget || 5; }
-        else if (g.manualEnd) s.stop = true;
-        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
-    });
-    
-    list.innerHTML = "";
-    Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
-        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-                <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div></div>
-                <div style="font-weight:900; color:var(--muted)">VS</div>
-                <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div></div>
-            </div>
-            <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="stop28('${s.id}')">STOP</button>
-            </div></div>`;
-    });
+    window.closeM();
 };
 
 window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: SEC }); };
@@ -210,19 +140,66 @@ window.stop28 = async (id) => {
 };
 
 window.resetSystem = async (type, id = '') => {
-    if(prompt(`Enter Password to reset ${type}:`) !== SEC) return;
-    let q;
-    if(type === 'ALL') q = query(gRef);
-    else if(type === 'GAME') q = query(gRef, where("gameType", "==", id));
-    else if(type === '28_ONLY') q = query(gRef, where("gameType", "==", ""));
+    if(prompt(`Enter Password:`) !== SEC) return;
+    let q = query(gRef);
+    if(type === 'GAME') q = query(gRef, where("gameType", "==", id));
     else if(type === 'SERIES') q = query(gRef, where("seriesId", "==", id));
     else if(type === 'ROUND') q = query(gRef, where("time", "==", id));
-    const snap = await getDocs(q); 
-    for(const d of snap.docs) { await deleteDoc(d.ref); }
-    if(type !== 'ROUND') location.reload(); else closeM();
+    const snap = await getDocs(q);
+    for (const d of snap.docs) { await deleteDoc(d.ref); }
+    location.reload();
 };
 
-// --- ANALYTICS ---
+window.closeM = () => { document.getElementById('modal-container').innerHTML = ""; };
+
+// --- HELPERS ---
+function resetSetup() {
+    document.getElementById('indiv-title').innerText = window.activeMode + ' Setup';
+    document.getElementById('pCnt').value = ""; 
+    document.getElementById('pInputs').innerHTML = "";
+    document.getElementById('btn-start').style.display = "none";
+    document.getElementById('indiv-setup').style.display = "block";
+    document.getElementById('indiv-play').style.display = "none";
+}
+
+function render28() {
+    const list = document.getElementById('list-28');
+    if(!list) return;
+    const seriesMap = {};
+    allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
+        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
+        const s = seriesMap[g.seriesId];
+        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget || 5; }
+        else if (g.manualEnd) s.stop = true;
+        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+    });
+    list.innerHTML = "";
+    Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
+        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
+        list.innerHTML += `<div class="card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
+                <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div></div>
+                <div style="font-weight:900; color:var(--muted)">VS</div>
+                <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div></div>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="neu-btn primary" style="flex:1" onclick="window.score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
+                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="window.score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
+                <button class="neu-btn danger" onclick="window.stop28('${s.id}')">STOP</button>
+            </div></div>`;
+    });
+}
+
+function renderGlobalTiles() {
+    const gt = document.getElementById('global-tiles');
+    if(!gt) return;
+    const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && (g.winner || g.ranks)).length;
+    gt.innerHTML = `
+        <div class="card" onclick="window.openDeepStats('28')">🏏 <b>28</b> - ${f('28')} Series</div>
+        <div class="card" onclick="window.openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
+        <div class="card" onclick="window.openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
+}
+
 window.openDeepStats = (m) => {
     const is28 = m === '28', isPts = m === 'UNO' || m === 'Bluff';
     const data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && (g.winner || g.ranks));
@@ -237,13 +214,9 @@ window.openDeepStats = (m) => {
                 else if(r==='2') st[p].pts+=5;
                 else if(r==='3') st[p].pts+=3;
                 else if(r==='none') st[p].pts+=1;
-                else if(r==='last') st[p].pts+=0;
             });
         } else if(g.winner) {
-            const w=g.winner, l=g.last||g.loser;
-            [w, l, ...(g.runnersUp||[])].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, t:0, pts:0} });
-            st[w].w++; if(l) st[l].l++; st[w].t++; if(l) st[l].t++; 
-            (g.runnersUp||[]).forEach(p => { if(st[p]) st[p].t++; });
+            const w=g.winner; if(!st[w]) st[w] = {w:0, pts:0, t:0}; st[w].w++; st[w].t++;
         }
     });
 
@@ -253,54 +226,31 @@ window.openDeepStats = (m) => {
     let h = `<div class="modal-box"><h3>${m} Dashboard</h3>
         <div class="dash-grid">
             <div class="tile"><small>${isPts?'🏆 POINT KING':'🥇 WIN KING'}</small><div class="val">${mvp}</div></div>
-            <div class="tile"><small>🎮 TOTAL</small><div class="val">${data.length} ${isPts?'Rds':'Srs'}</div></div>
+            <div class="tile"><small>🎮 TOTAL</small><div class="val">${data.length}</div></div>
             ${randoms.length ? `<div class="tile" style="border:1px solid var(--gold)"><small>🎲 RANDOM</small><div class="val">${randoms.length}</div></div>`:''}
         </div>`;
 
     sorted.forEach(n => {
-        const d = st[n]; 
-        const val = isPts ? `${d.pts} pts` : `${d.w} Wins`;
+        const d = st[n]; const val = isPts ? `${d.pts} pts` : `${d.w} Wins`;
         const ppg = isPts ? `<span style="opacity:0.6; margin-left:5px">(${ (d.pts/d.t).toFixed(1) } PPG)</span>` : '';
-        const barW = isPts ? (d.pts/(data.length*10))*100 : (d.w/d.t)*100;
         h += `<div class="analytics-row"><div style="display:flex; justify-content:space-between; font-size:10px"><b>${n}</b><span>${val}${ppg}</span></div>
-              <div class="bar-container"><div class="b-win" style="width:${barW}%"></div></div></div>`;
+              <div class="bar-container"><div class="b-win" style="width:${isPts ? (d.pts/(data.length*10))*100 : (d.w/d.t)*100}%"></div></div></div>`;
     });
 
     if(randoms.length) {
-        h += `<h4 style="margin:10px 0 5px 0; font-size:10px; color:var(--gold)">Recent Incomplete</h4>`;
-        randoms.slice(-3).reverse().forEach(r => h += `<div class="log-item" style="font-size:9px; border-left:2px solid var(--gold); padding-left:5px">${r.teamA} vs ${r.teamB} (${r.finalScore})</div>`);
+        h += `<h4 style="margin:10px 0 5px 0; font-size:10px; color:var(--gold)">Incomplete Series</h4>`;
+        randoms.slice(-3).reverse().forEach(r => h += `<div class="log-item" style="font-size:9px;">${r.teamA} vs ${r.teamB} (${r.finalScore})</div>`);
     }
 
-    h += `<h4 style="margin-top:15px; font-size:10px">History</h4>`;
-    data.slice(-5).reverse().forEach(g => h += `<div class="log-item"><div style="font-size:9px;">${new Date(g.time).toLocaleDateString()} | 🏆 ${g.winner}</div><button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}')">🗑️</button></div>`);
-    h += `<button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('${is28 ? '28_ONLY' : 'GAME'}', '${m}')">⚠️ Reset ${m}</button>
-          <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="closeM()">Close</button></div>`;
-    const container = document.getElementById('modal-container');
-    if(container) container.innerHTML = `<div class="overlay">${h}</div>`;
+    h += `<button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="window.resetSystem('GAME', '${m}')">⚠️ Reset ${m}</button>
+          <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="window.closeM()">Close</button></div>`;
+    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
-window.renderGlobalTiles = () => {
-    const tilesEl = document.getElementById('global-tiles');
-    if(!tilesEl) return;
-    const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && (g.winner || g.ranks)).length;
-    tilesEl.innerHTML = `
-        <div class="card" onclick="openDeepStats('28')">🏏 <b>28</b> - ${f('28')} Series</div>
-        <div class="card" onclick="openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
-        <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
-};
-
-window.closeM = () => {
-    const container = document.getElementById('modal-container');
-    if(container) container.innerHTML = "";
-};
-
-// --- STARTUP ---
-document.addEventListener('DOMContentLoaded', () => {
-    onSnapshot(query(gRef, orderBy("time")), snap => {
-        allG = snap.docs.map(d => d.data());
-        render28();
-        const overallView = document.getElementById('view-OVERALL');
-        if(overallView && overallView.style.display === 'block') renderGlobalTiles();
-    });
+// --- SYNC ---
+onSnapshot(query(gRef, orderBy("time")), snap => {
+    allG = snap.docs.map(d => d.data());
+    render28();
+    if(document.getElementById('view-OVERALL').style.display === 'block') renderGlobalTiles();
 });
 </script>
