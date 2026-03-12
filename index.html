@@ -3,43 +3,27 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>Gaming Zone - Entry</title>
-<link rel="icon" href="blufffavicon.png" />
+<title>GZ - Game Entry</title>
 <style>
-  :root {
-    --bg1:#061226; --bg2:#081b31; --card:#0e2336;
-    --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db;
-  }
-  html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
+  :root { --bg1:#061226; --bg2:#081b31; --card:#0e2336; --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db; }
+  html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;}
   .wrap{max-width:800px;margin:15px auto;padding:15px;}
   header{display:flex;align-items:center;gap:10px;margin-bottom:15px}
   .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;}
   h1{margin:0;font-size:16px;flex:1}
-  
-  .nav-link {
-    font-size: 10px; font-weight: 800; color: #ffd36d; text-decoration: none; text-transform: uppercase;
-    letter-spacing: 1px; border: 1px solid rgba(255, 211, 109, 0.3); padding: 6px 12px; border-radius: 20px;
-    background: rgba(255, 255, 255, 0.05); transition: 0.3s;
-  }
-  .nav-link:hover { background: rgba(255, 211, 109, 0.1); }
-
+  .nav-link { font-size: 10px; font-weight: 800; color: var(--gold); text-decoration: none; text-transform: uppercase; border: 1px solid rgba(255, 211, 109, 0.3); padding: 6px 12px; border-radius: 20px; background: rgba(255, 255, 255, 0.05); }
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
-  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  
   .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
   .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-  
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:10px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
-  
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+  td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
 </style>
 </head>
 <body>
-
 <div class="wrap">
   <header>
     <div class="logo">GZ</div>
@@ -47,163 +31,92 @@
     <a href="dashboard.html" class="nav-link">📊 Dashboard</a>
   </header>
 
-  <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img"/>
+  <img src="bluffmasters.png" style="width:100%; border-radius:10px; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
 
   <section id="view-HOME">
     <div class="card">
-      <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid">
-        <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28"><div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.7);font-size:8px;text-align:center;padding:3px 0;">28 GAME</div></div>
-        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff"><div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.7);font-size:8px;text-align:center;padding:3px 0;">BLUFF</div></div>
-        <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO"><div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.7);font-size:8px;text-align:center;padding:3px 0;">UNO</div></div>
+        <div class="game-box" onclick="launch('28')"><img src="28 button.png"><div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.7);font-size:8px;text-align:center;padding:3px 0;">28</div></div>
+        <div class="game-box" onclick="launch('Bluff')"><img src="bluff button.png"><div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.7);font-size:8px;text-align:center;padding:3px 0;">BLUFF</div></div>
+        <div class="game-box" onclick="launch('UNO')"><img src="uno button.png"><div style="position:absolute;bottom:0;width:100%;background:rgba(0,0,0,0.7);font-size:8px;text-align:center;padding:3px 0;">UNO</div></div>
       </div>
     </div>
   </section>
 
-  <section id="view-28" style="display:none;">
-    <div class="card">
-      <h2 style="margin:0 0 10px 0; font-size:16px;">Active Series</h2>
-      <div id="list-28"></div>
-      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="newSeries28()">➕ New Series</button>
-      <button class="neu-btn" style="width:100%; margin-top:10px;" onclick="location.reload()">🏠 Home</button>
-    </div>
-  </section>
-
-  <section id="view-INDIV" style="display:none;">
+  <section id="view-PLAY" style="display:none;">
     <div class="card" id="pane-setup">
-        <h3 id="indiv-title" style="margin:0 0 15px 0; font-size:16px;">Setup</h3>
-        <input type="number" id="pCnt" min="3" max="10" placeholder="Players (3-10)" oninput="drawInputs()">
+        <h3 id="game-title">Setup</h3>
+        <input type="number" id="pCnt" placeholder="Players (3-10)" oninput="draw()">
         <div id="pInputs"></div>
-        <button id="btn-start" class="neu-btn primary" style="width:100%; display:none; margin-top:10px" onclick="goScoring()">Enter Tournament</button>
-        <button class="neu-btn" style="width:100%; margin-top:10px;" onclick="location.reload()">🏠 Home</button>
+        <button id="btn-start" class="neu-btn primary" style="width:100%; display:none;" onclick="goRank()">Enter Tournament</button>
     </div>
-    <div class="card" id="pane-play" style="display:none;">
-        <div id="lineupBadge" style="background:var(--info); color:#fff; padding:2px 8px; border-radius:4px; font-size:10px; margin-bottom:10px; display:inline-block;"></div>
-        <table><thead><tr><th>Player</th><th>Position</th></tr></thead><tbody id="table-score-body"></tbody></table>
-        <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveWeightedResult()">Finish Match</button>
+    <div class="card" id="pane-rank" style="display:none;">
+        <div id="lBadge" style="background:var(--info); color:#fff; padding:2px 8px; border-radius:4px; font-size:10px; margin-bottom:10px; display:inline-block;"></div>
+        <table><tbody id="table-body"></tbody></table>
+        <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="save()">Finish Match</button>
     </div>
+    <button class="neu-btn" style="width:100%; margin-top:10px;" onclick="location.reload()">🏠 Cancel</button>
   </section>
 </div>
 
-<div id="modal-container"></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
 const PASS = "zachariahrenji";
 const PLRS = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
-const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
 const LINEUPS = { "annu-megha-rikku-rohan-roopa-zach": { "UNO": "UNO Legends", "Bluff": "Bluff Legends" }, "annu-bibin-bimal-megha-rikku-zach": { "UNO": "UNO Masters", "Bluff": "Bluff Masters" } };
 
 const app = initializeApp(FIREBASE_CONF);
 const db = getFirestore(app);
 const gRef = collection(db, "games");
-let allG = [];
-window.activeMode = '';
+let activeMode = '';
 
-window.launchGame = (m) => { window.activeMode = m; document.getElementById('view-HOME').style.display='none'; document.getElementById(m==='28'?'view-28':'view-INDIV').style.display='block'; if(m!=='28') resetSetup(); };
+window.launch = (m) => {
+    activeMode = m;
+    document.getElementById('view-HOME').style.display = 'none';
+    document.getElementById('view-PLAY').style.display = 'block';
+    document.getElementById('game-title').innerText = m + ' Setup';
+};
 
-function resetSetup() {
-    document.getElementById('indiv-title').innerText = window.activeMode + ' Setup';
-    document.getElementById('pCnt').value = ""; document.getElementById('pInputs').innerHTML = "";
-    document.getElementById('btn-start').style.display = "none";
-    document.getElementById('pane-setup').style.display = "block";
-    document.getElementById('pane-play').style.display = "none";
-}
-
-window.drawInputs = () => {
+window.draw = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     const container = document.getElementById('pInputs'); container.innerHTML = "";
-    if(isNaN(cnt) || cnt < 3 || cnt > 10) return;
+    if(cnt < 3 || cnt > 10) return;
     for(let i=0; i<cnt; i++) {
-        container.innerHTML += `<select id="ps-${i}" onchange="refreshEx()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
+        container.innerHTML += `<select id="ps-${i}"><option value="" disabled selected>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="Custom">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
+        container.lastChild.previousSibling.onchange = (e) => document.getElementById(`pc-${i}`).style.display = e.target.value === 'Custom' ? 'block' : 'none';
     }
-    document.getElementById('btn-start').style.display="block";
+    document.getElementById('btn-start').style.display = "block";
 };
 
-window.refreshEx = () => {
-    const cnt = parseInt(document.getElementById('pCnt').value);
-    const used = [];
-    for(let i=0; i<cnt; i++) {
-        const v = document.getElementById(`ps-${i}`).value; if(v && v !== "C") used.push(v);
-        document.getElementById(`pc-${i}`).style.display = (v === "C" ? "block" : "none");
-    }
-};
-
-window.goScoring = () => {
-    const cnt = parseInt(document.getElementById('pCnt').value);
-    const names = Array.from(document.querySelectorAll('#pInputs select')).map((s,i) => s.value === 'C' ? document.getElementById(`pc-${i}`).value : s.value);
-    if(names.some(n=>!n)) return alert("Fill all names");
+window.goRank = () => {
+    const names = Array.from(document.querySelectorAll('#pInputs select')).map((s,i) => s.value === 'Custom' ? document.getElementById(`pc-${i}`).value : s.value);
+    if(names.some(n=>!n)) return alert("Select all players");
     const key = names.map(n=>n.toLowerCase()).sort().join('-');
-    document.getElementById('lineupBadge').innerText = (LINEUPS[key] && LINEUPS[key][activeMode]) ? LINEUPS[key][activeMode] : "Casual Tournament";
-    
-    const body = document.getElementById('table-score-body'); body.innerHTML = "";
-    names.forEach(name => {
-        body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}">
-            <option value="99" selected>Other (1 Pt)</option><option value="1">1st (10 Pts)</option>
-            <option value="2">2nd (5 Pts)</option>${cnt > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}
-            <option value="0">Last (0 Pts)</option></select></td></tr>`;
+    document.getElementById('lBadge').innerText = (LINEUPS[key] && LINEUPS[key][activeMode]) ? LINEUPS[key][activeMode] : `${names.length}P ${activeMode} Tourney`;
+    const tbody = document.getElementById('table-body'); tbody.innerHTML = "";
+    names.forEach(n => {
+        tbody.innerHTML += `<tr><td><b>${n}</b></td><td><select class="r-val" data-name="${n}"><option value="99" selected>Other (1 Pt)</option><option value="1">1st (10 Pts)</option><option value="2">2nd (5 Pts)</option>${names.length > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}<option value="0">Last (0 Pts)</option></select></td></tr>`;
     });
-    document.getElementById('pane-setup').style.display="none"; document.getElementById('pane-play').style.display="block";
+    document.getElementById('pane-setup').style.display = 'none';
+    document.getElementById('pane-rank').style.display = 'block';
 };
 
-window.saveWeightedResult = async () => {
-    const players = []; let win = '', lost = '';
-    document.querySelectorAll('.rank-sel').forEach(sel => {
-        const r = parseInt(sel.value); const n = sel.getAttribute('data-player');
-        let pts = 1; if(r===1){pts=10; win=n;} else if(r===2) pts=5; else if(r===3) pts=3; else if(r===0){pts=0; lost=n;}
-        players.push({ name:n, rank:r, pts });
+window.save = async () => {
+    const players = []; let win = '', last = '';
+    document.querySelectorAll('.r-val').forEach(s => {
+        const r = parseInt(s.value); const name = s.getAttribute('data-name');
+        let pts = 1; if(r===1){pts=10; win=name;} else if(r===2) pts=5; else if(r===3) pts=3; else if(r===0){pts=0; last=name;}
+        players.push({ name, rank: r, pts });
     });
-    if(!win || !lost) return alert("Select 1st and Last!");
-    const lName = document.getElementById('lineupBadge').innerText;
-    await addDoc(gRef, { gameType: activeMode, lineupName: lName, pCount: players.length, players, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
-    if(confirm("Match Saved! Another match?")) { document.querySelectorAll('.rank-sel').forEach(s => s.value = "99"); }
+    if(!win || !last) return alert("Select 1st and Last!");
+    const lName = document.getElementById('lBadge').innerText;
+    await addDoc(gRef, { gameType: activeMode, lineupName: lName, players, winner: win, last, time: new Date().toISOString(), secret: PASS });
+    if(confirm("Saved! Play another match with this group?")) { document.querySelectorAll('.r-val').forEach(s=>s.value="99"); }
     else { location.reload(); }
 };
-
-window.newSeries28 = () => {
-    const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
-    const h = `<div style="position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:999;">
-        <div class="card" style="width:90%; max-width:400px;"><h3>28 Setup</h3>
-        <select id="mTarget"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-        <select id="mT1"><option value="" selected disabled>Team 1</option>${o}</select>
-        <select id="mT2"><option value="" selected disabled>Team 2</option>${o}</select>
-        <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="conf28()">Start</button>
-        </div></div>`;
-    document.getElementById('modal-container').innerHTML = h;
-};
-
-window.conf28 = async () => {
-    const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
-    await addDoc(gRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS });
-    location.reload();
-};
-
-onSnapshot(query(gRef, orderBy("time")), snap => {
-    allG = snap.docs.map(d => d.data());
-    const seriesMap = {};
-    allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
-        if (g.isInit) { seriesMap[g.seriesId].teamA = g.teamA; seriesMap[g.seriesId].teamB = g.teamB; seriesMap[g.seriesId].target = g.seriesTarget; }
-        else if (g.manualEnd) seriesMap[g.seriesId].stop = true;
-        else if (g.winner) seriesMap[g.seriesId].wins[g.winner] = (seriesMap[g.seriesId].wins[g.winner] || 0) + 1;
-    });
-    const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
-    Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
-        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-            <div style="text-align:center; flex:1"><b>${s.teamA}</b><div style="font-size:24px; font-weight:800; color:var(--gold)">${wA}</div></div>
-            <div style="font-weight:900; color:var(--muted)">VS</div>
-            <div style="text-align:center; flex:1"><b>${s.teamB}</b><div style="font-size:24px; font-weight:800; color:var(--gold)">${wB}</div></div></div>
-            <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-            </div></div>`;
-    });
-});
-window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
 </script>
 </body>
 </html>
