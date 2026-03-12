@@ -3,370 +3,325 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>Gaming Zone</title>
-<link rel="icon" href="blufffavicon.png" />
+<title>Gaming Zone - Command Center</title>
 <style>
   :root {
-    --bg1:#061226; --bg2:#081b31; --card:#0e2336;
-    --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db;
+    --bg:#050b18; --card:rgba(255,255,255,0.03); --glass:rgba(255,255,255,0.05);
+    --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info:#3498db; --muted:#9fb7bf;
   }
-  html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:800px;margin:15px auto;padding:15px;}
-  header{display:flex;align-items:center;gap:10px;margin-bottom:15px}
-  .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;}
-  h1{margin:0;font-size:16px;flex:1}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
-  .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  body { margin:0; font-family:'Inter', sans-serif; background:var(--bg); color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  .wrap { max-width:900px; margin:auto; padding:15px; }
+  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+  .logo { font-weight:900; font-size:20px; letter-spacing:-1px; background:linear-gradient(to right, #ff6b6b, #ffd36d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
   
-  .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
-  .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
-  .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; text-align: center; }
+  /* GLASS CARDS */
+  .glass { background:var(--glass); backdrop-filter:blur(15px); border-radius:20px; border:1px solid rgba(255,255,255,0.08); padding:20px; margin-bottom:15px; box-shadow:0 10px 30px rgba(0,0,0,0.4); }
+  
+  /* PODIUM */
+  .podium { display:grid; grid-template-columns: 1fr 1.2fr 1fr; gap:10px; align-items:flex-end; margin-bottom:25px; text-align:center; }
+  .podium-item { background:var(--card); border-radius:15px; padding:15px 5px; border:1px solid rgba(255,255,255,0.05); }
+  .podium-item.first { border-color:var(--gold); box-shadow:0 0 20px rgba(255,211,109,0.1); padding-top:25px; }
+  .p-rank { font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:800; }
+  .p-name { font-size:14px; font-weight:900; display:block; margin:5px 0; color:var(--gold); }
+  .p-pts { font-size:11px; font-weight:700; opacity:0.8; }
 
-  /* DASHBOARD TILES */
-  .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
-  .tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; }
-  .tile small { display: block; color: var(--muted); font-size: 7px; text-transform: uppercase; margin-bottom: 4px; }
-  .tile .val { font-size: 13px; font-weight: 800; color: var(--gold); }
+  /* TABS */
+  .tab-bar { display:flex; gap:10px; margin-bottom:15px; overflow-x:auto; padding-bottom:5px; }
+  .tab { padding:8px 15px; border-radius:20px; background:rgba(255,255,255,0.05); font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap; border:1px solid transparent; }
+  .tab.active { background:var(--accent); color:#000; }
 
-  .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
-  .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; margin-top: 5px; }
-  .b-win { height: 100%; background: var(--accent); }
-  .b-last { height: 100%; background: var(--danger); }
+  /* LEADERBOARD */
+  .leader-row { display:flex; align-items:center; gap:12px; padding:12px; background:rgba(255,255,255,0.02); border-radius:12px; margin-bottom:8px; }
+  .l-rank { font-weight:900; color:var(--muted); font-size:12px; width:15px; }
+  .l-name { flex:1; font-weight:700; font-size:13px; }
+  .l-pts { font-weight:800; color:var(--accent); font-size:13px; }
+  .progress { flex:1; height:4px; background:rgba(255,255,255,0.05); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--accent); border-radius:2px; transition:width 0.5s; }
 
-  .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
-  .neu-btn.primary { background: var(--accent); color: #061226; }
-  .neu-btn.danger { color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
-  .neu-btn.small { padding: 4px 8px; font-size: 9px; }
+  /* H2H RIVALRY */
+  .h2h { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; }
+  .h2h-res { grid-column: span 2; background:rgba(0,0,0,0.2); padding:15px; border-radius:12px; margin-top:10px; text-align:center; }
+  
+  /* BUTTONS */
+  .btn { padding:10px 15px; border-radius:12px; border:none; font-weight:800; font-size:11px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+  .btn.gold { background:var(--gold); color:#000; }
+  .btn.primary { background:var(--accent); color:#000; }
+  .btn.danger { background:var(--danger); color:#fff; }
+  .btn.small { padding:5px 10px; font-size:9px; }
 
-  select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
-  .score-val { font-size: 24px; font-weight: 800; color: var(--gold); }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
-  .log-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff10; padding: 10px 0; }
+  select, input { background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.1); padding:10px; border-radius:10px; width:100%; font-size:12px; outline:none; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:10px; text-align:left; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .hero-img { width:100%; border-radius:20px; margin-bottom:20px; }
 </style>
 </head>
 <body>
 
 <div class="wrap">
   <header>
-    <div class="logo">GZ</div>
-    <h1>Gaming Zone</h1>
-    <button class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
-    <button id="btn-home" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
+    <div class="logo">GAMING ZONE</div>
+    <div>
+        <button id="nav-home" class="btn primary small" onclick="switchView('HOME')">🎮 Play</button>
+        <button id="nav-dash" class="btn gold small" onclick="switchView('DASH')">📊 Dashboard</button>
+    </div>
   </header>
 
-  <img src="bluffmasters.png" alt="Bluff Masters" class="hero-img"/>
-
   <section id="view-HOME">
-    <div class="card">
-      <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
-      <div class="game-grid">
-        <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28"><div class="game-name-overlay">28 Game</div></div>
-        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff"><div class="game-name-overlay">Bluff</div></div>
-        <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO"><div class="game-name-overlay">UNO</div></div>
+    <img src="bluffmasters.png" class="hero-img">
+    <div class="glass">
+      <h2 style="font-size:16px; margin:0 0 15px 0;">Start Game</h2>
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
+        <div class="game-box" onclick="launch('28')" style="text-align:center; cursor:pointer; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(255,255,255,0.08);">28</div>
+        <div class="game-box" onclick="launch('Bluff')" style="text-align:center; cursor:pointer; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(255,255,255,0.08);">BLUFF</div>
+        <div class="game-box" onclick="launch('UNO')" style="text-align:center; cursor:pointer; background:rgba(255,255,255,0.03); padding:15px; border-radius:15px; border:1px solid rgba(255,255,255,0.08);">UNO</div>
+      </div>
+    </div>
+    
+    <div id="pane-entry" style="display:none;" class="glass">
+      <h3 id="entry-title">Setup</h3>
+      <input type="number" id="pCnt" placeholder="Players (3-10)" oninput="drawInputs()">
+      <div id="pInputs"></div>
+      <button id="btn-start" class="btn primary" style="width:100%; display:none;" onclick="goRank()">Start Tournament</button>
+      
+      <div id="pane-rank" style="display:none; margin-top:20px;">
+        <div id="lBadge" style="font-size:10px; font-weight:900; color:var(--accent); margin-bottom:10px;"></div>
+        <table><tbody id="rank-tbody"></tbody></table>
+        <button class="btn primary" style="width:100%; margin-top:15px" onclick="saveMatch()">Finish & Save</button>
       </div>
     </div>
   </section>
 
-  <section id="view-28" style="display:none;">
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h2 style="margin:0; font-size:16px;">Active Series</h2>
-        <button class="neu-btn small" onclick="openDeepStats('28')">📊 Stats</button>
+  <section id="view-DASH" style="display:none;">
+    <div class="tab-bar">
+        <div class="tab active" onclick="setDashGame('UNO', this)">UNO</div>
+        <div class="tab" onclick="setDashGame('Bluff', this)">BLUFF</div>
+        <div class="tab" onclick="setDashGame('28', this)">28 GAME</div>
+    </div>
+
+    <div class="podium" id="podium-area"></div>
+
+    <div class="glass">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3 style="margin:0; font-size:14px;">Leaderboard</h3>
+        <select id="lineup-filter" style="width:auto; padding:5px 10px;" onchange="renderDashboard()">
+            <option value="ALL">All Groups</option>
+        </select>
       </div>
-      <div id="list-28"></div>
-      <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="newSeries28()">➕ New Series</button>
+      <div id="leaderboard-list"></div>
     </div>
-  </section>
 
-  <section id="view-INDIV" style="display:none;">
-    <div class="card" id="pane-setup">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 id="indiv-title" style="margin:0; font-size:16px;">Setup</h3>
-            <button class="neu-btn small" onclick="openDeepStats(window.activeMode)">📊 Stats</button>
-        </div>
-        <input type="number" id="pCnt" min="3" max="10" placeholder="Players (3-10)" oninput="drawInputs()">
-        <div id="pInputs"></div>
-        <button id="btn-start" class="neu-btn primary" style="width:100%; display:none; margin-top:10px" onclick="goScoring()">Enter Tournament</button>
+    <div class="glass">
+      <h3 style="margin:0 0 15px 0; font-size:14px;">⚔️ Rivalry Matrix</h3>
+      <div class="h2h">
+        <select id="h2h1" onchange="runH2H()"><option value="">Select Player 1</option></select>
+        <select id="h2h2" onchange="runH2H()"><option value="">Select Player 2</option></select>
+      </div>
+      <div id="h2h-res" class="h2h-res">Pick two players to see their history...</div>
     </div>
-    <div class="card" id="pane-play" style="display:none;">
-        <h3 id="play-subtitle" style="font-size:14px; margin-bottom:10px;">Tournament Rankings</h3>
-        <table><thead><tr><th>Player</th><th>Position</th></tr></thead><tbody id="table-score-body"></tbody></table>
-        <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveWeightedResult()">Finish Match</button>
-    </div>
-  </section>
 
-  <section id="view-OVERALL" style="display:none;">
-    <div class="card">
-        <h2 style="margin:0 0 15px 0; font-size:16px; text-align:center;">Analytics Hub</h2>
-        <div id="summary-tiles"></div>
-        <button class="neu-btn danger" style="width:100%; margin-top:15px" onclick="resetSystem('ALL')">⚠️ Emergency Reset All Data</button>
+    <div class="glass">
+      <h3 style="margin:0 0 15px 0; font-size:14px;">Recent History</h3>
+      <div id="history-log"></div>
+      <button class="btn danger small" style="width:100%; margin-top:20px;" onclick="wipeGame()">⚠️ Reset Current Game Data</button>
     </div>
   </section>
 </div>
 
-<div id="modal-container"></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, where } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
-const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
+const CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
 const PASS = "zachariahrenji";
 const PLRS = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
-const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
+const LINEUPS = {
+    "annu-megha-rikku-rohan-roopa-zach": { "UNO": "UNO Legends", "Bluff": "Bluff Legends" },
+    "annu-bibin-bimal-megha-rikku-zach": { "UNO": "UNO Masters", "Bluff": "Bluff Masters" }
+};
 
-const app = initializeApp(FIREBASE_CONF);
+const app = initializeApp(CONF);
 const db = getFirestore(app);
 const gRef = collection(db, "games");
 let allG = [];
 window.activeMode = '';
+window.dashMode = 'UNO';
 
 window.switchView = (v) => {
-    ['HOME','28','INDIV','OVERALL'].forEach(x => document.getElementById('view-'+x).style.display = (x===v?'block':'none'));
-    document.getElementById('btn-home').style.display = (v === 'HOME' ? 'none' : 'block');
-    if(v === 'OVERALL') renderGlobalTiles();
+    document.getElementById('view-HOME').style.display = (v === 'HOME' ? 'block' : 'none');
+    document.getElementById('view-DASH').style.display = (v === 'DASH' ? 'block' : 'none');
+    document.getElementById('nav-home').classList.toggle('primary', v==='HOME');
+    document.getElementById('nav-dash').classList.toggle('gold', v==='DASH');
+    if(v === 'DASH') renderDashboard();
 };
 
-window.launchGame = (m) => { window.activeMode = m; switchView(m==='28'?'28':'INDIV'); if(m!=='28') resetSetup(); };
-
-function resetSetup() {
-    document.getElementById('indiv-title').innerText = window.activeMode + ' Setup';
-    document.getElementById('pCnt').value = ""; document.getElementById('pInputs').innerHTML = "";
-    document.getElementById('btn-start').style.display = "none";
-    document.getElementById('pane-setup').style.display = "block";
-    document.getElementById('pane-play').style.display = "none";
-}
+window.launch = (m) => {
+    activeMode = m;
+    document.getElementById('pane-entry').style.display = 'block';
+    document.getElementById('entry-title').innerText = m + ' Setup';
+    document.getElementById('pCnt').value = "";
+    document.getElementById('pInputs').innerHTML = "";
+    document.getElementById('btn-start').style.display = 'none';
+    document.getElementById('pane-rank').style.display = 'none';
+};
 
 window.drawInputs = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     const container = document.getElementById('pInputs'); container.innerHTML = "";
-    if(isNaN(cnt) || cnt < 3 || cnt > 10) { document.getElementById('btn-start').style.display="none"; return; }
+    if(cnt < 3 || cnt > 10) return;
     for(let i=0; i<cnt; i++) {
-        container.innerHTML += `<select id="ps-${i}" onchange="refreshExclusion()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
+        container.innerHTML += `<select id="ps-${i}" onchange="checkDupes()"><option value="" disabled selected>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}</select>`;
     }
-    document.getElementById('btn-start').style.display="block";
+    document.getElementById('btn-start').style.display = 'block';
 };
 
-window.refreshExclusion = () => {
-    const cnt = parseInt(document.getElementById('pCnt').value);
-    const used = [];
-    for(let i=0; i<cnt; i++) {
-        const v = document.getElementById(`ps-${i}`).value; if(v && v !== "C") used.push(v);
-        document.getElementById(`pc-${i}`).style.display = (v === "C" ? "block" : "none");
-    }
-    for(let i=0; i<cnt; i++) {
-        const sel = document.getElementById(`ps-${i}`);
-        Array.from(sel.options).forEach(opt => { if(opt.value && opt.value !== "C") opt.disabled = used.includes(opt.value) && sel.value !== opt.value; });
-    }
+window.checkDupes = () => {
+    const sel = Array.from(document.querySelectorAll('#pInputs select')).map(s => s.value);
+    document.querySelectorAll('#pInputs select').forEach(s => {
+        Array.from(s.options).forEach(opt => opt.disabled = sel.includes(opt.value) && s.value !== opt.value);
+    });
 };
 
-window.goScoring = () => {
-    const cnt = parseInt(document.getElementById('pCnt').value);
-    document.getElementById('play-subtitle').innerText = `${cnt} Player ${activeMode} Tournament`;
-    const body = document.getElementById('table-score-body'); body.innerHTML = "";
-    for(let i=0; i<cnt; i++) {
-        const sel = document.getElementById(`ps-${i}`).value;
-        const name = (sel === 'C' ? document.getElementById(`pc-${i}`).value : sel);
-        if(!name) return alert("Fill all names");
-        body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}">
+window.goRank = () => {
+    const names = Array.from(document.querySelectorAll('#pInputs select')).map(s => s.value);
+    if(names.some(n=>!n)) return alert("Select all players");
+    const key = names.map(n=>n.toLowerCase()).sort().join('-');
+    document.getElementById('lBadge').innerText = (LINEUPS[key] && LINEUPS[key][activeMode]) ? LINEUPS[key][activeMode] : "Casual Tournament";
+    
+    const tbody = document.getElementById('rank-tbody'); tbody.innerHTML = "";
+    names.forEach(n => {
+        tbody.innerHTML += `<tr><td><b>${n}</b></td><td><select class="r-val" data-name="${n}">
             <option value="99" selected>Other (1 Pt)</option>
-            <option value="1">1st (10 Pts)</option>
-            <option value="2">2nd (5 Pts)</option>
-            ${cnt > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}
+            <option value="1">1st (10 Pts)</option><option value="2">2nd (5 Pts)</option>
+            ${names.length > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}
             <option value="0">Last (0 Pts)</option>
         </select></td></tr>`;
-    }
-    document.getElementById('pane-setup').style.display="none"; document.getElementById('pane-play').style.display="block";
+    });
+    document.getElementById('pane-setup').style.display = 'none';
+    document.getElementById('pane-rank').style.display = 'block';
 };
 
-window.saveWeightedResult = async () => {
-    const cnt = parseInt(document.getElementById('pCnt').value);
-    const results = [];
-    let win = '', lost = '';
-    document.querySelectorAll('.rank-sel').forEach(sel => {
-        const rank = parseInt(sel.value);
-        const name = sel.getAttribute('data-player');
-        let pts = 1;
-        if(rank === 1) { pts = 10; win = name; }
-        else if(rank === 2) pts = 5;
-        else if(rank === 3) pts = 3;
-        else if(rank === 0) { pts = 0; lost = name; }
-        results.push({ name, rank, pts });
+window.saveMatch = async () => {
+    const players = []; let win = '', last = '';
+    document.querySelectorAll('.r-val').forEach(s => {
+        const r = parseInt(s.value); const name = s.getAttribute('data-name');
+        let pts = 1; if(r===1){pts=10; win=name;} else if(r===2) pts=5; else if(r===3) pts=3; else if(r===0){pts=0; last=name;}
+        players.push({name, rank:r, pts});
     });
-    if(!win || !lost) return alert("Identify 1st and Last!");
+    if(!win || !last) return alert("Select 1st and Last!");
+    const lName = document.getElementById('lBadge').innerText;
+    await addDoc(gRef, { gameType: activeMode, lineupName: lName, players, winner: win, last, time: new Date().toISOString(), secret: PASS });
+    if(confirm("Saved! Play another match?")) { document.querySelectorAll('.r-val').forEach(s=>s.value="99"); }
+    else { switchView('HOME'); }
+};
 
-    await addDoc(gRef, { gameType: activeMode, pCount: cnt, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
+// DASHBOARD CORE
+window.setDashGame = (m, el) => {
+    dashMode = m;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderDashboard();
+};
+
+window.renderDashboard = () => {
+    const lFilter = document.getElementById('lineup-filter').value;
+    const data = allG.filter(g => (dashMode==='28' ? (!g.gameType || g.gameType==='28') : g.gameType === dashMode) && g.winner);
     
-    if(confirm("Saved! Record another match for these players?")) {
-        document.querySelectorAll('.rank-sel').forEach(sel => sel.value = "99");
-    } else {
-        resetSetup();
+    // Update Lineup Filter Options
+    const lineups = [...new Set(data.map(g => g.lineupName))].filter(Boolean);
+    const filterEl = document.getElementById('lineup-filter');
+    const curVal = filterEl.value;
+    filterEl.innerHTML = `<option value="ALL">All Combined</option>` + lineups.map(l => `<option value="${l}" ${l===curVal?'selected':''}>${l}</option>`).join('');
+
+    const filtered = lFilter === 'ALL' ? data : data.filter(g => g.lineupName === lFilter);
+    const stats = {};
+    filtered.forEach(g => {
+        const pList = g.players || [{name: g.winner, pts:10, rank:1}, {name: g.last, pts:0, rank:0}];
+        pList.forEach(p => {
+            if(!stats[p.name]) stats[p.name] = {pts:0, w:0, t:0};
+            stats[p.name].pts += (p.pts || 0); stats[p.name].t++; if(p.rank===1) stats[p.name].w++;
+        });
+    });
+
+    const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
+    
+    // Render Podium
+    const podium = document.getElementById('podium-area');
+    podium.innerHTML = "";
+    if(sorted.length >= 2) {
+        podium.innerHTML = `
+            <div class="podium-item">
+                <div class="p-rank">#2</div><span class="p-name">${sorted[1]}</span><span class="p-pts">${stats[sorted[1]].pts} Pts</span>
+            </div>
+            <div class="podium-item first">
+                <div class="p-rank">👑 Champion</div><span class="p-name">${sorted[0]}</span><span class="p-pts">${stats[sorted[0]].pts} Pts</span>
+            </div>
+            <div class="podium-item">
+                <div class="p-rank">#3</div><span class="p-name">${sorted[2]||'—'}</span><span class="p-pts">${sorted[2]?stats[sorted[2]].pts:'0'} Pts</span>
+            </div>`;
     }
-};
 
-window.newSeries28 = () => {
-    const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
-    const h = `<div class="modal-box"><h3>28 Setup</h3>
-        <select id="mTarget"><option value="5">First to 5</option><option value="10">First to 10</option></select>
-        <select id="mT1" onchange="filterTMS()"><option value="" selected disabled>Team 1</option>${o}</select>
-        <select id="mT2"><option value="" selected disabled>Team 2</option>${o}</select>
-        <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="conf28()">Start</button>
-        <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Close</button></div>`;
-    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
-};
+    // Render List
+    const list = document.getElementById('leaderboard-list');
+    list.innerHTML = sorted.map((n, i) => `
+        <div class="leader-row">
+            <div class="l-rank">${i+1}</div>
+            <div class="l-name">${n}</div>
+            <div class="progress"><div class="progress-fill" style="width:${(stats[n].w/stats[n].t)*100}%"></div></div>
+            <div class="l-pts">${stats[n].pts}</div>
+        </div>`).join('');
 
-window.filterTMS = () => {
-    const t1 = document.getElementById('mT1').value;
-    Array.from(document.getElementById('mT2').options).forEach(o => { if(o.value) o.disabled = t1.split(' & ').some(m => o.value.includes(m)); });
-};
-
-window.conf28 = async () => {
-    const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
-    await addDoc(gRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS });
-    closeM();
-};
-
-window.render28 = () => {
-    const seriesMap = {};
-    allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
-        const s = seriesMap[g.seriesId];
-        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; }
-        else if (g.manualEnd) s.stop = true;
-        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+    // Update H2H Player Selects
+    ['h2h1', 'h2h2'].forEach(id => {
+        const s = document.getElementById(id); const val = s.value;
+        s.innerHTML = `<option value="">Select Player</option>` + sorted.map(n => `<option value="${n}" ${n===val?'selected':''}>${n}</option>`).join('');
     });
-    const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
-    Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
-        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-            <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div></div>
-            <div style="font-weight:900; color:var(--muted)">VS</div>
-            <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div></div></div>
-            <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="resetSystem('SERIES', '${s.id}')">STOP</button>
-            </div></div>`;
-    });
+
+    // History Log
+    document.getElementById('history-log').innerHTML = filtered.slice(-5).reverse().map(g => `
+        <div class="log-item">
+            <div style="font-size:10px;">${new Date(g.time).toLocaleDateString()} - 🏆 ${g.winner}</div>
+            <button class="btn danger small" style="padding:2px 5px;" onclick="wipeRound('${g.time}')">🗑️</button>
+        </div>`).join('');
 };
 
-window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
-
-// DEEP DIVE DASHBOARD
-window.openDeepStats = (m, pSize = 'ALL') => {
-    const is28 = m === '28';
-    let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
-    if(pSize !== 'ALL') data = data.filter(g => g.pCount === parseInt(pSize));
-
-    const st = {};
-    data.forEach(g => {
-        if(is28) {
-            [g.winner, g.loser].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, pts:0, t:0} });
-            st[g.winner].w++; st[g.loser].l++; st[g.winner].t++; st[g.loser].t++;
-        } else if(g.players) {
-            g.players.forEach(p => {
-                if(!st[p.name]) st[p.name] = {w:0, l:0, pts:0, t:0};
-                st[p.name].pts += p.pts; st[p.name].t++;
-                if(p.rank === 1) st[p.name].w++; if(p.rank === 0) st[p.name].l++;
-            });
+window.runH2H = () => {
+    const p1 = document.getElementById('h2h1').value;
+    const p2 = document.getElementById('h2h2').value;
+    if(!p1 || !p2 || p1 === p2) return;
+    const filtered = allG.filter(g => g.gameType === dashMode);
+    let p1W = 0, p2W = 0, p1L = 0, p2L = 0, common = 0;
+    filtered.forEach(g => {
+        const names = (g.players||[]).map(p=>p.name);
+        if(names.includes(p1) && names.includes(p2)) {
+            common++; if(g.winner === p1) p1W++; if(g.winner === p2) p2W++;
+            if(g.last === p1) p1L++; if(g.last === p2) p2L++;
         }
     });
-
-    const sorted = Object.keys(st).sort((a,b) => is28 ? st[b].w - st[a].w : st[b].pts - st[a].pts);
-    const mvp = sorted[0] || '—';
-    const tgt = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
-
-    let h = `<div class="modal-box"><h3>${m} Dashboard</h3>
-        <select onchange="openDeepStats('${m}', this.value)" style="margin-bottom:15px">
-            <option value="ALL">Combined Stats</option>
-            ${[3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${pSize==''+n?'selected':''}>${n} Player Tourney</option>`).join('')}
-        </select>
-        <div class="dash-grid">
-            <div class="tile"><small>${is28?'WIN KING':'POINTS KING'}</small><div class="val">${mvp}</div></div>
-            <div class="tile"><small>💩 LAST KING</small><div class="val">${tgt}</div></div>
-            <div class="tile" style="grid-column: span 2"><small>🎮 SESSIONS RECORDED</small><div class="val">${data.length}</div></div>
+    document.getElementById('h2h-res').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="text-align:left;"><b>${p1}</b><br><small>${p1W} Wins | ${p1L} 💩</small></div>
+            <div style="font-size:10px; color:var(--muted)">vs<br>${common} Match</div>
+            <div style="text-align:right;"><b>${p2}</b><br><small>${p2W} Wins | ${p2L} 💩</small></div>
         </div>`;
-
-    sorted.forEach(n => {
-        const d = st[n]; const wP = (d.w/d.t)*100, lP = (d.l/d.t)*100;
-        h += `<div class="analytics-row"><div style="display:flex; justify-content:space-between; font-size:10px"><b>${n}</b><span>${is28 ? d.w+' Wins' : d.pts+' Pts'}</span></div>
-              <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-last" style="width:${lP}%"></div></div></div>`;
-    });
-
-    h += `<h4 style="margin-top:15px">History (Tap 🗑️ to delete)</h4>`;
-    data.slice(-8).reverse().forEach(g => h += `
-        <div class="log-item">
-            <div style="font-size:10px;">${new Date(g.time).toLocaleString()}<br>🏆 ${g.winner} | 💩 ${g.last||g.loser}</div>
-            <button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}', '${m}')">🗑️</button>
-        </div>`);
-    
-    h += `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;">
-            <button class="neu-btn" style="flex:1" onclick="shareStats('${m}', '${pSize}')">📤 Share</button>
-            <button class="neu-btn danger" style="flex:1" onclick="resetSystem('GAME', '${m}')">⚠️ Reset ${m}</button>
-            <button class="neu-btn primary" style="width:100%" onclick="closeM()">Close</button>
-          </div></div>`;
-    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
 };
 
-window.renderGlobalTiles = () => {
-    const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
-    document.getElementById('summary-tiles').innerHTML = `
-        <div class="card" onclick="openDeepStats('28')">🏏 <b>28</b> - ${f('28')} Series</div>
-        <div class="card" onclick="openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
-        <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
+window.wipeRound = async (t) => {
+    if(prompt("Delete Password:") !== PASS) return;
+    const snap = await getDocs(query(gRef, where("time", "==", t)));
+    snap.forEach(async d => await deleteDoc(d.ref));
 };
 
-window.resetSystem = async (type, id, gameMode = '') => {
-    if(prompt(`Password to ${type}:`) !== PASS) return;
-    let snap;
-    if(type === 'ALL') snap = await getDocs(gRef);
-    else if(type === 'GAME') snap = await getDocs(query(gRef, where("gameType", "==", id)));
-    else if(type === 'ROUND') snap = await getDocs(query(gRef, where("time", "==", id)));
-    else if(type === 'SERIES') {
-        const sSnap = await getDocs(query(gRef, where("seriesId", "==", id)));
-        sSnap.forEach(async d => await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }));
-        return;
-    }
-    
-    const deleteOps = [];
-    snap.forEach(d => deleteOps.push(deleteDoc(d.ref)));
-    await Promise.all(deleteOps);
-    
-    if(type === 'ROUND' || type === 'GAME') {
-        const up = await getDocs(query(gRef, orderBy("time")));
-        allG = up.docs.map(d => d.data());
-        if(type === 'ROUND') openDeepStats(gameMode); else openDeepStats(id);
-    } else {
-        location.reload();
-    }
+window.wipeGame = async () => {
+    if(prompt("Reset " + dashMode + " Password:") !== PASS) return;
+    const snap = await getDocs(query(gRef, where("gameType", "==", dashMode)));
+    snap.forEach(async d => await deleteDoc(d.ref));
 };
-
-window.shareStats = (m, pSize) => {
-    const is28 = m === '28';
-    let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
-    if(pSize !== 'ALL') data = data.filter(g => g.pCount === parseInt(pSize));
-    const st = {};
-    data.forEach(g => {
-        if(is28) { if(!st[g.winner]) st[g.winner] = {w:0}; st[g.winner].w++; }
-        else { g.players.forEach(p => { if(!st[p.name]) st[p.name] = {pts:0}; st[p.name].pts += p.pts; }); }
-    });
-    const sorted = Object.keys(st).sort((a,b) => is28 ? st[b].w - st[a].w : st[b].pts - st[a].pts);
-    let msg = `🏆 ${m} ${pSize==='ALL'?'Overall':pSize+'P'} Leaderboard\n\n`;
-    sorted.forEach((n, i) => msg += `${i+1}. ${n}: ${is28 ? st[n].w+' Wins' : st[n].pts+' Pts'}\n`);
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
-};
-
-window.closeM = () => document.getElementById('modal-container').innerHTML = "";
 
 onSnapshot(query(gRef, orderBy("time")), snap => {
     allG = snap.docs.map(d => d.data());
+    renderDashboard();
     render28();
 });
 </script>
 </body>
 </html>
-
