@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>GZ - Command Center</title>
+<title>GZ - Command Center Pro</title>
 <style>
   :root {
     --bg:#050b18; --glass:rgba(255,255,255,0.05); --card:rgba(255,255,255,0.02);
@@ -11,52 +11,35 @@
   }
   body { margin:0; font-family:'Inter', sans-serif; background:var(--bg); color:#fff; overflow-x:hidden; }
   .wrap { max-width:900px; margin:auto; padding:20px; }
-  
-  /* HEADER */
-  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:30px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; }
+  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:15px; }
   .logo { font-weight:900; font-size:22px; background:linear-gradient(to right, #ff6b6b, #ffd36d); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
   .nav-btn { background:var(--info); color:#fff; padding:8px 15px; border-radius:20px; text-decoration:none; font-size:11px; font-weight:800; border:none; cursor:pointer; }
-  
-  /* GLASS CARDS */
   .glass { background:var(--glass); backdrop-filter:blur(20px); border-radius:24px; border:1px solid rgba(255,255,255,0.08); padding:25px; margin-bottom:20px; }
   
-  /* PODIUM */
+  /* KPI TILES */
+  .kpi-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:20px; }
+  .kpi-tile { background:var(--card); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:16px; text-align:center; min-height: 60px; display: flex; flex-direction: column; justify-content: center; }
+  .kpi-tile small { display:block; color:var(--muted); font-size:7px; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px; font-weight: 800; }
+  .kpi-tile .val { font-size:11px; font-weight:900; color:var(--gold); line-height: 1.2; }
+
   .podium { display:grid; grid-template-columns: 1fr 1.2fr 1fr; gap:12px; align-items:flex-end; margin-bottom:30px; text-align:center; }
   .podium-item { background:var(--card); border-radius:15px; padding:20px 10px; border:1px solid rgba(255,255,255,0.05); }
   .podium-item.first { border-color:var(--gold); box-shadow:0 0 30px rgba(255,211,109,0.15); padding-top:40px; }
-  .p-rank { font-size:10px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:1px; }
-  .p-name { font-size:16px; font-weight:900; display:block; margin:8px 0; }
-  .p-pts { font-size:12px; color:var(--gold); font-weight:700; }
-
-  /* CONTROLS */
-  .control-row { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
-  .tab { padding:10px 20px; border-radius:30px; background:rgba(255,255,255,0.05); font-size:12px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-  .tab.active { background:var(--accent); color:#050b18; border-color:var(--accent); }
   
-  /* DROPDOWN - FIXED VISIBILITY */
-  select { 
-    background:#162136 !important; 
-    color:#ffffff !important; 
-    padding:12px; 
-    border-radius:12px; 
-    border:1px solid rgba(255,255,255,0.2); 
-    font-weight:600; 
-    width:100%;
-    cursor:pointer;
-  }
-  option { background:#162136; color:#ffffff; }
-
-  /* LEADERBOARD */
-  .leader-row { display:flex; align-items:center; gap:15px; padding:15px; background:rgba(255,255,255,0.02); border-radius:16px; margin-bottom:10px; }
-  .l-rank { font-weight:900; color:var(--muted); width:20px; }
-  .l-name { flex:1; font-weight:700; font-size:14px; }
-  .l-pts { font-weight:900; color:var(--accent); font-size:15px; }
-  .bar-bg { flex:1.5; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden; }
-  .bar-fill { height:100%; background:var(--accent); transition: width 0.8s ease-out; }
-
-  /* RIVALRY */
-  .h2h-grid { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px; }
-  .h2h-display { margin-top:20px; background:rgba(0,0,0,0.3); border-radius:15px; padding:20px; text-align:center; border:1px dashed rgba(255,255,255,0.1); }
+  .tab-bar { display:flex; gap:10px; margin-bottom:20px; }
+  .tab { padding:10px 20px; border-radius:30px; background:rgba(255,255,255,0.05); font-size:11px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.1); }
+  .tab.active { background:var(--accent); color:#050b18; }
+  
+  select { background:#162136 !important; color:#ffffff !important; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.2); font-weight:600; width:100%; }
+  
+  .lb-card { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; min-width:500px; }
+  th { text-align:left; color:var(--muted); font-size:9px; padding:12px; text-transform:uppercase; }
+  td { padding:12px; border-bottom:1px solid rgba(255,255,255,0.03); font-size:12px; }
+  .rank-pill { display:inline-block; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px; margin-right:4px; }
+  .r1 { background:var(--accent); color:#000; }
+  .r2 { background:var(--info); color:#fff; }
+  .rl { background:var(--danger); color:#fff; }
 </style>
 </head>
 <body>
@@ -67,44 +50,44 @@
     <a href="index.html" class="nav-btn">🏠 HOME</a>
   </header>
 
-  <div class="control-row">
+  <div class="tab-bar">
     <div class="tab active" onclick="setMode('UNO', this)">UNO</div>
     <div class="tab" onclick="setMode('Bluff', this)">BLUFF</div>
-    <div class="tab" onclick="setMode('28', this)">28 GAME</div>
   </div>
 
-  <div class="glass" style="padding:15px; display:flex; align-items:center; gap:15px;">
-    <span style="font-size:12px; font-weight:800; color:var(--muted)">LINEUP:</span>
+  <div class="glass">
+    <small style="color:var(--muted); font-weight:800; display:block; margin-bottom:8px;">SELECT LINEUP</small>
     <select id="lineupFilter" onchange="renderAll()"></select>
+    <div id="lineupMembers" style="margin-top:12px; font-size:11px; color:var(--info); font-style:italic; border-top:1px solid #ffffff10; padding-top:8px;"></div>
   </div>
+
+  <div class="kpi-grid" id="kpi-container"></div>
 
   <div class="podium" id="podium"></div>
 
-  <div class="glass">
-    <h3 style="margin-top:0; font-size:14px; letter-spacing:1px; color:var(--accent)">LEADERBOARD</h3>
-    <div id="leaderboard"></div>
-  </div>
-
-  <div class="glass">
-    <h3 style="margin-top:0; font-size:14px; letter-spacing:1px; color:var(--gold)">⚔️ RIVALRY MATRIX</h3>
-    <div class="h2h-grid">
-      <select id="rival1" onchange="runRivalry()"></select>
-      <select id="rival2" onchange="runRivalry()"></select>
-    </div>
-    <div id="rival-display" class="h2h-display">Select two players to compare performance</div>
+  <div class="glass lb-card">
+    <h3 style="margin-top:0; font-size:14px; color:var(--accent); letter-spacing:1px;">PERFORMANCE BOARD</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>1st</th>
+          <th>2nd</th>
+          <th>3rd</th>
+          <th>Last</th>
+          <th>Pts</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboard"></tbody>
+    </table>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy, where, getDocs } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 const FIREBASE_CONFIG = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
-const LINEUP_MAP = {
-    "annu-megha-rikku-rohan-roopa-zach": "Legends",
-    "annu-bibin-bimal-megha-rikku-zach": "Masters"
-};
-
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 const gRef = collection(db, "games");
@@ -120,107 +103,82 @@ window.setMode = (m, el) => {
 };
 
 window.renderAll = () => {
-    const is28 = currentMode === '28';
-    // Filter games by mode
-    const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
+    const rawGames = allData.filter(g => g.gameType === currentMode && g.winner);
     
-    // 1. Tag Lineups (Retroactive)
+    let lineupsFound = {};
     rawGames.forEach(g => {
-        if (!g.lineupName) {
-            const players = g.players ? g.players.map(p => p.name.toLowerCase()).sort().join('-') : "";
-            if (LINEUP_MAP[players]) {
-                g.lineupName = currentMode + " " + LINEUP_MAP[players];
-            } else if (g.pCount) {
-                g.lineupName = g.pCount + "P Tournament";
-            } else {
-                g.lineupName = "Casual Session";
-            }
-        }
+        const pNames = g.players ? g.players.map(p => p.name).sort() : [];
+        const key = pNames.join(', ');
+        if(!lineupsFound[key]) lineupsFound[key] = { count: pNames.length, name: key };
     });
 
-    // 2. Populate Dropdown
-    const foundLineups = [...new Set(rawGames.map(g => g.lineupName))].filter(Boolean);
+    const lKeys = Object.keys(lineupsFound);
     const lSelect = document.getElementById('lineupFilter');
-    const currentSelection = lSelect.value || "ALL";
-    lSelect.innerHTML = `<option value="ALL">All Combined Stats</option>` + 
-        foundLineups.map(l => `<option value="${l}" ${l === currentSelection ? 'selected' : ''}>${l}</option>`).join('');
+    const savedLineup = lSelect.value;
+    lSelect.innerHTML = `<option value="ALL">Combined Stats</option>` + 
+        lKeys.map((k, i) => `<option value="${k}" ${k===savedLineup?'selected':''}>Lineup ${i+1} (${lineupsFound[k].count}P)</option>`).join('');
 
-    // 3. Filter by Lineup
-    const filteredGames = lSelect.value === 'ALL' ? rawGames : rawGames.filter(g => g.lineupName === lSelect.value);
+    const activeLineupKey = lSelect.value;
+    const filteredGames = activeLineupKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeLineupKey);
     
+    document.getElementById('lineupMembers').innerText = activeLineupKey === 'ALL' ? "Aggregate view of all recorded matches." : "Members: " + activeLineupKey;
+
     const stats = {};
     filteredGames.forEach(g => {
-        const players = g.players || [{name: g.winner, pts:10, rank:1}, {name: g.last, pts:0, rank:0}];
-        players.forEach(p => {
-            if(!stats[p.name]) stats[p.name] = {pts:0, w:0, t:0};
-            stats[p.name].pts += (p.pts || 0); 
-            stats[p.name].t++;
-            if(p.rank === 1) stats[p.name].w++;
+        const pl = g.players || [];
+        pl.forEach(p => {
+            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, other:0};
+            stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
+            if(p.rank === 1) stats[p.name].r1++;
+            else if(p.rank === 2) stats[p.name].r2++;
+            else if(p.rank === 3) stats[p.name].r3++;
+            else if(p.rank === 0) stats[p.name].rl++;
+            else stats[p.name].other++;
         });
     });
 
-    const sorted = Object.keys(stats).sort((a,b) => is28 ? stats[b].w - stats[a].w : stats[b].pts - stats[a].pts);
+    const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
+
+    // KPI LOGIC
+    const pointsKingQueen = sorted[0] || '—';
+    const lastKingQueen = Object.keys(stats).sort((a,b) => stats[b].rl - stats[a].rl)[0] || '—';
+    const highestFinisher = Object.keys(stats).sort((a,b) => stats[b].r1 - stats[a].r1)[0] || '—';
     
-    // 4. Render Podium
+    // Comeback King/Queen logic: High win rate relative to total games played
+    const comebackKingQueen = Object.keys(stats).sort((a,b) => {
+        const scoreA = stats[a].r1 / (stats[a].t || 1);
+        const scoreB = stats[b].r1 / (stats[b].t || 1);
+        return scoreB - scoreA;
+    })[0] || '—';
+
+    document.getElementById('kpi-container').innerHTML = `
+        <div class="kpi-tile"><small>Total Rounds</small><div class="val">${filteredGames.length}</div></div>
+        <div class="kpi-tile"><small>Points King/Queen</small><div class="val">${pointsKingQueen}</div></div>
+        <div class="kpi-tile"><small>Last Place King/Queen</small><div class="val">${lastKingQueen}</div></div>
+        <div class="kpi-tile"><small>Highest Finisher</small><div class="val">${highestFinisher}</div></div>
+        <div class="kpi-tile"><small>Comeback King/Queen</small><div class="val">${comebackKingQueen}</div></div>
+        <div class="kpi-tile"><small>Active Lineups</small><div class="val">${lKeys.length}</div></div>
+    `;
+
     const pod = document.getElementById('podium');
     if(sorted.length >= 2) {
         pod.innerHTML = `
-            <div class="podium-item">
-                <div class="p-rank">🥈 SECOND</div>
-                <span class="p-name">${sorted[1]}</span>
-                <span class="p-pts">${is28 ? stats[sorted[1]].w+' Wins' : stats[sorted[1]].pts+' Pts'}</span>
-            </div>
-            <div class="podium-item first">
-                <div class="p-rank">👑 CHAMPION</div>
-                <span class="p-name">${sorted[0]}</span>
-                <span class="p-pts">${is28 ? stats[sorted[0]].w+' Wins' : stats[sorted[0]].pts+' Pts'}</span>
-            </div>
-            <div class="podium-item">
-                <div class="p-rank">🥉 THIRD</div>
-                <span class="p-name">${sorted[2]||'—'}</span>
-                <span class="p-pts">${sorted[2] ? (is28 ? stats[sorted[2]].w+' Wins' : stats[sorted[2]].pts+' Pts') : '0'}</span>
-            </div>`;
-    } else { pod.innerHTML = "<p style='grid-column:span 3; opacity:0.5'>Need more match data...</p>"; }
+            <div class="podium-item">🥈 ${sorted[1]}<br><span style="color:var(--gold)">${stats[sorted[1]].pts}</span></div>
+            <div class="podium-item first">👑 ${sorted[0]}<br><span style="color:var(--gold)">${stats[sorted[0]].pts}</span></div>
+            <div class="podium-item">🥉 ${sorted[2]||'-'}<br><span style="color:var(--gold)">${sorted[2]?stats[sorted[2]].pts:0}</span></div>`;
+    }
 
-    // 5. Render Leaderboard
-    document.getElementById('leaderboard').innerHTML = sorted.map((n, i) => {
+    document.getElementById('leaderboard').innerHTML = sorted.map(n => {
         const d = stats[n];
-        return `
-            <div class="leader-row">
-                <div class="l-rank">#${i+1}</div>
-                <div class="l-name">${n}</div>
-                <div class="bar-bg"><div class="bar-fill" style="width:${(d.w/d.t)*100}%"></div></div>
-                <div class="l-pts">${is28 ? d.w : d.pts}</div>
-            </div>`;
+        return `<tr>
+            <td><b>${n}</b></td>
+            <td><span class="rank-pill r1">${d.r1}</span></td>
+            <td><span class="rank-pill r2">${d.r2}</span></td>
+            <td><span class="rank-pill">${d.r3}</span></td>
+            <td><span class="rank-pill rl">${d.rl}</span></td>
+            <td style="color:var(--gold); font-weight:900;">${d.pts}</td>
+        </tr>`;
     }).join('');
-
-    // 6. Update H2H Selects
-    const optHtml = `<option value="">Select Player</option>` + sorted.map(n => `<option value="${n}">${n}</option>`).join('');
-    document.getElementById('rival1').innerHTML = optHtml; 
-    document.getElementById('rival2').innerHTML = optHtml;
-};
-
-window.runRivalry = () => {
-    const p1 = document.getElementById('rival1').value;
-    const p2 = document.getElementById('rival2').value;
-    if(!p1 || !p2 || p1 === p2) return;
-    const is28 = currentMode === '28';
-    const games = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode));
-    let p1w = 0, p2w = 0, p1l = 0, p2l = 0, shared = 0;
-    games.forEach(g => {
-        const ns = (g.players||[]).map(p=>p.name);
-        if(ns.includes(p1) && ns.includes(p2)) {
-            shared++;
-            if(g.winner === p1) p1w++; if(g.winner === p2) p2w++;
-            if(g.last === p1) p1l++; if(g.last === p2) p2l++;
-        }
-    });
-    document.getElementById('rival-display').innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div><b>${p1}</b><br><small>${p1w}W | ${p1l}💩</small></div>
-            <div style="font-size:10px; opacity:0.5">VS<br>${shared} Matches</div>
-            <div><b>${p2}</b><br><small>${p2w}W | ${p2l}💩</small></div>
-        </div>`;
 };
 
 onSnapshot(query(gRef, orderBy("time")), snap => {
