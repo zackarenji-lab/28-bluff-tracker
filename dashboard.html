@@ -7,7 +7,9 @@
 <style>
   :root {
     --bg:#050b18; --glass:rgba(255,255,255,0.05); --card:rgba(255,255,255,0.02);
-    --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info:#3498db; --muted:#9fb7bf;
+    --accent:#2ecc71; --gold:#b8860b; --silver:#a9a9a9; --bronze:#8b4513;
+    --dark-blue:#001a4d; --light-blue:#003cb3;
+    --danger:#ff6b6b; --info:#3498db; --muted:#9fb7bf;
   }
   body { margin:0; font-family:'Inter', sans-serif; background:var(--bg); color:#fff; overflow-x:hidden; }
   .wrap { max-width:900px; margin:auto; padding:20px; }
@@ -16,29 +18,33 @@
   .nav-btn { background:var(--info); color:#fff; padding:8px 15px; border-radius:20px; text-decoration:none; font-size:11px; font-weight:800; border:none; cursor:pointer; }
   .glass { background:var(--glass); backdrop-filter:blur(20px); border-radius:24px; border:1px solid rgba(255,255,255,0.08); padding:25px; margin-bottom:20px; }
   
-  /* KPI TILES */
-  .kpi-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:20px; }
-  .kpi-tile { background:var(--card); border:1px solid rgba(255,255,255,0.05); padding:15px; border-radius:16px; text-align:center; min-height: 60px; display: flex; flex-direction: column; justify-content: center; }
-  .kpi-tile small { display:block; color:var(--muted); font-size:7px; text-transform:uppercase; margin-bottom:5px; letter-spacing:1px; font-weight: 800; }
-  .kpi-tile .val { font-size:11px; font-weight:900; color:var(--gold); line-height: 1.2; }
-
-  .podium { display:grid; grid-template-columns: 1fr 1.2fr 1fr; gap:12px; align-items:flex-end; margin-bottom:30px; text-align:center; }
-  .podium-item { background:var(--card); border-radius:15px; padding:20px 10px; border:1px solid rgba(255,255,255,0.05); }
-  .podium-item.first { border-color:var(--gold); box-shadow:0 0 30px rgba(255,211,109,0.15); padding-top:40px; }
-  
+  /* TAB BAR */
   .tab-bar { display:flex; gap:10px; margin-bottom:20px; }
   .tab { padding:10px 20px; border-radius:30px; background:rgba(255,255,255,0.05); font-size:11px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.1); }
   .tab.active { background:var(--accent); color:#050b18; }
-  
   select { background:#162136 !important; color:#ffffff !important; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.2); font-weight:600; width:100%; }
-  
+
+  /* SAMPLE PODIUM DESIGN */
+  .podium { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; margin-bottom:25px; }
+  .pod-box { display: flex; flex-direction: column; border-radius: 4px; overflow: hidden; }
+  .pod-header { padding: 8px; text-align: center; font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
+  .pod-body { display: flex; height: 80px; }
+  .p-name { background: var(--dark-blue); flex: 1.5; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; text-transform: uppercase; padding: 5px; text-align: center; }
+  .p-pts { background: var(--light-blue); flex: 1; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 22px; color: #ffd36d; }
+
+  /* KPI TILES */
+  .kpi-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-bottom:20px; }
+  .kpi-tile { background:var(--card); border:1px solid rgba(255,255,255,0.05); padding:18px 10px; border-radius:16px; text-align:center; }
+  .kpi-tile small { display:block; color:var(--muted); font-size:8px; text-transform:uppercase; margin-bottom:8px; letter-spacing:1px; font-weight: 800; }
+  .kpi-tile .val { font-size:14px; font-weight:900; color:#ffd36d; text-transform: uppercase; }
+
+  /* LEADERBOARD */
   .lb-card { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; min-width:500px; }
   th { text-align:left; color:var(--muted); font-size:9px; padding:12px; text-transform:uppercase; }
   td { padding:12px; border-bottom:1px solid rgba(255,255,255,0.03); font-size:12px; }
   .rank-pill { display:inline-block; padding:2px 6px; border-radius:4px; font-weight:800; font-size:9px; margin-right:4px; }
   .r1 { background:var(--accent); color:#000; }
-  .r2 { background:var(--info); color:#fff; }
   .rl { background:var(--danger); color:#fff; }
 </style>
 </head>
@@ -61,9 +67,9 @@
     <div id="lineupMembers" style="margin-top:12px; font-size:11px; color:var(--info); font-style:italic; border-top:1px solid #ffffff10; padding-top:8px;"></div>
   </div>
 
-  <div class="kpi-grid" id="kpi-container"></div>
-
   <div class="podium" id="podium"></div>
+
+  <div class="kpi-grid" id="kpi-container"></div>
 
   <div class="glass lb-card">
     <h3 style="margin-top:0; font-size:14px; color:var(--accent); letter-spacing:1px;">PERFORMANCE BOARD</h3>
@@ -118,56 +124,58 @@ window.renderAll = () => {
     lSelect.innerHTML = `<option value="ALL">Combined Stats</option>` + 
         lKeys.map((k, i) => `<option value="${k}" ${k===savedLineup?'selected':''}>Lineup ${i+1} (${lineupsFound[k].count}P)</option>`).join('');
 
-    const activeLineupKey = lSelect.value;
-    const filteredGames = activeLineupKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeLineupKey);
-    
-    document.getElementById('lineupMembers').innerText = activeLineupKey === 'ALL' ? "Aggregate view of all recorded matches." : "Members: " + activeLineupKey;
+    const activeKey = lSelect.value;
+    const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
+    document.getElementById('lineupMembers').innerText = activeKey === 'ALL' ? "Aggregate of all matches." : "Members: " + activeKey;
 
     const stats = {};
-    filteredGames.forEach(g => {
-        const pl = g.players || [];
-        pl.forEach(p => {
-            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, other:0};
+    filtered.forEach(g => {
+        (g.players || []).forEach(p => {
+            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0};
             stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
             if(p.rank === 1) stats[p.name].r1++;
             else if(p.rank === 2) stats[p.name].r2++;
             else if(p.rank === 3) stats[p.name].r3++;
             else if(p.rank === 0) stats[p.name].rl++;
-            else stats[p.name].other++;
         });
     });
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
-    // KPI LOGIC
-    const pointsKingQueen = sorted[0] || '—';
-    const lastKingQueen = Object.keys(stats).sort((a,b) => stats[b].rl - stats[a].rl)[0] || '—';
-    const highestFinisher = Object.keys(stats).sort((a,b) => stats[b].r1 - stats[a].r1)[0] || '—';
-    
-    // Comeback King/Queen logic: High win rate relative to total games played
-    const comebackKingQueen = Object.keys(stats).sort((a,b) => {
-        const scoreA = stats[a].r1 / (stats[a].t || 1);
-        const scoreB = stats[b].r1 / (stats[b].t || 1);
-        return scoreB - scoreA;
-    })[0] || '—';
+    // PODIUM (Splitted Blue Design)
+    const pod = document.getElementById('podium');
+    if(sorted.length >= 3) {
+        pod.innerHTML = `
+            <div class="pod-box">
+                <div class="pod-header" style="background:var(--silver)">Second</div>
+                <div class="pod-body"><div class="p-name">${sorted[1]}</div><div class="p-pts">${stats[sorted[1]].pts}</div></div>
+            </div>
+            <div class="pod-box">
+                <div class="pod-header" style="background:var(--gold)">First</div>
+                <div class="pod-body"><div class="p-name">${sorted[0]}</div><div class="p-pts">${stats[sorted[0]].pts}</div></div>
+            </div>
+            <div class="pod-box">
+                <div class="pod-header" style="background:var(--bronze)">Third</div>
+                <div class="pod-body"><div class="p-name">${sorted[2]}</div><div class="p-pts">${stats[sorted[2]].pts}</div></div>
+            </div>`;
+    } else { pod.innerHTML = ""; }
+
+    // KPI TILES (Increased Font + Bold)
+    const king = sorted[0] || '—';
+    const finisher = Object.keys(stats).sort((a,b) => stats[b].r1 - stats[a].r1)[0] || '—';
+    const last = Object.keys(stats).sort((a,b) => stats[b].rl - stats[a].rl)[0] || '—';
+    const cb = Object.keys(stats).sort((a,b) => (stats[b].r1/stats[b].t) - (stats[a].r1/stats[a].t))[0] || '—';
 
     document.getElementById('kpi-container').innerHTML = `
-        <div class="kpi-tile"><small>Total Rounds</small><div class="val">${filteredGames.length}</div></div>
-        <div class="kpi-tile"><small>Points King/Queen</small><div class="val">${pointsKingQueen}</div></div>
-        <div class="kpi-tile"><small>Last Place King/Queen</small><div class="val">${lastKingQueen}</div></div>
-        <div class="kpi-tile"><small>Highest Finisher</small><div class="val">${highestFinisher}</div></div>
-        <div class="kpi-tile"><small>Comeback King/Queen</small><div class="val">${comebackKingQueen}</div></div>
+        <div class="kpi-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>
+        <div class="kpi-tile"><small>Points King/Queen</small><div class="val">${king}</div></div>
+        <div class="kpi-tile"><small>Last Place King/Queen</small><div class="val">${last}</div></div>
+        <div class="kpi-tile"><small>Highest Finisher</small><div class="val">${finisher}</div></div>
+        <div class="kpi-tile"><small>Comeback King/Queen</small><div class="val">${cb}</div></div>
         <div class="kpi-tile"><small>Active Lineups</small><div class="val">${lKeys.length}</div></div>
     `;
 
-    const pod = document.getElementById('podium');
-    if(sorted.length >= 2) {
-        pod.innerHTML = `
-            <div class="podium-item">🥈 ${sorted[1]}<br><span style="color:var(--gold)">${stats[sorted[1]].pts}</span></div>
-            <div class="podium-item first">👑 ${sorted[0]}<br><span style="color:var(--gold)">${stats[sorted[0]].pts}</span></div>
-            <div class="podium-item">🥉 ${sorted[2]||'-'}<br><span style="color:var(--gold)">${sorted[2]?stats[sorted[2]].pts:0}</span></div>`;
-    }
-
+    // LEADERBOARD
     document.getElementById('leaderboard').innerHTML = sorted.map(n => {
         const d = stats[n];
         return `<tr>
@@ -176,7 +184,7 @@ window.renderAll = () => {
             <td><span class="rank-pill r2">${d.r2}</span></td>
             <td><span class="rank-pill">${d.r3}</span></td>
             <td><span class="rank-pill rl">${d.rl}</span></td>
-            <td style="color:var(--gold); font-weight:900;">${d.pts}</td>
+            <td style="color:#ffd36d; font-weight:900;">${d.pts}</td>
         </tr>`;
     }).join('');
 };
