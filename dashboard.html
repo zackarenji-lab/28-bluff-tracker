@@ -3,104 +3,103 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>GZ - Command Center Ultra</title>
+<title>GZ - Command Center</title>
 <style>
   :root {
-    --bg-gradient: radial-gradient(circle at 20% 20%, #161625 0%, #0b0b14 50%, #050508 100%);
-    --glass: rgba(255, 255, 255, 0.03);
-    --neon-violet: #bc13fe; --neon-blue: #00f5ff; --neon-gold: #ffd36d;
-    --muted: #8b949e; --text: #e6edf3;
+    --bg-gradient: radial-gradient(circle at 50% 50%, #111122 0%, #050508 100%);
+    --panel: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.1);
+    --violet: #7b2cbf; --blue: #3a86ff; --cyan: #00f5ff;
+    --accent: #ffd36d; --text: #e6edf3; --muted: #8b949e;
+    /* Clean Gradients for Tiles */
+    --grad-purp: linear-gradient(135deg, #480ca8, #7209b7);
+    --grad-blue: linear-gradient(135deg, #03045e, #0077b6);
+    --grad-dark: linear-gradient(135deg, #1b1b2f, #16213e);
   }
   
   body { 
     margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); 
-    background-attachment: fixed; color: var(--text); overflow-x: hidden;
+    color: var(--text); min-height: 100vh; overflow-x: hidden;
   }
-  .wrap { max-width: 1000px; margin: auto; padding: 20px; box-sizing: border-box; }
+  .wrap { max-width: 900px; margin: auto; padding: 15px; box-sizing: border-box; }
   
-  /* NEON TABS */
-  .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 35px; }
+  /* SYMMETRICAL TABS */
+  .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
   .g-tab { 
-    padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; 
-    cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); 
-    font-size: 12px; background: var(--glass); color: var(--muted); transition: 0.4s;
+    padding: 14px; border-radius: 10px; text-align: center; font-weight: 800; 
+    cursor: pointer; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--border); 
+    font-size: 11px; background: var(--panel); color: var(--muted); transition: 0.3s;
   }
-  .g-tab.active { 
-    background: linear-gradient(135deg, #4b0082, #00008b);
-    color: white; border-color: var(--neon-blue);
-    box-shadow: 0 0 20px rgba(0, 245, 255, 0.2); transform: translateY(-3px);
+  .g-tab.active { background: linear-gradient(135deg, var(--violet), var(--blue)); color: white; border-color: #fff; transform: translateY(-2px); }
+
+  /* SELECTOR PANEL */
+  .panel { 
+    background: var(--panel); border-radius: 15px; padding: 15px; margin-bottom: 20px; 
+    border: 1px solid var(--border); backdrop-filter: blur(10px);
+  }
+  select { 
+    background: #0d1117; color: white; border: 1px solid #30363d; padding: 12px; 
+    width: 100%; border-radius: 8px; font-weight: 600; font-size: 13px; outline: none;
   }
 
-  /* MODERN 3D PODIUM */
-  .podium { display: flex; justify-content: center; align-items: flex-end; gap: 20px; margin-bottom: 50px; padding-top: 40px; }
-  @media (max-width: 600px) { .podium { flex-direction: column; align-items: center; } }
-  
-  .pod-card {
-    background: rgba(255,255,255,0.02); backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
-    width: 220px; padding: 25px 15px; text-align: center; position: relative;
-    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .pod-card:hover { transform: translateY(-10px) scale(1.02); border-color: var(--neon-blue); }
-  
-  .rank-tag {
-    position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-    padding: 5px 15px; border-radius: 20px; font-weight: 900; font-size: 10px;
-    text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 15px currentColor;
-  }
-  
-  .champ { height: 160px; border-color: var(--neon-gold); box-shadow: 0 0 40px rgba(255, 211, 109, 0.1); }
-  .runner { height: 130px; }
-  
-  .p-name { font-size: 18px; font-weight: 900; text-transform: uppercase; margin: 15px 0 5px 0; letter-spacing: 1px; }
-  .p-pts { font-size: 32px; font-weight: 900; color: var(--neon-gold); }
-
-  /* ADVANCED KPI TILES */
-  .section-header { font-weight: 900; font-size: 14px; color: var(--neon-blue); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; display: flex; align-items: center; gap: 10px; }
-  .section-header::before { content:''; width:4px; height:14px; background:var(--neon-blue); border-radius:2px; }
-
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 40px; }
-  @media (max-width: 768px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-
+  /* SYMMETRICAL KPI GRID */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+  @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
   .k-tile { 
-    background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-    border: 1px solid rgba(255,255,255,0.05); border-left: 3px solid var(--muted);
-    border-radius: 12px; padding: 20px; position: relative; overflow: hidden;
-    transition: 0.3s;
+    padding: 20px 10px; border-radius: 15px; border: 1px solid var(--border);
+    text-align: center; transition: 0.3s;
   }
-  .k-tile:hover { background: rgba(255,255,255,0.05); border-left-color: var(--neon-blue); transform: translateX(5px); }
+  /* Alternating Colors for Symmetry */
+  .k-tile:nth-child(odd) { background: var(--grad-purp); }
+  .k-tile:nth-child(even) { background: var(--grad-blue); }
+  .k-tile.special { background: var(--grad-dark); border-color: var(--violet); }
   
-  .k-tile small { font-size: 8px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 12px; }
-  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
-  .k-tile .sub { font-size: 9px; margin-top: 8px; font-weight: 700; color: var(--neon-blue); opacity: 0.8; }
+  .k-tile small { font-size: 8px; font-weight: 800; color: rgba(255,255,255,0.7); text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .k-tile .val { font-size: 14px; font-weight: 900; color: #fff; }
+  .k-tile .sub { font-size: 8px; margin-top: 5px; color: var(--accent); font-weight: 700; }
 
-  /* RANKING LIST */
-  .rank-row { 
-    background: var(--glass); margin-bottom: 10px; padding: 20px; 
-    border-radius: 16px; display: flex; align-items: center; gap: 20px;
-    border: 1px solid rgba(255,255,255,0.03); transition: 0.3s;
+  /* PREMIUM LEADERBOARD DESIGN */
+  .section-header { font-weight: 900; font-size: 16px; color: #fff; margin: 30px 0 15px 0; text-transform: uppercase; letter-spacing: 1px; border-left: 4px solid var(--violet); padding-left: 10px; }
+  
+  .rank-list { display: flex; flex-direction: column; gap: 10px; }
+  .rank-item { 
+    display: flex; align-items: center; background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
+    padding: 15px; border-radius: 12px; border: 1px solid var(--border); transition: 0.3s;
   }
-  .rank-row:hover { border-color: var(--neon-violet); background: rgba(255,255,255,0.06); }
-  .num { width: 30px; font-weight: 900; color: var(--muted); font-size: 20px; }
-  .score-box { background: linear-gradient(135deg, #ff416c, #ff4b2b); color: white; padding: 10px 18px; border-radius: 10px; font-weight: 900; font-size: 18px; }
+  .rank-item:hover { border-color: var(--cyan); background: rgba(255,255,255,0.08); }
+  
+  .rank-num { width: 40px; font-size: 22px; font-weight: 900; color: var(--muted); font-style: italic; }
+  .rank-item:nth-child(1) .rank-num { color: var(--accent); }
+  
+  .player-core { flex: 1; }
+  .player-name { font-weight: 800; font-size: 15px; margin-bottom: 4px; display: block; }
+  .player-meta { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .player-meta b { color: var(--cyan); }
+
+  .points-badge { 
+    background: #fff; color: #000; padding: 8px 15px; border-radius: 8px; 
+    font-weight: 900; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
 </style>
 </head>
 <body>
 
 <div class="wrap">
   <div class="game-tabs">
-    <div class="g-tab active" onclick="setMode('UNO', this)">Uno Pro</div>
-    <div class="g-tab" onclick="setMode('Bluff', this)">Bluff Elite</div>
-    <div class="g-tab" onclick="setMode('28', this)">28 Masters</div>
+    <div class="g-tab active" onclick="setMode('UNO', this)">UNO</div>
+    <div class="g-tab" onclick="setMode('Bluff', this)">Bluff</div>
+    <div class="g-tab" onclick="setMode('28', this)">28 Card</div>
   </div>
 
-  <div class="podium" id="podium"></div>
+  <div class="panel">
+    <select id="lineupFilter" onchange="renderAll()"></select>
+    <div id="lineupDesc" style="font-size: 10px; color: var(--cyan); margin-top: 10px; text-align: center; font-style: italic;"></div>
+  </div>
 
-  <div class="section-header">Advanced tournament intelligence</div>
   <div class="kpi-grid" id="kpi-container"></div>
 
-  <div class="section-header">Elite player rankings</div>
-  <div id="leaderboard-container"></div>
+  <div class="section-header">Player Rankings</div>
+  <div class="rank-list" id="leaderboard"></div>
 </div>
 
 <script type="module">
@@ -127,52 +126,68 @@ window.renderAll = () => {
     const is28 = currentMode === '28';
     const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
     
-    const stats = {};
+    let lineups = {};
     rawGames.forEach(g => {
+        const pNames = g.players ? g.players.map(p => p.name).sort() : [];
+        if(pNames.length > 0) {
+            const key = pNames.join(', ');
+            if(!lineups[key]) lineups[key] = { count: pNames.length, names: key };
+        }
+    });
+
+    const lSelect = document.getElementById('lineupFilter');
+    const saved = lSelect.value;
+    lSelect.innerHTML = `<option value="ALL">All Global Data</option>` + 
+        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
+
+    const activeKey = lSelect.value || "ALL";
+    const filtered = activeKey === "ALL" ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
+    document.getElementById('lineupDesc').innerText = activeKey === "ALL" ? "Combined historical stats." : "Active Lineup Selected.";
+
+    const stats = {};
+    filtered.forEach(g => {
         (g.players || []).forEach(p => {
-            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, history: []};
+            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, rl:0, history: []};
             stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
             if(p.rank === 1) stats[p.name].r1++;
+            if(p.rank === 0) stats[p.name].rl++;
             stats[p.name].history.push(p.rank);
         });
     });
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
-    // PODIUM (3D GLASS CARDS)
-    const pod = document.getElementById('podium');
-    if(sorted.length >= 3) {
-        pod.innerHTML = `
-            <div class="pod-card runner">
-                <div class="rank-tag" style="background:var(--muted); color:#000;">#2 Silver</div>
-                <div class="p-name">${sorted[1]}</div>
-                <div class="p-pts">${stats[sorted[1]].pts}</div>
-            </div>
-            <div class="pod-card champ">
-                <div class="rank-tag" style="background:var(--neon-gold); color:#000;">👑 #1 Gold</div>
-                <div class="p-name">${sorted[0]}</div>
-                <div class="p-pts">${stats[sorted[0]].pts}</div>
-            </div>
-            <div class="pod-card runner">
-                <div class="rank-tag" style="background:#8b4513; color:#fff;">#3 Bronze</div>
-                <div class="p-name">${sorted[2]}</div>
-                <div class="p-pts">${stats[sorted[2]].pts}</div>
-            </div>`;
-    }
-
     // KPI TILES
-    const pred = sorted.length >= 2 ? `${sorted[1]} needs ${ (stats[sorted[0]].pts - stats[sorted[1]].pts) + 1} pts` : '—';
-    
+    let hatTrick = '—';
+    for(let n in stats) {
+        let s = 0, m = 0;
+        stats[n].history.forEach(r => { if(r === 1) s++; else s = 0; if(s > m) m = s; });
+        if(m >= 3) { hatTrick = n; break; }
+    }
+    const pred = sorted.length >= 2 ? `${sorted[1]} +${(stats[sorted[0]].pts - stats[sorted[1]].pts) + 1} Pts` : '—';
+
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile" style="border-left-color:var(--neon-blue)"><small>Total Rounds</small><div class="val">${rawGames.length}</div></div>
-        <div class="k-tile" style="border-left-color:var(--neon-gold)"><small>Points Champion</small><div class="val">${sorted[0] || '—'}</div></div>
-        <div class="k-tile" style="border-left-color:var(--neon-violet)"><small>Top Prediction</small><div class="val" style="font-size:11px;">${pred}</div><div class="sub">All the Best!</div></div>
-        <div class="k-tile" style="border-left-color:var(--neon-blue)"><small>Consistency</small><div class="val">${sorted[0] ? ((stats[sorted[0]].r1 / stats[sorted[0]].t)*100).toFixed(0) : 0}% Win Rate</div></div>
+        <div class="k-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>
+        <div class="k-tile"><small>Points King/Queen</small><div class="val">${sorted[0] || '—'}</div></div>
+        <div class="k-tile"><small>Last King/Queen</small><div class="val">${Object.keys(stats).sort((a,b) => stats[b].rl - stats[a].rl)[0] || '—'}</div></div>
+        <div class="k-tile"><small>Hat-Trick Hero</small><div class="val">${hatTrick}</div></div>
+        <div class="k-tile special"><small>Prediction</small><div class="val">${pred}</div><div class="sub">All the Best!</div></div>
+        <div class="k-tile"><small>Win Rate</small><div class="val">${sorted.length ? ((stats[sorted[0]].r1 / stats[sorted[0]].t)*100).toFixed(0)+'%' : '0%'}</div></div>
     `;
 
-    // LEADERBOARD
-    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => `
-        <div class="rank-row"><div class="num">${i+1}</div><div style="flex:1; font-weight:800;">${n}</div><div class="score-box">${stats[n].pts}</div></div>`).join('');
+    // PREMIER LEADERBOARD
+    document.getElementById('leaderboard').innerHTML = sorted.map((n, i) => {
+        const d = stats[n];
+        return `
+        <div class="rank-item">
+            <div class="rank-num">${i+1}</div>
+            <div class="player-core">
+                <span class="player-name">${n}</span>
+                <div class="player-meta">Wins: <b>${d.r1}</b> | Last: <b>${d.rl}</b> | Played: <b>${d.t}</b></div>
+            </div>
+            <div class="points-badge">${d.pts}</div>
+        </div>`;
+    }).join('');
 };
 
 onSnapshot(query(gRef, orderBy("time")), snap => {
