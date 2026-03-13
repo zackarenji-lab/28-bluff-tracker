@@ -18,15 +18,17 @@
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
 
-  /* TABS & PANEL */
+  /* TABS */
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
   .g-tab.active { background: var(--tile-grad); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); transform: translateY(-4px); }
+
+  /* PANEL */
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   .panel-header { font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 15px; display: block; }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  /* LAYOUT GRID */
+  /* MID GRID */
   .mid-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px; }
   @media (max-width: 900px) { .mid-grid { grid-template-columns: 1fr; } }
 
@@ -37,25 +39,24 @@
   .p-name-cap { text-transform: uppercase; font-size: 20px; font-weight: 900; color: #fff; flex: 1; text-align: left; margin-left: 20px; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 28px; }
 
-  /* PREDICTIONS BOX */
+  /* PREDICTIONS BOX - INCREASED SIZE */
   .va-title { color:var(--accent); font-weight:900; font-size:13px; letter-spacing:4px; margin: 30px 0 15px 0; opacity:0.8; }
-  .pred-box { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: left; }
-  .pred-box small { color: var(--cyan); font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px; }
-  .pred-text { font-size: 13px; color: #fff; margin: 6px 0; line-height: 1.4; opacity: 0.9; }
+  .pred-box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
+  .pred-box small { color: var(--cyan); font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 15px; }
+  .pred-text { font-size: 15px; color: #fff; margin: 10px 0; line-height: 1.6; font-style: italic; }
 
-  /* KPI TILES (ENHANCED) */
+  /* KPI TILES */
   .section-header { font-weight: 900; font-size: 18px; color: #fff; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 15px; }
   .section-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--blue), transparent); }
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
   @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
 
   .k-tile { padding: 25px 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); transition: 0.3s; position: relative; overflow: hidden; min-height: 130px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
-  .k-tile:hover { transform: scale(1.02); filter: brightness(1.1); }
-  .k-tile small { font-size: 11px; font-weight: 900; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+  .k-tile:hover { transform: scale(1.02); filter: brightness(1.2); }
+  .k-tile small { font-size: 11px; font-weight: 900; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
   .k-tile .val { font-size: 24px; font-weight: 900; color: #fff; text-transform: uppercase; }
-  .k-tile .sub { font-size: 11px; color: #fff; margin-top: 10px; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px; align-self: flex-start; }
   
-  /* 9 GRADIENTS */
+  /* UNIQUE GRADIENTS */
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -66,196 +67,14 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* RANKING SECTION */
+  /* PLAYER RANKING STYLE RESTORED */
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 40px 0 20px 0; display: flex; align-items: center; gap: 15px; text-transform: uppercase; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 22px; border-radius: 16px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 22px; border-radius: 16px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+  .rank-row:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--violet); }
   .num { width: 35px; font-weight: 900; color: var(--cyan); font-size: 26px; }
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 18px; }
-
-  /* OVERLAY DETAIL MODAL */
-  #detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
-  .detail-card { background: #161b22; border: 1px solid var(--blue); padding: 40px; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; }
-  .detail-card h2 { margin-top: 0; color: var(--accent); text-transform: uppercase; font-size: 14px; }
-  .detail-card p { font-size: 18px; line-height: 1.6; color: #fff; margin: 20px 0; }
-  .close-btn { background: var(--blue); border: none; color: white; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-</style>
-</head>
-<body>
-
-<div id="detail-overlay" onclick="closeDetail()">
-  <div class="detail-card" onclick="event.stopPropagation()">
-    <h2 id="detail-title">Stat Insight</h2>
-    <p id="detail-text"></p>
-    <button class="close-btn" onclick="closeDetail()">CLOSE</button>
-  </div>
-</div>
-
-<div class="wrap">
-  <header>
-    <a href="index.html" class="home-link">🏠 HOME</a>
-    <div style="font-weight: 900; font-size: 11px; letter-spacing: 2px; color: var(--muted);">ELITE ANALYTICS</div>
-  </header>
-
-  <div class="game-tabs">
-    <div class="g-tab active" id="tab-UNO" onclick="setMode('UNO', this)">Uno Cards</div>
-    <div class="g-tab" id="tab-Bluff" onclick="setMode('Bluff', this)">Bluff Game</div>
-    <div class="g-tab" id="tab-28" onclick="setMode('28', this)">28 Card</div>
-  </div>
-
-  <div class="panel">
-    <span class="panel-header">Group Configuration</span>
-    <select id="lineupFilter" onchange="renderAll()"></select>
-  </div>
-
-  <div class="mid-grid">
-    <div class="hof-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" style="width:55px; margin-bottom:15px;">
-      <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent);">UNO ELITE HALL</h4>
-      <div id="podium-list" style="margin: 15px 0;"></div>
-      <div class="va-title">VICTORY AWAITS</div>
-      <div class="pred-box">
-        <small>Game Predictions</small>
-        <div id="predictions-list"></div>
-      </div>
-    </div>
-
-    <div>
-      <div class="section-header">Tournament Intelligence</div>
-      <div class="kpi-grid" id="kpi-container"></div>
-    </div>
-  </div>
-
-  <div class="ranking-header">Player Ranking</div>
-  <div id="leaderboard-container"></div>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-const FIREBASE_CONFIG = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getFirestore(app);
-const gRef = collection(db, "games");
-
-let allData = [];
-let currentMode = 'UNO';
-let currentStats = {};
-
-window.setMode = (m, el) => {
-    currentMode = m;
-    document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
-    renderAll();
-};
-
-window.renderAll = () => {
-    const is28 = currentMode === '28';
-    const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
-    
-    let lineups = {};
-    rawGames.forEach(g => {
-        const pNames = g.players ? g.players.map(p => p.name).sort() : [];
-        const key = pNames.join(', ');
-        if(!lineups[key]) lineups[key] = { count: pNames.length, names: key };
-    });
-
-    const lSelect = document.getElementById('lineupFilter');
-    const saved = lSelect.value;
-    lSelect.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
-        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
-
-    const activeKey = lSelect.value;
-    const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
-
-    currentStats = {};
-    filtered.forEach(g => {
-        (g.players || []).forEach(p => {
-            if(!currentStats[p.name]) currentStats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, history: []};
-            currentStats[p.name].pts += (p.pts || 0); currentStats[p.name].t++;
-            if(p.rank === 1) currentStats[p.name].r1++;
-            else if(p.rank === 2) currentStats[p.name].r2++;
-            else if(p.rank === 3) currentStats[p.name].r3++;
-            else if(p.rank === 0) currentStats[p.name].rl++;
-            currentStats[p.name].history.push(p.rank);
-        });
-    });
-
-    const sorted = Object.keys(currentStats).sort((a,b) => currentStats[b].pts - currentStats[a].pts);
-
-    document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
-        <div class="hof-item">
-            <span class="rank-lbl">#${i+1}</span>
-            <b class="p-name-cap">${n}</b>
-            <span class="p-pts-big">${currentStats[n].pts}</span>
-        </div>`).join('');
-
-    // PREDICTIONS Logic
-    if(sorted.length >= 2) {
-        const champ = sorted[0];
-        const challengers = sorted.slice(1, 3);
-        document.getElementById('predictions-list').innerHTML = challengers.map(p => {
-            const diff = currentStats[champ].pts - currentStats[p].pts;
-            return `<div class="pred-text"><b>${p}</b> needs <b>${diff + 1} pts</b> to beat <b>${champ}</b></div>`;
-        }).join('');
-    }
-
-    // KPI DATA
-    let htw = '—', htl = '—';
-    for(let n in currentStats) {
-        let sw = 0, mw = 0, sl = 0, ml = 0;
-        currentStats[n].history.forEach(r => {
-            if(r===1) {sw++; sl=0;} else if(r===0) {sl++; sw=0;} else {sw=0; sl=0;}
-            if(sw > mw) mw = sw; if(sl > ml) ml = sl;
-        });
-        if(mw >= 3) htw = n; if(ml >= 3) htl = n;
-    }
-
-    const mk = (lbl, val, detail) => `
-        <div class="k-tile" onclick="openDetail('${lbl}', '${detail}')">
-            <small>${lbl}</small>
-            <div class="val">${val}</div>
-        </div>`;
-
-    const king = sorted[0] || '—';
-    document.getElementById('kpi-container').innerHTML = 
-        mk('Total Rounds', filtered.length, `Across ${filtered.length} matches, a total of ${Object.keys(currentStats).length} unique players participated.`) +
-        mk('Points King/Queen', king, `${king} is dominating the board with ${currentStats[king]?.pts || 0} total points.`) +
-        mk('Last King/Queen', Object.keys(currentStats).sort((a,b) => currentStats[b].rl - currentStats[a].rl)[0] || '—', "This player has finished in last place more than anyone else in this lineup.") +
-        mk('Highest Finisher', Object.keys(currentStats).sort((a,b) => currentStats[b].r1 - currentStats[a].r1)[0] || '—', "This player has the highest number of 1st place finishes.") +
-        mk('Comeback King/Queen', Object.keys(currentStats).sort((a,b) => (currentStats[b].r1/currentStats[b].t) - (currentStats[a].r1/currentStats[a].t))[0] || '—', "The most efficient winner relative to the number of games they've played.") +
-        mk('Consistent Pro', Object.keys(currentStats).sort((a,b) => (currentStats[b].r2 + currentStats[b].r3) - (currentStats[a].r2 + currentStats[a].r3))[0] || '—', "The player who most frequently occupies 2nd and 3rd place.") +
-        mk('Hat-Trick Hero', htw, htw !== '—' ? `${htw} has won 3 or more games in a row!` : "No player currently holds a 3-win streak.") +
-        mk('Wooden Spoon', htl, htl !== '—' ? `${htl} has unfortunately lost 3 games in a row.` : "No one is currently on a 3-loss streak.") +
-        mk('Peak Win Rate', sorted.length ? ((currentStats[king].r1 / currentStats[king].t) * 100).toFixed(0) + "%" : "0%", "This represents the win percentage of the current rank #1 player.");
-
-    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
-        const d = currentStats[n];
-        return `
-        <div class="rank-row">
-            <div class="num">#${i+1}</div>
-            <div class="p-info">
-                <div class="p-name">${n}</div>
-                <div class="p-chart-container"><div class="p-chart-fill" style="width: ${((d.r1/d.t)*100).toFixed(0)}%"></div></div>
-            </div>
-            <div class="score-box">${d.pts}</div>
-        </div>`;
-    }).join('');
-};
-
-window.openDetail = (title, text) => {
-    document.getElementById('detail-title').innerText = title;
-    document.getElementById('detail-text').innerText = text;
-    document.getElementById('detail-overlay').style.display = 'flex';
-};
-
-window.closeDetail = () => {
-    document.getElementById('detail-overlay').style.display = 'none';
-};
-
-onSnapshot(query(gRef, orderBy("time")), snap => { allData = snap.docs.map(d => d.data()); renderAll(); });
-</script>
-</body>
-</html>
+  .p-info { flex: 1; }
+  .p-name { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; margin-bottom: 8px; display: block; }
+  .p-chart-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
+  .p-chart-fill { height: 100%; background: linear-gradient(to right, var(--cyan), var(--blue), var(--violet)); border-radius: 10px; transition: width 1s ease; }
+  .score-box { background: linear-gradient(135deg, #ff4
