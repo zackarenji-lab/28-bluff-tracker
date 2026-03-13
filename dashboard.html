@@ -72,7 +72,7 @@
   
   .k-tile:hover { transform: scale(1.03); box-shadow: 0 15px 30px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.4); }
   .k-tile small { font-size: 8px; font-weight: 800; color: rgba(255,255,255,0.7); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
-  .k-tile .val { font-size: 13px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); text-transform: uppercase; }
+  .k-tile .val { font-size: 14px; font-weight: 900; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.3); text-transform: uppercase; }
   .k-tile .sub { font-size: 8px; color: rgba(255,255,255,0.8); margin-top: 6px; font-weight: 700; background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 4px; align-self: flex-start; }
 
   /* PLAYER RANKING */
@@ -153,4 +153,106 @@ window.setMode = (m, el) => {
 };
 
 window.renderAll = () => {
-    const
+    const is28 = currentMode === '28';
+    const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
+    
+    let lineups = {};
+    rawGames.forEach(g => {
+        const pNames = g.players ? g.players.map(p => p.name).sort() : [];
+        const key = pNames.join(', ');
+        if(!lineups[key]) lineups[key] = { count: pNames.length, names: key };
+    });
+
+    const lSelect = document.getElementById('lineupFilter');
+    const saved = lSelect.value;
+    lSelect.innerHTML = `<option value="ALL">Global History (All Groups)</option>` + 
+        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
+
+    const activeKey = lSelect.value;
+    const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
+    document.getElementById('lineupDesc').innerText = activeKey === 'ALL' ? "Global data across all player sessions." : "Members: " + activeKey;
+
+    const stats = {};
+    filtered.forEach(g => {
+        (g.players || []).forEach(p => {
+            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, history: []};
+            stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
+            if(p.rank === 1) stats[p.name].r1++;
+            else if(p.rank === 2) stats[p.name].r2++;
+            else if(p.rank === 3) stats[p.name].r3++;
+            else if(p.rank === 0) stats[p.name].rl++;
+            stats[p.name].history.push(p.rank);
+        });
+    });
+
+    const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
+
+    // PODIUM (LEFT CARD)
+    document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
+        <div class="hof-item">
+            <span style="color:var(--muted)">RANK #${i+1}</span>
+            <b style="flex:1; margin-left:15px; text-align:left;">${n}</b>
+            <span>${stats[n].pts}</span>
+        </div>`).join('');
+
+    // KPI TILES LOGIC
+    let hatTrickHero = '—';
+    for(let n in stats) {
+        let streak = 0, max = 0;
+        stats[n].history.forEach(r => { if(r === 1) streak++; else streak = 0; if(streak > max) max = streak; });
+        if(max >= 3) { hatTrickHero = n; break; }
+    }
+
+    let predictionVal = '—';
+    if(sorted.length >= 2) {
+        const diff = stats[sorted[0]].pts - stats[sorted[1]].pts;
+        predictionVal = `${sorted[1]} +${diff + 1} Pts`;
+    }
+
+    const king = sorted[0] || '—';
+    const finisher = Object.keys(stats).sort((a,b) => stats[b].r1 - stats[a].r1)[0] || '—';
+    const last = Object.keys(stats).sort((a,b) => stats[b].rl - stats[a].rl)[0] || '—';
+    const comeback = Object.keys(stats).sort((a,b) => (stats[b].r1/stats[b].t) - (stats[a].r1/stats[a].t))[0] || '—';
+    const consistent = Object.keys(stats).sort((a,b) => (stats[b].r2 + stats[b].r3) - (stats[a].r2 + stats[a].r3))[0] || '—';
+    const winRate = sorted.length ? ((stats[king].r1 / stats[king].t) * 100).toFixed(0) + "%" : "0%";
+
+    document.getElementById('kpi-container').innerHTML = `
+        <div class="k-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>
+        <div class="k-tile"><small>Points King/Queen</small><div class="val">${king}</div></div>
+        <div class="k-tile"><small>Last King/Queen</small><div class="val" style="color:#ffb3b3">${last}</div></div>
+        <div class="k-tile"><small>Highest Finisher</small><div class="val">${finisher}</div></div>
+        <div class="k-tile"><small>Comeback K/Q</small><div class="val">${comeback}</div></div>
+        <div class="k-tile"><small>Consistent Pro</small><div class="val">${consistent}</div></div>
+        <div class="k-tile"><small>Hat-Trick Hero</small><div class="val">${hatTrickHero}</div><span class="sub">3 Consecutive</span></div>
+        <div class="k-tile"><small>Prediction</small><div class="val" style="font-size:11px;">${predictionVal}</div><span class="sub">All the Best!</span></div>
+        <div class="k-tile"><small>Peak Win Rate</small><div class="val">${winRate}</div></div>
+    `;
+
+    // LEADERBOARD CONTAINER
+    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
+        const d = stats[n];
+        const winPercent = ((d.r1 / d.t) * 100).toFixed(0);
+        return `
+        <div class="rank-row">
+            <div class="num">${i+1}</div>
+            <div class="p-info">
+                <div class="p-name">${n}</div>
+                <div class="p-stats">
+                    <span>1st: <b>${d.r1}</b></span>
+                    <span>Last: <b>${d.rl}</b></span>
+                    <span>Total: <b>${d.t}</b></span>
+                </div>
+                <div class="p-chart-container"><div class="p-chart-fill" style="width: ${winPercent}%"></div></div>
+            </div>
+            <div class="score-box">${d.pts}</div>
+        </div>`;
+    }).join('');
+};
+
+onSnapshot(query(gRef, orderBy("time")), snap => {
+    allData = snap.docs.map(d => d.data());
+    renderAll();
+});
+</script>
+</body>
+</html>
