@@ -18,34 +18,28 @@
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
 
-  /* TABS */
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
   .g-tab.active { background: var(--tile-grad); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); transform: translateY(-4px); }
 
-  /* PANEL */
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   .panel-header { font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 15px; display: block; }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  /* MID GRID */
   .mid-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px; }
   @media (max-width: 900px) { .mid-grid { grid-template-columns: 1fr; } }
 
-  /* HOF CARD */
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
   .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .rank-lbl { font-weight: 900; font-size: 20px; color: var(--muted); font-style: italic; }
   .p-name-cap { text-transform: uppercase; font-size: 20px; font-weight: 900; color: #fff; flex: 1; text-align: left; margin-left: 20px; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 28px; }
 
-  /* PREDICTIONS BOX */
   .va-title { color:var(--accent); font-weight:900; font-size:13px; letter-spacing:4px; margin: 30px 0 15px 0; opacity:0.8; }
   .pred-box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
   .pred-box small { color: var(--cyan); font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 15px; }
   .pred-text { font-size: 15px; color: #fff; margin: 10px 0; line-height: 1.6; font-style: italic; }
 
-  /* KPI TILES */
   .section-header { font-weight: 900; font-size: 18px; color: #fff; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 15px; }
   .section-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--blue), transparent); }
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
@@ -55,8 +49,7 @@
   .k-tile:hover { transform: scale(1.02); filter: brightness(1.2); }
   .k-tile small { font-size: 11px; font-weight: 900; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
   .k-tile .val { font-size: 24px; font-weight: 900; color: #fff; text-transform: uppercase; }
-  
-  /* UNIQUE GRADIENTS */
+
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -67,7 +60,6 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* RANKING SECTION */
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 40px 0 20px 0; display: flex; align-items: center; gap: 15px; text-transform: uppercase; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 22px; border-radius: 16px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
@@ -76,9 +68,8 @@
   .p-name { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; margin-bottom: 8px; display: block; }
   .p-chart-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, var(--cyan), var(--blue), var(--violet)); border-radius: 10px; transition: width 1s ease; }
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 20px; }
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 20px; box-shadow: 0 4px 15px rgba(179,0,0,0.3); }
 
-  /* OVERLAY DETAIL MODAL */
   #detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
   .detail-card { background: #161b22; border: 1px solid var(--blue); padding: 40px; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; }
   .detail-card h2 { margin-top: 0; color: var(--accent); text-transform: uppercase; font-size: 14px; letter-spacing: 2px; }
@@ -191,11 +182,7 @@ window.renderAll = () => {
     const sorted = Object.keys(currentStats).sort((a,b) => currentStats[b].pts - currentStats[a].pts);
 
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
-        <div class="hof-item">
-            <span class="rank-lbl">#${i+1}</span>
-            <b class="p-name-cap">${n}</b>
-            <span class="p-pts-big">${currentStats[n].pts}</span>
-        </div>`).join('');
+        <div class="hof-item"><span class="rank-lbl">#${i+1}</span><b class="p-name-cap">${n}</b><span class="p-pts-big">${currentStats[n].pts}</span></div>`).join('');
 
     if(sorted.length >= 2) {
         const champ = sorted[0];
@@ -227,18 +214,18 @@ window.renderAll = () => {
     const highestF = Object.keys(currentStats).sort((a,b) => currentStats[b].r1 - currentStats[a].r1)[0] || '—';
     const lastK = Object.keys(currentStats).sort((a,b) => currentStats[b].rl - currentStats[a].rl)[0] || '—';
     const cbK = Object.keys(currentStats).sort((a,b) => (currentStats[b].r1/currentStats[b].t) - (currentStats[a].r1/currentStats[a].t))[0] || '—';
-    const consP = Object.keys(currentStats).sort((a,b) => (currentStats[b].r2 + currentStats[b].r3) - (currentStats[a].r2 + stats[a].r3))[0] || '—';
+    const consP = Object.keys(currentStats).sort((a,b) => (currentStats[b].r2 + currentStats[b].r3) - (currentStats[a].r2 + currentStats[a].r3))[0] || '—';
 
     document.getElementById('kpi-container').innerHTML = 
         mk('Total Rounds', filtered.length, `Matches: ${filtered.length}.`) +
-        mk('Points King/Queen', king, `${king} is leading with ${currentStats[king]?.pts || 0} pts.`) +
-        mk('Last King/Queen', lastK, `${lastK} is currently in the shitter with the most last place finishes.`) +
-        mk('Highest Finisher', highestF, `${highestF} has the most individual 1st place trophies.`) +
-        mk('Comeback King/Queen', cbK, `${cbK} has the best win efficiency per game played.`) +
-        mk('Consistent Pro', consP, `${consP} is most likely to find the 2nd/3rd place slot.`) +
-        mk('Hat-Trick Hero', htw, htw !== '—' ? `${htw} is on a tear with 3+ consecutive wins!` : "No player has a hat-trick win yet.") +
-        mk('Wooden Spoon', htl, htl !== '—' ? `${htl} is in a slump with 3+ consecutive losses.` : "No one is currently holding the spoon.") +
-        mk('Peak Win Rate', sorted.length ? ((currentStats[king].r1 / currentStats[king].t) * 100).toFixed(0) + "%" : "0%", "Win percentage of the current Rank #1.");
+        mk('Points King/Queen', king, `${king} leads with ${currentStats[king]?.pts || 0} pts.`) +
+        mk('Last King/Queen', lastK, `${lastK} is in the shitter with most losses.`) +
+        mk('Highest Finisher', highestF, `${highestF} has the most trophies.`) +
+        mk('Comeback King/Queen', cbK, `${cbK} has the best win ratio.`) +
+        mk('Consistent Pro', consP, `${consP} is master of 2nd/3rd place.`) +
+        mk('Hat-Trick Hero', htw, htw !== '—' ? `${htw} has won 3 in a row!` : "No 3-win streaks.") +
+        mk('Wooden Spoon', htl, htl !== '—' ? `${htl} has lost 3 in a row.` : "No 3-loss streaks.") +
+        mk('Peak Win Rate', sorted.length ? ((currentStats[king].r1 / currentStats[king].t) * 100).toFixed(0) + "%" : "0%", "Efficiency of Rank #1.");
 
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = currentStats[n];
@@ -264,10 +251,7 @@ window.closeDetail = () => {
     document.getElementById('detail-overlay').style.display = 'none';
 };
 
-onSnapshot(query(gRef, orderBy("time")), snap => { 
-    allData = snap.docs.map(d => d.data()); 
-    renderAll(); 
-});
+onSnapshot(query(gRef, orderBy("time")), snap => { allData = snap.docs.map(d => d.data()); renderAll(); });
 </script>
 </body>
 </html>
