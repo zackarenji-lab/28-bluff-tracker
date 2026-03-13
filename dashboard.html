@@ -39,7 +39,7 @@
   .p-name-cap { text-transform: uppercase; font-size: 20px; font-weight: 900; color: #fff; flex: 1; text-align: left; margin-left: 20px; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 28px; }
 
-  /* PREDICTIONS BOX - INCREASED SIZE */
+  /* PREDICTIONS BOX */
   .va-title { color:var(--accent); font-weight:900; font-size:13px; letter-spacing:4px; margin: 30px 0 15px 0; opacity:0.8; }
   .pred-box { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
   .pred-box small { color: var(--cyan); font-weight: 900; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 15px; }
@@ -67,14 +67,207 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* PLAYER RANKING STYLE RESTORED */
+  /* RANKING SECTION */
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 40px 0 20px 0; display: flex; align-items: center; gap: 15px; text-transform: uppercase; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 22px; border-radius: 16px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
-  .rank-row:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--violet); }
   .num { width: 35px; font-weight: 900; color: var(--cyan); font-size: 26px; }
   .p-info { flex: 1; }
   .p-name { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; margin-bottom: 8px; display: block; }
   .p-chart-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, var(--cyan), var(--blue), var(--violet)); border-radius: 10px; transition: width 1s ease; }
-  .score-box { background: linear-gradient(135deg, #ff4
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 20px; }
+
+  /* OVERLAY DETAIL MODAL */
+  #detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .detail-card { background: #161b22; border: 1px solid var(--blue); padding: 40px; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; }
+  .detail-card h2 { margin-top: 0; color: var(--accent); text-transform: uppercase; font-size: 14px; letter-spacing: 2px; }
+  .detail-card p { font-size: 18px; line-height: 1.6; color: #fff; margin: 20px 0; }
+  .close-btn { background: var(--blue); border: none; color: white; padding: 12px 25px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="detail-overlay" onclick="closeDetail()">
+  <div class="detail-card" onclick="event.stopPropagation()">
+    <h2 id="detail-title">Stat Insight</h2>
+    <p id="detail-text"></p>
+    <button class="close-btn" onclick="closeDetail()">CLOSE</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <a href="index.html" class="home-link">🏠 HOME</a>
+    <div style="font-weight: 900; font-size: 11px; letter-spacing: 2px; color: var(--muted);">ELITE ANALYTICS</div>
+  </header>
+
+  <div class="game-tabs">
+    <div class="g-tab active" id="tab-UNO" onclick="setMode('UNO', this)">Uno Cards</div>
+    <div class="g-tab" id="tab-Bluff" onclick="setMode('Bluff', this)">Bluff Game</div>
+    <div class="g-tab" id="tab-28" onclick="setMode('28', this)">28 Card</div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-header">Group Configuration</span>
+    <select id="lineupFilter" onchange="renderAll()"></select>
+  </div>
+
+  <div class="mid-grid">
+    <div class="hof-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" style="width:55px; margin-bottom:15px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3));">
+      <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent);">UNO ELITE HALL</h4>
+      <div id="podium-list" style="margin: 15px 0;"></div>
+      <div class="va-title">VICTORY AWAITS</div>
+      <div class="pred-box">
+        <small>Game Predictions</small>
+        <div id="predictions-list"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-header">Tournament Intelligence</div>
+      <div class="kpi-grid" id="kpi-container"></div>
+    </div>
+  </div>
+
+  <div class="ranking-header">Player Ranking</div>
+  <div id="leaderboard-container"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const FIREBASE_CONFIG = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getFirestore(app);
+const gRef = collection(db, "games");
+
+let allData = [];
+let currentMode = 'UNO';
+let currentStats = {};
+
+window.setMode = (m, el) => {
+    currentMode = m;
+    document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
+    renderAll();
+};
+
+window.renderAll = () => {
+    const is28 = currentMode === '28';
+    const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
+    
+    let lineups = {};
+    rawGames.forEach(g => {
+        const pNames = g.players ? g.players.map(p => p.name).sort() : [];
+        const key = pNames.join(', ');
+        if(!lineups[key]) lineups[key] = { count: pNames.length, names: key };
+    });
+
+    const lSelect = document.getElementById('lineupFilter');
+    const saved = lSelect.value;
+    lSelect.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
+        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
+
+    const activeKey = lSelect.value;
+    const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
+
+    currentStats = {};
+    filtered.forEach(g => {
+        (g.players || []).forEach(p => {
+            if(!currentStats[p.name]) currentStats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, history: []};
+            currentStats[p.name].pts += (p.pts || 0); currentStats[p.name].t++;
+            if(p.rank === 1) currentStats[p.name].r1++;
+            else if(p.rank === 2) currentStats[p.name].r2++;
+            else if(p.rank === 3) currentStats[p.name].r3++;
+            else if(p.rank === 0) currentStats[p.name].rl++;
+            currentStats[p.name].history.push(p.rank);
+        });
+    });
+
+    const sorted = Object.keys(currentStats).sort((a,b) => currentStats[b].pts - currentStats[a].pts);
+
+    document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
+        <div class="hof-item">
+            <span class="rank-lbl">#${i+1}</span>
+            <b class="p-name-cap">${n}</b>
+            <span class="p-pts-big">${currentStats[n].pts}</span>
+        </div>`).join('');
+
+    if(sorted.length >= 2) {
+        const champ = sorted[0];
+        const challengers = sorted.slice(1, 3);
+        let predHtml = challengers.map(p => {
+            const diff = currentStats[champ].pts - currentStats[p].pts;
+            return `<div class="pred-text">${p} needs <b>${diff + 1} pts</b> to beat ${champ}</div>`;
+        }).join('');
+        document.getElementById('predictions-list').innerHTML = predHtml + `<div class="pred-text" style="color:var(--accent); margin-top:15px; font-weight:900;">ALL THE BEST!</div>`;
+    }
+
+    let htw = '—', htl = '—';
+    for(let n in currentStats) {
+        let sw = 0, mw = 0, sl = 0, ml = 0;
+        currentStats[n].history.forEach(r => {
+            if(r===1) {sw++; sl=0;} else if(r===0) {sl++; sw=0;} else {sw=0; sl=0;}
+            if(sw > mw) mw = sw; if(sl > ml) ml = sl;
+        });
+        if(mw >= 3) htw = n; if(ml >= 3) htl = n;
+    }
+
+    const mk = (lbl, val, detail) => `
+        <div class="k-tile" onclick="openDetail('${lbl}', '${detail}')">
+            <small>${lbl}</small>
+            <div class="val">${val}</div>
+        </div>`;
+
+    const king = sorted[0] || '—';
+    const highestF = Object.keys(currentStats).sort((a,b) => currentStats[b].r1 - currentStats[a].r1)[0] || '—';
+    const lastK = Object.keys(currentStats).sort((a,b) => currentStats[b].rl - currentStats[a].rl)[0] || '—';
+    const cbK = Object.keys(currentStats).sort((a,b) => (currentStats[b].r1/currentStats[b].t) - (currentStats[a].r1/currentStats[a].t))[0] || '—';
+    const consP = Object.keys(currentStats).sort((a,b) => (currentStats[b].r2 + currentStats[b].r3) - (currentStats[a].r2 + stats[a].r3))[0] || '—';
+
+    document.getElementById('kpi-container').innerHTML = 
+        mk('Total Rounds', filtered.length, `Matches: ${filtered.length}.`) +
+        mk('Points King/Queen', king, `${king} is leading with ${currentStats[king]?.pts || 0} pts.`) +
+        mk('Last King/Queen', lastK, `${lastK} is currently in the shitter with the most last place finishes.`) +
+        mk('Highest Finisher', highestF, `${highestF} has the most individual 1st place trophies.`) +
+        mk('Comeback King/Queen', cbK, `${cbK} has the best win efficiency per game played.`) +
+        mk('Consistent Pro', consP, `${consP} is most likely to find the 2nd/3rd place slot.`) +
+        mk('Hat-Trick Hero', htw, htw !== '—' ? `${htw} is on a tear with 3+ consecutive wins!` : "No player has a hat-trick win yet.") +
+        mk('Wooden Spoon', htl, htl !== '—' ? `${htl} is in a slump with 3+ consecutive losses.` : "No one is currently holding the spoon.") +
+        mk('Peak Win Rate', sorted.length ? ((currentStats[king].r1 / currentStats[king].t) * 100).toFixed(0) + "%" : "0%", "Win percentage of the current Rank #1.");
+
+    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
+        const d = currentStats[n];
+        return `
+        <div class="rank-row">
+            <div class="num">#${i+1}</div>
+            <div class="p-info">
+                <span class="p-name">${n}</span>
+                <div class="p-chart-container"><div class="p-chart-fill" style="width: ${((d.r1/d.t)*100).toFixed(0)}%"></div></div>
+            </div>
+            <div class="score-box">${d.pts}</div>
+        </div>`;
+    }).join('');
+};
+
+window.openDetail = (title, text) => {
+    document.getElementById('detail-title').innerText = title;
+    document.getElementById('detail-text').innerText = text;
+    document.getElementById('detail-overlay').style.display = 'flex';
+};
+
+window.closeDetail = () => {
+    document.getElementById('detail-overlay').style.display = 'none';
+};
+
+onSnapshot(query(gRef, orderBy("time")), snap => { 
+    allData = snap.docs.map(d => d.data()); 
+    renderAll(); 
+});
+</script>
+</body>
+</html>
