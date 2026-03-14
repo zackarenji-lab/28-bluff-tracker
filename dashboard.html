@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
 <title>GZ - Elite Command Center</title>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <style>
   :root {
     --bg-gradient: radial-gradient(circle at 0% 0%, #0d0d1a 0%, #101026 40%, #05050d 100%);
@@ -13,10 +14,19 @@
     --tile-grad: linear-gradient(135deg, #3d3dff 0%, #a020f0 100%);
   }
   body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden; }
-  .wrap { max-width: 1200px; margin: auto; padding: 20px; }
+  .wrap { max-width: 1200px; margin: auto; padding: 20px; background: transparent; }
   
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
+
+  /* NEW SHARE BUTTON STYLE */
+  .share-btn { 
+    cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); 
+    color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; 
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .share-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0, 245, 255, 0.4); }
 
   /* NAVIGATION */
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
@@ -42,6 +52,7 @@
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.8; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
 
+  /* Grad Tiles */
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -62,11 +73,11 @@
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
 
-  /* THE BAR (WIN RATE LOGIC) */
+  /* BAR WITH BUBBLE SAFETY ZONE */
   .p-chart-container { 
     height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; 
     position: relative; overflow: hidden; display: flex; align-items: center; 
-    padding: 0 60px 0 0; /* Space reserved for bubble */
+    padding: 0 65px 0 0; 
     border: 1px solid rgba(255,255,255,0.1); 
   }
   .p-chart-fill { 
@@ -86,10 +97,13 @@
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; }
 </style>
 </head>
-<body>
+<body id="capture-area">
 
 <div class="wrap">
-  <header><a href="index.html" class="home-link">🏠 HOME</a></header>
+  <header>
+    <a href="index.html" class="home-link">🏠 HOME</a>
+    <div class="share-btn" onclick="takeSnapshot()">📸 Share Stats</div>
+  </header>
 
   <div class="game-tabs">
     <div class="g-tab active" id="tab-UNO" onclick="setMode('UNO', this)">Uno Cards</div>
@@ -131,6 +145,24 @@ const gRef = collection(db, "games");
 
 let allData = [];
 let currentMode = 'UNO';
+
+// Snapshot Function
+window.takeSnapshot = () => {
+    const btn = document.querySelector('.share-btn');
+    btn.innerText = "Generating...";
+    
+    html2canvas(document.querySelector("#capture-area"), {
+        backgroundColor: "#0d0d1a",
+        scale: 2 // High resolution
+    }).then(canvas => {
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = `GZ_Stats_${currentMode}.png`;
+        link.href = image;
+        link.click();
+        btn.innerText = "📸 Share Stats";
+    });
+};
 
 window.setMode = (m, el) => {
     currentMode = m;
@@ -197,10 +229,8 @@ window.renderAll = () => {
         mkTile('Consistent Pro', Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—') + 
         mkTile('Hat-Trick Hero', '—') + mkTile('Wooden Spoon', '—') + mkTile('Peak Win Rate', sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%');
 
-    // LEADERBOARD (Bar length based on Win %)
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n];
-        const diff = i === 0 ? 0 : stats[sorted[i-1]].pts - d.pts;
         const winPercent = ((d.r1/d.t)*100).toFixed(0);
         return `
         <div class="rank-row">
