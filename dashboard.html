@@ -20,66 +20,69 @@
   
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid var(--gold-border); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
-  .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+  .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
 
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
   .g-tab.active { background: var(--tile-grad); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); transform: translateY(-4px); }
 
+  .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
+  select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
+
+  /* TOP SECTION FIX */
   .top-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; align-items: stretch; }
   @media (max-width: 1000px) { .top-grid { grid-template-columns: 1fr; } }
 
-  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; }
-  .cup-icon { display: block; margin: 0 auto 15px auto; width: 55px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
+  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .cup-icon { width: 55px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
+  .hof-title { font-size: 18px; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; font-weight: 900; }
+  
+  .hof-list { width: 100%; }
+  .hof-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px; width: 100%; }
+  .hof-rank-lbl { font-weight: 900; font-size: 15px; color: var(--accent); width: 30px; text-align: left; }
+  .hof-avatar { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
+  .p-name-cap { text-transform: uppercase; font-size: 15px; font-weight: 900; color: #fff; flex: 1; text-align: left; }
+  .p-pts-big { color: var(--accent); font-weight: 900; font-size: 20px; }
 
-  .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px; }
-  .hof-rank-lbl { font-weight: 900; font-size: 16px; color: var(--accent); width: 35px; text-align: left; }
-  .hof-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
-  .p-name-cap { text-transform: uppercase; font-size: 16px; font-weight: 900; color: #fff; flex: 1; text-align: left; }
-  .p-pts-big { color: var(--accent); font-weight: 900; font-size: 22px; }
-
-  .pred-box { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: 16px; padding: 22px; text-align: left; margin-top: auto; }
-  .pred-line { font-size: 14px; color: #fff; margin-bottom: 12px; line-height: 1.5; font-style: italic; display: block; }
-  .all-best { color: var(--accent); font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; display: block; }
-
-  /* KPI TILES WITH AVATAR SUPPORT */
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  /* KPI TILES */
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; height: 100%; }
   .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
-  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 70%; }
-  
-  /* Avatar in Tile logic */
-  .tile-avatar { 
-    position: absolute; bottom: 10px; right: 10px; 
-    width: 50px; height: 50px; border-radius: 50%; 
-    border: 2px solid var(--cyan); background: rgba(0,0,0,0.2);
-    object-fit: cover;
-  }
+  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; }
+  .tile-avatar { position: absolute; bottom: 10px; right: 10px; width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; }
 
-  .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
-  .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
-  .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
-  .k-tile:nth-child(4) { background: linear-gradient(135deg, #ef476f, #d00000); }
-  .k-tile:nth-child(5) { background: linear-gradient(135deg, #06d6a0, #00afb9); }
-  .k-tile:nth-child(6) { background: linear-gradient(135deg, #ff9f1c, #f3722c); }
-  .k-tile:nth-child(7) { background: linear-gradient(135deg, #5e60ce, #480ca8); }
-  .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
-  .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
-
+  /* RANKING ROW FIX */
+  .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
-  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; box-shadow: 0 0 15px rgba(0, 245, 255, 0.3); }
+  @media (max-width: 950px) { .rank-row { grid-template-columns: 50px 60px 1fr 100px; } .p-chart-container, .data-table-block { display: none; } }
+  
+  .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
+  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
+  .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
+  .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: width 1.2s ease; }
+  .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; }
+
+  .data-table-block { display: flex; gap: 15px; justify-content: center; }
+  .data-col { text-align: center; min-width: 40px; }
+  .data-col label { display: block; font-size: 9px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; }
+  .data-col span { font-size: 14px; font-weight: 900; color: #fff; display: block; }
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; }
 </style>
 </head>
 <body id="capture-area">
 
 <div class="wrap">
-  <header><a href="index.html" class="home-link">🏠 HOME</a><div class="share-btn" onclick="takeSnapshot()">📸 Share Stats</div></header>
+  <header>
+    <a href="index.html" class="home-link">🏠 HOME</a>
+    <div class="share-btn" onclick="takeSnapshot()">📸 Share Stats</div>
+  </header>
 
   <div class="game-tabs">
-    <div class="g-tab active" id="tab-UNO" onclick="setMode('UNO', this)">Uno Cards</div>
-    <div class="g-tab" id="tab-Bluff" onclick="setMode('Bluff', this)">Bluff Game</div>
-    <div class="g-tab" id="tab-28" onclick="setMode('28', this)">28 Card</div>
+    <div class="g-tab active" onclick="setMode('UNO', this)">Uno Cards</div>
+    <div class="g-tab" onclick="setMode('Bluff', this)">Bluff Game</div>
+    <div class="g-tab" onclick="setMode('28', this)">28 Card</div>
   </div>
 
   <div class="panel">
@@ -89,8 +92,8 @@
   <div class="top-grid">
     <div class="hof-card">
       <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" class="cup-icon">
-      <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent); margin-bottom: 10px;">UNO ELITE HALL</h4>
-      <div id="podium-list"></div>
+      <div id="hof-title" class="hof-title">UNO ELITE HALL</div>
+      <div id="podium-list" class="hof-list"></div>
       <p class="va-title">VICTORY AWAITS</p>
       <div class="pred-box">
         <div id="predictions-list"></div>
@@ -99,12 +102,11 @@
     </div>
 
     <div class="intel-section">
-      <div style="font-weight: 900; font-size: 16px; color: #fff; margin-bottom: 20px; text-transform: uppercase;">Tournament Intelligence</div>
       <div class="kpi-grid" id="kpi-container"></div>
     </div>
   </div>
 
-  <div class="ranking-header" style="font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase;">Live Player Rankings</div>
+  <div class="ranking-header">Live Player Rankings</div>
   <div id="leaderboard-container"></div>
 </div>
 
@@ -155,25 +157,28 @@ window.renderAll = () => {
     });
 
     const lSelect = document.getElementById('lineupFilter');
+    const saved = lSelect.value;
+    lSelect.innerHTML = `<option value="ALL">Global History Statistics</option>` + 
+        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P)</option>`).join('');
+
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
 
     const stats = {};
     filtered.forEach(g => {
         (g.players || []).forEach(p => {
-            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, history: []};
+            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0};
             stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
             if(p.rank === 1) stats[p.name].r1++;
             else if(p.rank === 2) stats[p.name].r2++;
             else if(p.rank === 3) stats[p.name].r3++;
             else if(p.rank === 0) stats[p.name].rl++;
-            stats[p.name].history.push(p.rank);
         });
     });
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
-    // PODIUM
+    // ELITE HALL
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <span class="hof-rank-lbl">#${i+1}</span>
@@ -190,7 +195,7 @@ window.renderAll = () => {
         document.getElementById('predictions-list').innerHTML = `<div style="margin-bottom:15px;">${predHtml}</div>`;
     }
 
-    // TILE LOGIC
+    // TILES
     const mkT = (lbl, val) => {
         const path = getAvatarPath(val);
         const img = path ? `<img class="tile-avatar" src="${path}" onerror="this.style.display='none'">` : '';
@@ -206,9 +211,8 @@ window.renderAll = () => {
     document.getElementById('kpi-container').innerHTML = 
         `<div class="k-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>` +
         mkT('Points King', king) + mkT('Last Place', lastK) +
-        mkT('Most Wins', finisher) + mkT('Comeback Pro', cbK) +
+        mkT('Highest Finisher', finisher) + mkT('Comeback Pro', cbK) +
         mkT('Consistent Pro', consP) + 
-        mkT('Hat-Trick', '—') + mkT('Wooden Spoon', '—') +
         `<div class="k-tile"><small>Peak Rate</small><div class="val">${sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'}</div></div>`;
 
     // LEADERBOARD
