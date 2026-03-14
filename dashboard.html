@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>GZ - Elite Command Center</title>
+<title>GZ - Elite Command Center Pro</title>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <style>
   :root {
@@ -36,9 +36,11 @@
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; }
   .cup-icon { display: block; margin: 0 auto 15px auto; width: 55px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
 
-  /* HOF Item with Avatar Support */
-  .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .hof-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--accent); margin-right: 12px; object-fit: cover; }
+  /* HOF Item with Rank Support */
+  .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px; }
+  /* NEW: Bold Gold Rank for Elite Hall */
+  .hof-rank-lbl { font-weight: 900; font-size: 16px; color: var(--accent); width: 35px; text-align: left; }
+  .hof-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
   .p-name-cap { text-transform: uppercase; font-size: 16px; font-weight: 900; color: #fff; flex: 1; text-align: left; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 22px; }
 
@@ -63,6 +65,7 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
+  /* LEADERBOARD ROW */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
   @media (max-width: 950px) { .rank-row { grid-template-columns: 1fr; } }
   
@@ -72,7 +75,7 @@
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
   .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: width 1.2s ease; }
-  .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; }
+  .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; z-index: 5; }
 
   .data-table-block { display: flex; gap: 15px; justify-content: center; }
   .data-col { text-align: center; min-width: 40px; }
@@ -133,7 +136,7 @@ const gRef = collection(db, "games");
 let allData = [];
 let currentMode = 'UNO';
 
-// Helper to format names for local .png files (ZACH -> Zach.png)
+// Helper for local .png files
 const getAvatarPath = (name) => {
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() + ".png";
 };
@@ -169,7 +172,7 @@ window.renderAll = () => {
 
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
-    lSelect.innerHTML = `<option value="ALL">Global History Statistics</option>` + 
+    lSelect.innerHTML = `<option value="ALL">Global Combined Statistics</option>` + 
         Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
@@ -190,9 +193,10 @@ window.renderAll = () => {
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
-    // ELITE HALL (Podium) with Avatars
+    // ELITE HALL (Podium) with Ranks and Avatars
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
+            <span class="hof-rank-lbl">#${i+1}</span>
             <img class="hof-avatar" src="${getAvatarPath(n)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
             <b class="p-name-cap">${n}</b>
             <span class="p-pts-big">${stats[n].pts}</span>
@@ -210,13 +214,7 @@ window.renderAll = () => {
 
     const mkTile = (lbl, val) => `<div class="k-tile"><small>${lbl}</small><div class="val">${val}</div></div>`;
     const king = sorted[0] || '—';
-    document.getElementById('kpi-container').innerHTML = 
-        mkTile('Total Rounds', filtered.length) + mkTile('Points King', king) + 
-        mkTile('Last King', Object.keys(stats).sort((a,b)=>stats[b].rl-stats[a].rl)[0] || '—') + 
-        mkTile('Highest Finisher', Object.keys(stats).sort((a,b)=>stats[b].r1-stats[a].r1)[0] || '—') + 
-        mkTile('Comeback Expert', Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—') + 
-        mkTile('Consistent Pro', Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—') + 
-        mkTile('Hat-Trick Hero', '—') + mkTile('Wooden Spoon', '—') + mkTile('Peak Win Rate', sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%');
+    document.getElementById('kpi-container').innerHTML = mkTile('Total Rounds', filtered.length) + mkTile('Points King', king) + mkTile('Last Place', Object.keys(stats).sort((a,b)=>stats[b].rl-stats[a].rl)[0] || '—') + mkTile('Most Wins', Object.keys(stats).sort((a,b)=>stats[b].r1-stats[a].r1)[0] || '—') + mkTile('Efficiency', Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—') + mkTile('Consistent Pro', Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—') + mkTile('Hat-Trick Hero', '—') + mkTile('Wooden Spoon', '—') + mkTile('Peak Win Rate', sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%');
 
     // LEADERBOARD with Avatars
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
