@@ -42,13 +42,12 @@
   .section-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--blue), transparent); }
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
   @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr 1fr; } }
-
-  .k-tile { padding: 25px 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); transition: 0.3s; min-height: 130px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
+  .k-tile { padding: 25px 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); transition: 0.3s; min-height: 130px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
   .k-tile:hover { transform: scale(1.02); filter: brightness(1.2); }
   .k-tile small { font-size: 11px; font-weight: 900; color: #fff; margin-bottom: 12px; text-transform: uppercase; }
   .k-tile .val { font-size: 22px; font-weight: 900; color: #fff; }
 
-  /* TILE GRADIENTS */
+  /* 9 Grad Tiles */
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -62,19 +61,20 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 40px 0 20px 0; display: flex; align-items: center; gap: 15px; text-transform: uppercase; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
 
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 16px; display: grid; grid-template-columns: 320px 1fr 120px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
-  @media (max-width: 850px) { .rank-row { grid-template-columns: 60px 1fr; } }
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 16px; display: grid; grid-template-columns: 280px 1fr 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
+  @media (max-width: 850px) { .rank-row { grid-template-columns: 1fr; } }
 
   .num { width: 35px; font-weight: 900; color: var(--cyan); font-size: 26px; }
   .p-name { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; margin-bottom: 10px; display: block; }
   .p-chart-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, var(--cyan), var(--blue), var(--violet)); border-radius: 10px; }
   
-  .data-table-block { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; text-align: center; }
-  .data-col label { display: block; font-size: 9px; font-weight: 900; color: #3fff3f; text-transform: uppercase; margin-bottom: 6px; }
+  .data-table-block { display: flex; gap: 15px; justify-content: flex-end; }
+  .data-col { text-align: center; min-width: 35px; }
+  .data-col label { display: block; font-size: 8px; font-weight: 900; color: #3fff3f; text-transform: uppercase; margin-bottom: 4px; }
   .data-col span { font-size: 14px; font-weight: 900; color: #fff; }
 
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 20px; box-shadow: 0 4px 15px rgba(179,0,0,0.3); text-align: center; }
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 20px; text-align: center; }
 </style>
 </head>
 <body>
@@ -135,7 +135,6 @@ window.renderAll = () => {
     const is28 = currentMode === '28';
     const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
     
-    // Lineup Logic
     let lineups = {};
     rawGames.forEach(g => {
         const pNames = g.players ? g.players.map(p => p.name).sort() : [];
@@ -166,11 +165,9 @@ window.renderAll = () => {
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
-    // Podium
-    document.getElementById('podium-list').innerHTML = sorted.length > 0 ? sorted.slice(0,3).map((n, i) => `
-        <div class="hof-item"><span class="rank-lbl">#${i+1}</span><b class="p-name-cap">${n}</b><span class="p-pts-big">${stats[n].pts}</span></div>`).join('') : "<p>Awaiting match data...</p>";
+    document.getElementById('podium-list').innerHTML = sorted.length ? sorted.slice(0,3).map((n, i) => `
+        <div class="hof-item"><span class="rank-lbl">#${i+1}</span><b class="p-name-cap">${n}</b><span class="p-pts-big">${stats[n].pts}</span></div>`).join('') : "<p>No data</p>";
 
-    // Predictions
     if(sorted.length >= 2) {
         const champ = sorted[0];
         const challengers = sorted.slice(1, 3);
@@ -178,12 +175,9 @@ window.renderAll = () => {
             const diff = stats[champ].pts - stats[p].pts;
             return `<div class="pred-text">${p} needs <b>${diff + 1} pts</b> to beat ${champ}</div>`;
         }).join('');
-        document.getElementById('predictions-list').innerHTML = predHtml + `<div class="pred-text" style="color:var(--accent); margin-top:10px; font-weight:900;">ALL THE BEST!</div>`;
-    } else {
-        document.getElementById('predictions-list').innerHTML = "Competition heating up...";
+        document.getElementById('predictions-list').innerHTML = predHtml + `<div class="pred-text" style="color:var(--accent); font-weight:900;">ALL THE BEST!</div>`;
     }
 
-    // Tiles
     let htw = '—', htl = '—';
     for(let n in stats) {
         let sw = 0, mw = 0, sl = 0, ml = 0;
@@ -191,4 +185,49 @@ window.renderAll = () => {
             if(r===1) {sw++; sl=0;} else if(r===0) {sl++; sw=0;} else {sw=0; sl=0;}
             if(sw > mw) mw = sw; if(sl > ml) ml = sl;
         });
-        if(mw >= 3) htw = n; if(ml >= 3) htl =
+        if(mw >= 3) htw = n; if(ml >= 3) htl = n;
+    }
+
+    const king = sorted[0] || '—';
+    const finisher = Object.keys(stats).sort((a,b)=>stats[b].r1-stats[a].r1)[0] || '—';
+    const lastK = Object.keys(stats).sort((a,b)=>stats[b].rl-stats[a].rl)[0] || '—';
+    const cbK = Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—';
+    const consP = Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—';
+
+    document.getElementById('kpi-container').innerHTML = `
+        <div class="k-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>
+        <div class="k-tile"><small>Points King/Queen</small><div class="val">${king}</div></div>
+        <div class="k-tile"><small>Last King/Queen</small><div class="val">${lastK}</div></div>
+        <div class="k-tile"><small>Highest Finisher</small><div class="val">${finisher}</div></div>
+        <div class="k-tile"><small>Comeback Expert</small><div class="val">${cbK}</div></div>
+        <div class="k-tile"><small>Consistent Pro</small><div class="val">${consP}</div></div>
+        <div class="k-tile"><small>Hat-Trick Hero</small><div class="val">${htw}</div></div>
+        <div class="k-tile"><small>Wooden Spoon</small><div class="val">${htl}</div></div>
+        <div class="k-tile"><small>Peak Win Rate</small><div class="val">${sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'}</div></div>`;
+
+    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
+        const d = stats[n];
+        const diff = i === 0 ? 0 : stats[sorted[i-1]].pts - d.pts;
+        return `
+        <div class="rank-row">
+            <div class="num">#${i+1}</div>
+            <div class="p-info">
+                <span class="p-name">${n}</span>
+                <div class="p-chart-container"><div class="p-chart-fill" style="width: ${((d.r1/d.t)*100).toFixed(0)}%"></div></div>
+            </div>
+            <div class="data-table-block">
+                <div class="data-col"><label>Diff</label><span>${diff.toString().padStart(2, '0')}</span></div>
+                <div class="data-col"><label>1st</label><span>${d.r1.toString().padStart(2, '0')}</span></div>
+                <div class="data-col"><label>2nd</label><span>${d.r2.toString().padStart(2, '0')}</span></div>
+                <div class="data-col"><label>3rd</label><span>${d.r3.toString().padStart(2, '0')}</span></div>
+                <div class="data-col"><label>Lost</label><span>${d.rl.toString().padStart(2, '0')}</span></div>
+            </div>
+            <div class="score-box">${d.pts}</div>
+        </div>`;
+    }).join('');
+};
+
+onSnapshot(query(gRef, orderBy("time")), snap => { allData = snap.docs.map(d => d.data()); renderAll(); });
+</script>
+</body>
+</html>
