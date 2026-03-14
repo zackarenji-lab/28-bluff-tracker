@@ -30,16 +30,17 @@
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  /* TOP GRID */
-  .top-grid { display: grid; grid-template-columns: 350px 1fr; gap: 25px; margin-bottom: 40px; align-items: stretch; }
+  .top-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; align-items: stretch; }
   @media (max-width: 1000px) { .top-grid { grid-template-columns: 1fr; } }
 
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; }
   .cup-icon { display: block; margin: 0 auto 15px auto; width: 55px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
 
-  .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .p-name-cap { text-transform: uppercase; font-size: 18px; font-weight: 900; color: #fff; flex: 1; text-align: left; margin-left: 20px; }
-  .p-pts-big { color: var(--accent); font-weight: 900; font-size: 24px; }
+  /* HOF Item with Avatar Support */
+  .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .hof-avatar { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--accent); margin-right: 12px; object-fit: cover; }
+  .p-name-cap { text-transform: uppercase; font-size: 16px; font-weight: 900; color: #fff; flex: 1; text-align: left; }
+  .p-pts-big { color: var(--accent); font-weight: 900; font-size: 22px; }
 
   .va-title { color:var(--accent); font-weight:900; font-size:12px; letter-spacing:4px; margin: 30px 0 15px 0; opacity:0.8; text-transform: uppercase; }
   .pred-box { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: 16px; padding: 22px; text-align: left; margin-top: auto; }
@@ -47,7 +48,7 @@
   .all-best { color: var(--accent); font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; display: block; }
 
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
 
@@ -62,17 +63,11 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* RANKING ROW */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
   @media (max-width: 950px) { .rank-row { grid-template-columns: 1fr; } }
   
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
-  
-  /* UPDATED AVATAR STYLE: Glowing Cyan Circle */
-  .p-avatar { 
-    width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); 
-    background: #161b22; object-fit: cover; box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
-  }
+  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; box-shadow: 0 0 15px rgba(0, 245, 255, 0.3); }
   
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
   .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
@@ -107,7 +102,7 @@
   <div class="top-grid">
     <div class="hof-card">
       <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" class="cup-icon">
-      <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent);">UNO ELITE HALL</h4>
+      <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent); margin-bottom: 10px;">UNO ELITE HALL</h4>
       <div id="podium-list"></div>
       <p class="va-title">VICTORY AWAITS</p>
       <div class="pred-box">
@@ -137,6 +132,11 @@ const gRef = collection(db, "games");
 
 let allData = [];
 let currentMode = 'UNO';
+
+// Helper to format names for local .png files (ZACH -> Zach.png)
+const getAvatarPath = (name) => {
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase() + ".png";
+};
 
 window.takeSnapshot = () => {
     html2canvas(document.querySelector("#capture-area"), { backgroundColor: "#0d0d1a", scale: 2 }).then(canvas => {
@@ -190,8 +190,13 @@ window.renderAll = () => {
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
+    // ELITE HALL (Podium) with Avatars
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
-        <div class="hof-item"><span class="rank-lbl">#${i+1}</span><b class="p-name-cap">${n}</b><span class="p-pts-big">${stats[n].pts}</span></div>`).join('');
+        <div class="hof-item">
+            <img class="hof-avatar" src="${getAvatarPath(n)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            <b class="p-name-cap">${n}</b>
+            <span class="p-pts-big">${stats[n].pts}</span>
+        </div>`).join('');
 
     if(sorted.length >= 2) {
         const champ = sorted[0];
@@ -213,17 +218,14 @@ window.renderAll = () => {
         mkTile('Consistent Pro', Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—') + 
         mkTile('Hat-Trick Hero', '—') + mkTile('Wooden Spoon', '—') + mkTile('Peak Win Rate', sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%');
 
+    // LEADERBOARD with Avatars
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n];
         const winPercent = ((d.r1/d.t)*100).toFixed(0);
-        
-        // DYNAMIC LOCAL IMAGE PATH: Matches file name like "Zach.png"
-        const formattedName = n.charAt(0).toUpperCase() + n.slice(1).toLowerCase();
-        
         return `
         <div class="rank-row">
             <div class="num">#${i+1}</div>
-            <img class="p-avatar" src="${formattedName}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            <img class="p-avatar" src="${getAvatarPath(n)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
             <div class="p-name">${n}</div>
             <div class="p-chart-container">
                 <div class="p-chart-fill" style="width:${winPercent}%"></div>
