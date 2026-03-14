@@ -30,9 +30,9 @@
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
   .lineup-sub { font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* RESTORED TOP GRID STRUCTURE */
+  /* TOP SECTION GRID */
   .top-section { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
-  @media (max-width: 1000px) { .top-section { grid-template-columns: 1fr; } }
+  @media (max-width: 1100px) { .top-section { grid-template-columns: 1fr; } }
 
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; align-items: center; }
   .cup-icon { width: 55px; margin: 0 auto 15px auto; display: block; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
@@ -46,15 +46,15 @@
   .va-title { color:var(--accent); font-weight:900; font-size:12px; letter-spacing:4px; margin: 25px 0 15px 0; opacity:0.8; text-transform: uppercase; }
   .pred-box { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: 16px; padding: 22px; text-align: left; margin-top: auto; width: 85%; }
   .pred-line { font-size: 13px; color: #fff; margin-bottom: 8px; line-height: 1.4; font-style: italic; display: block; }
-  .all-best { color: var(--accent); font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; display: block; margin-top: 5px; }
 
-  /* KPI TILES COLORS RESTORED */
+  /* FULL 9-TILE GRID */
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; z-index: 2; }
   .tile-avatar { position: absolute; bottom: 10px; right: 10px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; z-index: 1; }
 
+  /* Grad Colors */
   .c1 { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .c2 { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .c3 { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -63,8 +63,8 @@
   .c6 { background: linear-gradient(135deg, #ff9f1c, #f3722c); }
   .c7 { background: linear-gradient(135deg, #5e60ce, #480ca8); }
   .c8 { background: linear-gradient(135deg, #212529, #343a40); }
+  .c9 { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* RANKING ROW */
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
@@ -108,12 +108,12 @@
       <p class="va-title">VICTORY AWAITS</p>
       <div class="pred-box">
         <div id="predictions-list"></div>
-        <span class="all-best">ALL THE BEST!</span>
+        <span style="color:var(--accent); font-weight:900; font-size:11px; text-transform:uppercase; letter-spacing:2px; display:block; margin-top:10px;">ALL THE BEST!</span>
       </div>
     </div>
 
     <div class="intel-side">
-      <div style="font-weight: 900; font-size: 16px; color: #fff; margin-bottom: 20px; text-transform: uppercase;">Intelligence & Efficiency</div>
+      <div style="font-weight: 900; font-size: 16px; color: #fff; margin-bottom: 20px; text-transform: uppercase;">Tournament Intelligence</div>
       <div class="kpi-grid" id="kpi-container"></div>
     </div>
   </div>
@@ -171,12 +171,12 @@ window.renderAll = () => {
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
     lSelect.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
-        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P)</option>`).join('');
+        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${k}]</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
 
-    document.getElementById('lineup-names-label').innerText = activeKey === 'ALL' ? "Showing global data" : `Group: ${activeKey}`;
+    document.getElementById('lineup-names-label').innerText = activeKey === 'ALL' ? "Global Statistics" : `Group: ${activeKey}`;
 
     const stats = {};
     filtered.forEach(g => {
@@ -192,7 +192,6 @@ window.renderAll = () => {
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
 
-    // ELITE HALL
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <span class="hof-rank-lbl">#${i+1}</span>
@@ -201,7 +200,6 @@ window.renderAll = () => {
             <span class="p-pts-big">${stats[n].pts}</span>
         </div>`).join('');
 
-    // PREDICTIONS
     if(sorted.length >= 2) {
         const champ = sorted[0];
         const challengers = sorted.slice(1, 3);
@@ -209,7 +207,6 @@ window.renderAll = () => {
         document.getElementById('predictions-list').innerHTML = predHtml;
     }
 
-    // TILE BUILDER
     const mkT = (lbl, val, c) => {
         const path = getAvatarPath(val);
         const img = path ? `<img class="tile-avatar" src="${path}" onerror="this.style.display='none'">` : '';
@@ -225,11 +222,11 @@ window.renderAll = () => {
     document.getElementById('kpi-container').innerHTML = 
         `<div class="k-tile c1"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>` +
         mkT('Points King', king, 'c2') + mkT('Last Place', lastK, 'c3') +
-        mkT('Highest Finisher', finisher, 'c4') + mkT('Comeback Expert', cbK, 'c5') +
-        mkT('Consistent Pro', consP, 'c6') + mkT('Wooden Spoon', '—', 'c7') +
-        `<div class="k-tile c8"><small>Peak Rate</small><div class="val">${sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'}</div></div>`;
+        mkT('Most Wins', finisher, 'c4') + mkT('Comeback Pro', cbK, 'c5') +
+        mkT('Consistent Pro', consP, 'c6') + 
+        mkT('Hat-Trick', '—', 'c7') + mkT('Wooden Spoon', '—', 'c8') +
+        `<div class="k-tile c9"><small>Peak Rate</small><div class="val">${sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'}</div></div>`;
 
-    // LEADERBOARD
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n];
         const winPercent = ((d.r1/d.t)*100).toFixed(0);
