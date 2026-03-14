@@ -24,20 +24,21 @@
   .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
   .share-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0, 245, 255, 0.4); }
 
-  /* GAME TABS */
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
   .g-tab.active { background: var(--tile-grad); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); transform: translateY(-4px); }
 
-  /* LINEUP SELECTOR */
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  /* TOP LAYOUT */
-  .top-grid { display: flex; gap: 25px; margin-bottom: 40px; }
-  .hof-card { flex: 0 0 350px; background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; }
-  .intel-section { flex: 1; }
-  @media (max-width: 1000px) { .top-grid { flex-direction: column; } .hof-card { flex: none; width: auto; } }
+  /* SYMMETRY FIX: TOP LAYOUT */
+  .top-grid { display: grid; grid-template-columns: 350px 1fr; gap: 25px; margin-bottom: 40px; align-items: stretch; }
+  @media (max-width: 1000px) { .top-grid { grid-template-columns: 1fr; } }
+
+  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; }
+  
+  /* CENTER THE CUP ICON */
+  .cup-icon { display: block; margin: 0 auto 15px auto; width: 55px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
 
   .hof-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .p-name-cap { text-transform: uppercase; font-size: 18px; font-weight: 900; color: #fff; flex: 1; text-align: left; margin-left: 20px; }
@@ -48,14 +49,13 @@
   .pred-line { font-size: 14px; color: #fff; margin-bottom: 12px; line-height: 1.5; font-style: italic; display: block; }
   .all-best { color: var(--accent); font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; display: block; }
 
-  /* KPI TILES - GRADIENTS RESTORED */
+  /* KPI TILES */
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
-  .k-tile:hover { transform: translateY(-5px); filter: brightness(1.2); }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
 
-  /* 9 SPECIFIC GRADIENTS */
+  /* 9 TILE GRADIENTS */
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -66,12 +66,12 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* RANKING ROW WITH AVATAR */
+  /* PLAYER RANKING */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
   @media (max-width: 950px) { .rank-row { grid-template-columns: 1fr; } }
   
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
-  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
+  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
   
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
   .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
@@ -105,7 +105,7 @@
 
   <div class="top-grid">
     <div class="hof-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" style="width:55px; margin-bottom:15px;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" class="cup-icon">
       <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent);">UNO ELITE HALL</h4>
       <div id="podium-list"></div>
       <p class="va-title">VICTORY AWAITS</p>
@@ -121,7 +121,7 @@
     </div>
   </div>
 
-  <div class="ranking-header">Live Player Rankings</div>
+  <div class="ranking-header" style="font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase;">Live Player Rankings</div>
   <div id="leaderboard-container"></div>
 </div>
 
@@ -134,7 +134,7 @@ const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 const gRef = collection(db, "games");
 
-// GITHUB IMAGE URL BASE (Fixed to pull Raw content)
+// GITHUB BASE - Set up for case formatting
 const GITHUB_AVATAR_BASE = "https://raw.githubusercontent.com/AnnuZachariah/GZ_Command_Center/main/Avatars/";
 
 let allData = [];
@@ -218,10 +218,14 @@ window.renderAll = () => {
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n];
         const winPercent = ((d.r1/d.t)*100).toFixed(0);
+        
+        // FORMAT NAME FOR GITHUB: Capitalize first letter, lower rest (e.g. ANNU -> Annu)
+        const formattedName = n.charAt(0).toUpperCase() + n.slice(1).toLowerCase();
+        
         return `
         <div class="rank-row">
             <div class="num">#${i+1}</div>
-            <img class="p-avatar" src="${GITHUB_AVATAR_BASE}${n}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
+            <img class="p-avatar" src="${GITHUB_AVATAR_BASE}${formattedName}.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
             <div class="p-name">${n}</div>
             <div class="p-chart-container">
                 <div class="p-chart-fill" style="width:${winPercent}%"></div>
