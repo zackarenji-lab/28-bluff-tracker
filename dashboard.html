@@ -29,14 +29,14 @@
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  /* TOP SECTION FIX */
-  .top-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; align-items: stretch; }
-  @media (max-width: 1000px) { .top-grid { grid-template-columns: 1fr; } }
+  /* TOP SECTION GRID */
+  .top-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 25px; margin-bottom: 40px; align-items: start; }
+  @media (max-width: 1100px) { .top-grid { grid-template-columns: 1fr; } }
 
-  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; align-items: center; }
+  /* HOF CENTER CARD */
+  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; align-items: center; width: 360px; margin: 0 auto; }
   .cup-icon { width: 55px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,211,109,0.3)); }
   .hof-title { font-size: 18px; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; font-weight: 900; }
-  
   .hof-list { width: 100%; }
   .hof-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px; width: 100%; }
   .hof-rank-lbl { font-weight: 900; font-size: 15px; color: var(--accent); width: 30px; text-align: left; }
@@ -44,30 +44,38 @@
   .p-name-cap { text-transform: uppercase; font-size: 15px; font-weight: 900; color: #fff; flex: 1; text-align: left; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 20px; }
 
-  /* KPI TILES */
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; height: 100%; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
-  .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
-  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; }
-  .tile-avatar { position: absolute; bottom: 10px; right: 10px; width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; }
+  /* TILE STYLING & COLORS */
+  .intel-column { display: flex; flex-direction: column; gap: 15px; }
+  .intel-header { font-weight: 900; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 110px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+  .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 6px; text-transform: uppercase; opacity: 0.9; }
+  .k-tile .val { font-size: 17px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; z-index: 2; }
+  .tile-avatar { position: absolute; bottom: 8px; right: 8px; width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; z-index: 1; }
 
-  /* RANKING ROW FIX */
-  .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+  /* TILE COLOR DEFINITIONS */
+  .c1 { background: linear-gradient(135deg, #3d3dff, #a020f0); }
+  .c2 { background: linear-gradient(135deg, #00b4d8, #0077b6); }
+  .c3 { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
+  .c4 { background: linear-gradient(135deg, #ef476f, #d00000); }
+  .c5 { background: linear-gradient(135deg, #06d6a0, #00afb9); }
+  .c6 { background: linear-gradient(135deg, #ff9f1c, #f3722c); }
+  .c7 { background: linear-gradient(135deg, #5e60ce, #480ca8); }
+  .c8 { background: linear-gradient(135deg, #212529, #343a40); }
+  .c9 { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+
+  /* RANKING ROW */
+  .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; }
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
-  @media (max-width: 950px) { .rank-row { grid-template-columns: 50px 60px 1fr 100px; } .p-chart-container, .data-table-block { display: none; } }
-  
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
-  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
-  .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
+  .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
+  .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
   .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
-  .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: width 1.2s ease; }
+  .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: 1.2s ease; }
   .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; }
-
   .data-table-block { display: flex; gap: 15px; justify-content: center; }
   .data-col { text-align: center; min-width: 40px; }
   .data-col label { display: block; font-size: 9px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; }
-  .data-col span { font-size: 14px; font-weight: 900; color: #fff; display: block; }
+  .data-col span { font-size: 14px; font-weight: 900; color: #fff; }
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; }
 </style>
 </head>
@@ -90,6 +98,8 @@
   </div>
 
   <div class="top-grid">
+    <div class="intel-column" id="intel-left"></div>
+
     <div class="hof-card">
       <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" class="cup-icon">
       <div id="hof-title" class="hof-title">UNO ELITE HALL</div>
@@ -101,9 +111,7 @@
       </div>
     </div>
 
-    <div class="intel-section">
-      <div class="kpi-grid" id="kpi-container"></div>
-    </div>
+    <div class="intel-column" id="intel-right"></div>
   </div>
 
   <div class="ranking-header">Live Player Rankings</div>
@@ -140,7 +148,6 @@ window.setMode = (m, el) => {
     currentMode = m;
     document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
-    document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
     renderAll();
 };
 
@@ -158,7 +165,7 @@ window.renderAll = () => {
 
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
-    lSelect.innerHTML = `<option value="ALL">Global History Statistics</option>` + 
+    lSelect.innerHTML = `<option value="ALL">Global Combined Statistics</option>` + 
         Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P)</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
@@ -195,25 +202,29 @@ window.renderAll = () => {
         document.getElementById('predictions-list').innerHTML = `<div style="margin-bottom:15px;">${predHtml}</div>`;
     }
 
-    // TILES
-    const mkT = (lbl, val) => {
-        const path = getAvatarPath(val);
-        const img = path ? `<img class="tile-avatar" src="${path}" onerror="this.style.display='none'">` : '';
-        return `<div class="k-tile"><small>${lbl}</small><div class="val">${val}</div>${img}</div>`;
-    };
-
+    // TILE CREATION WITH MANUAL COLORS
     const king = sorted[0] || '—';
     const finisher = Object.keys(stats).sort((a,b)=>stats[b].r1-stats[a].r1)[0] || '—';
     const lastK = Object.keys(stats).sort((a,b)=>stats[b].rl-stats[a].rl)[0] || '—';
     const cbK = Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—';
     const consP = Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—';
 
-    document.getElementById('kpi-container').innerHTML = 
-        `<div class="k-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>` +
-        mkT('Points King', king) + mkT('Last Place', lastK) +
-        mkT('Highest Finisher', finisher) + mkT('Comeback Pro', cbK) +
-        mkT('Consistent Pro', consP) + 
-        `<div class="k-tile"><small>Peak Rate</small><div class="val">${sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'}</div></div>`;
+    const mkT = (lbl, val, colorClass) => {
+        const path = getAvatarPath(val);
+        const img = path ? `<img class="tile-avatar" src="${path}" onerror="this.style.display='none'">` : '';
+        return `<div class="k-tile ${colorClass}"><small>${lbl}</small><div class="val">${val}</div>${img}</div>`;
+    };
+
+    document.getElementById('intel-left').innerHTML = `<div class="intel-header">Summary</div>` +
+        mkT('Total Rounds', filtered.length, 'c1') +
+        mkT('Points King', king, 'c2') +
+        mkT('Last Place', lastK, 'c3');
+
+    document.getElementById('intel-right').innerHTML = `<div class="intel-header">Efficiency</div>` +
+        mkT('Most Wins', finisher, 'c4') +
+        mkT('Comeback Pro', cbK, 'c5') +
+        mkT('Consistent Pro', consP, 'c6') +
+        mkT('Peak Rate', (sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'), 'c7');
 
     // LEADERBOARD
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
