@@ -3,22 +3,25 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
-<title>GZ - Elite Command Center</title>
+<title>GZ - Elite Command Center Pro</title>
 <style>
   :root {
     --bg-gradient: radial-gradient(circle at 0% 0%, #0d0d1a 0%, #101026 40%, #05050d 100%);
-    --glass: rgba(255, 255, 255, 0.03);
-    --violet: #7b2cbf; --blue: #3a86ff; --cyan: #00f5ff;
+    --panel: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.08);
+    --neon-violet: #bc13fe; --neon-blue: #00f5ff; --neon-green: #3fff3f;
     --accent: #ffd36d; --text: #e6edf3; --muted: #8b949e;
     --tile-grad: linear-gradient(135deg, #3d3dff 0%, #a020f0 100%);
   }
-  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden; }
-  .wrap { max-width: 1100px; margin: auto; padding: 20px; }
+  body { 
+    margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); 
+    background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden;
+  }
+  .wrap { max-width: 1100px; margin: auto; padding: 20px; box-sizing: border-box; }
   
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
 
-  /* TABS */
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
   .g-tab.active { background: var(--tile-grad); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); transform: translateY(-4px); }
@@ -50,6 +53,7 @@
   .k-tile small { font-size: 11px; font-weight: 900; color: #fff; margin-bottom: 12px; text-transform: uppercase; }
   .k-tile .val { font-size: 22px; font-weight: 900; color: #fff; }
 
+  /* Tile Colors */
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -60,24 +64,31 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* RANKING SECTION - REFERENCE STYLE */
+  /* RANKING SECTION - REFINED SYMMETRICAL GRID */
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 40px 0 20px 0; display: flex; align-items: center; gap: 15px; text-transform: uppercase; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
 
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
-  .num { width: 35px; font-weight: 900; color: var(--cyan); font-size: 26px; }
-  .p-info { flex: 1; }
-  .p-name { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; margin-bottom: 10px; display: block; }
-  .p-chart-container { width: 40%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
-  .p-chart-fill { height: 100%; background: linear-gradient(to right, var(--cyan), var(--blue), var(--violet)); border-radius: 10px; }
-  
-  /* REFERENCE DATA TABLE */
-  .row-stats { display: flex; gap: 15px; margin-left: auto; align-items: flex-end; }
-  .stat-col { text-align: center; min-width: 30px; }
-  .stat-col label { display: block; font-size: 8px; font-weight: 900; color: var(--danger); text-transform: uppercase; margin-bottom: 4px; }
-  .stat-col span { font-size: 13px; font-weight: 900; color: #fff; }
+  .rank-row { 
+    background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; 
+    border-radius: 16px; display: grid; grid-template-columns: 320px 1fr 120px; 
+    align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); 
+  }
+  @media (max-width: 850px) { .rank-row { grid-template-columns: 60px 1fr; } }
 
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 20px; margin-left: 20px; }
+  .num { width: 35px; font-weight: 900; color: var(--cyan); font-size: 26px; }
+  
+  /* Leader Info Block */
+  .leader-info { display: flex; align-items: center; gap: 15px; }
+  .p-name { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; margin-bottom: 10px; display: block; }
+  .p-chart-container { width: 100%; height: 6px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; }
+  .p-chart-fill { height: 100%; background: linear-gradient(to right, var(--neon-blue), var(--neon-violet)); border-radius: 10px; }
+  
+  /* Symmetrical Data Table Block */
+  .data-table-block { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; text-align: center; }
+  .data-col label { display: block; font-size: 9px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+  .data-col span { font-size: 14px; font-weight: 900; color: #fff; }
+
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 22px; border-radius: 12px; font-weight: 900; font-size: 20px; box-shadow: 0 4px 15px rgba(179,0,0,0.3); text-align: center; }
 
   #detail-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; align-items: center; justify-content: center; z-index: 1000; }
   .detail-card { background: #161b22; border: 1px solid var(--blue); padding: 40px; border-radius: 24px; max-width: 400px; width: 90%; text-align: center; }
@@ -98,9 +109,9 @@
   <header><a href="index.html" class="home-link">🏠 HOME</a></header>
 
   <div class="game-tabs">
-    <div class="g-tab active" id="tab-UNO" onclick="setMode('UNO', this)">Uno Cards</div>
-    <div class="g-tab" id="tab-Bluff" onclick="setMode('Bluff', this)">Bluff Game</div>
-    <div class="g-tab" id="tab-28" onclick="setMode('28', this)">28 Card</div>
+    <div class="g-tab active" onclick="setMode('UNO', this)">Uno Cards</div>
+    <div class="g-tab" onclick="setMode('Bluff', this)">Bluff Game</div>
+    <div class="g-tab" onclick="setMode('28', this)">28 Card</div>
   </div>
 
   <div class="panel">
@@ -111,156 +122,4 @@
   <div class="mid-grid">
     <div class="hof-card">
       <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" style="width:55px; margin-bottom:15px;">
-      <h4 id="hof-title" style="margin:0; font-size:16px; color: var(--accent);">UNO ELITE HALL</h4>
-      <div id="podium-list" style="margin: 15px 0;"></div>
-      <div class="va-title">VICTORY AWAITS</div>
-      <div class="pred-box">
-        <div id="predictions-list"></div>
-      </div>
-    </div>
-
-    <div>
-      <div class="section-header">Tournament Intelligence</div>
-      <div class="kpi-grid" id="kpi-container"></div>
-    </div>
-  </div>
-
-  <div class="ranking-header">Player Ranking</div>
-  <div id="leaderboard-container"></div>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
-
-const FIREBASE_CONFIG = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getFirestore(app);
-const gRef = collection(db, "games");
-
-let allData = [];
-let currentMode = 'UNO';
-
-window.setMode = (m, el) => {
-    currentMode = m;
-    document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
-    renderAll();
-};
-
-window.renderAll = () => {
-    const is28 = currentMode === '28';
-    const rawGames = allData.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === currentMode) && g.winner);
-    
-    let lineups = {};
-    rawGames.forEach(g => {
-        const pNames = g.players ? g.players.map(p => p.name).sort() : [];
-        const key = pNames.join(', ');
-        if(!lineups[key] && key) lineups[key] = { count: pNames.length, names: key };
-    });
-
-    const lSelect = document.getElementById('lineupFilter');
-    const saved = lSelect.value;
-    lSelect.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
-        Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
-
-    const activeKey = lSelect.value;
-    const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
-
-    const stats = {};
-    filtered.forEach(g => {
-        (g.players || []).forEach(p => {
-            if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0, history: []};
-            stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
-            if(p.rank === 1) stats[p.name].r1++;
-            else if(p.rank === 2) stats[p.name].r2++;
-            else if(p.rank === 3) stats[p.name].r3++;
-            else if(p.rank === 0) stats[p.name].rl++;
-            stats[p.name].history.push(p.rank);
-        });
-    });
-
-    const sorted = Object.keys(stats).sort((a,b) => stats[b].pts - stats[a].pts);
-
-    document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
-        <div class="hof-item">
-            <span class="rank-lbl">#${i+1}</span>
-            <b class="p-name-cap">${n}</b>
-            <span class="p-pts-big">${stats[n].pts}</span>
-        </div>`).join('');
-
-    // PREDICTIONS
-    if(sorted.length >= 2) {
-        const champ = sorted[0];
-        const challengers = sorted.slice(1, 3);
-        let predHtml = challengers.map(p => {
-            const diff = stats[champ].pts - stats[p].pts;
-            return `<div class="pred-text">${p} needs <b>${diff + 1} pts</b> to beat ${champ}</div>`;
-        }).join('');
-        document.getElementById('predictions-list').innerHTML = predHtml + `<div class="pred-text" style="color:var(--accent); margin-top:10px; font-weight:900;">ALL THE BEST!</div>`;
-    }
-
-    // KPI LOGIC
-    let htw = '—', htl = '—';
-    for(let n in stats) {
-        let sw = 0, mw = 0, sl = 0, ml = 0;
-        stats[n].history.forEach(r => {
-            if(r===1) {sw++; sl=0;} else if(r===0) {sl++; sw=0;} else {sw=0; sl=0;}
-            if(sw > mw) mw = sw; if(sl > ml) ml = sl;
-        });
-        if(mw >= 3) htw = n; if(ml >= 3) htl = n;
-    }
-
-    const mk = (lbl, val, detail) => `
-        <div class="k-tile" onclick="openDetail('${lbl}', '${detail}')">
-            <small>${lbl}</small><div class="val">${val}</div>
-        </div>`;
-
-    const king = sorted[0] || '—';
-    document.getElementById('kpi-container').innerHTML = 
-        mk('Total Rounds', filtered.length, `Total matches played: ${filtered.length}.`) +
-        mk('Points Champion', king, `${king} is leading the board.`) +
-        mk('Last Place King', Object.keys(stats).sort((a,b)=>stats[b].rl-stats[a].rl)[0] || '—', "Most last place finishes.") +
-        mk('Highest Finisher', Object.keys(stats).sort((a,b)=>stats[b].r1-stats[a].r1)[0] || '—', "Most 1st place wins.") +
-        mk('Comeback Expert', Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—', "Best win efficiency.") +
-        mk('Consistent Pro', Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—', "Master of 2nd and 3rd place.") +
-        mk('Hat-Trick Hero', htw, `${htw} won 3 in a row.`) +
-        mk('Wooden Spoon', htl, `${htl} lost 3 in a row.`) +
-        mk('Peak Win Rate', sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%', "Rank #1 win percentage.");
-
-    // LEADERBOARD WITH GRAPH STATS
-    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
-        const d = stats[n];
-        const diff = i === 0 ? 0 : stats[sorted[i-1]].pts - d.pts;
-        return `
-        <div class="rank-row">
-            <div class="num">#${i+1}</div>
-            <div class="p-info">
-                <span class="p-name">${n}</span>
-                <div class="p-chart-container"><div class="p-chart-fill" style="width: ${((d.r1/d.t)*100).toFixed(0)}%"></div></div>
-            </div>
-            <div class="row-stats">
-                <div class="stat-col"><label>Diff</label><span>${diff.toString().padStart(2, '0')}</span></div>
-                <div class="stat-col"><label>1</label><span>${d.r1.toString().padStart(2, '0')}</span></div>
-                <div class="stat-col"><label>2</label><span>${d.r2.toString().padStart(2, '0')}</span></div>
-                <div class="stat-col"><label>3</label><span>${d.r3.toString().padStart(2, '0')}</span></div>
-                <div class="stat-col"><label>Oth</label><span>${(d.t - d.r1 - d.r2 - d.r3 - d.rl).toString().padStart(2, '0')}</span></div>
-                <div class="stat-col"><label>Lost</label><span>${d.rl.toString().padStart(2, '0')}</span></div>
-            </div>
-            <div class="score-box">${d.pts}</div>
-        </div>`;
-    }).join('');
-};
-
-window.openDetail = (title, text) => {
-    document.getElementById('detail-title').innerText = title;
-    document.getElementById('detail-text').innerText = text;
-    document.getElementById('detail-overlay').style.display = 'flex';
-};
-window.closeDetail = () => document.getElementById('detail-overlay').style.display = 'none';
-
-onSnapshot(query(gRef, orderBy("time")), snap => { allData = snap.docs.map(d => d.data()); renderAll(); });
-</script>
-</body>
-</html>
+      <h4 id="hof-title" style="margin:0; font-size:
