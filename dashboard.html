@@ -12,23 +12,19 @@
     --violet: #7b2cbf; --blue: #3a86ff; --cyan: #00f5ff;
     --neon-green: #3fff3f; --accent: #ffd36d; --text: #e6edf3; --muted: #8b949e;
     --tile-grad: linear-gradient(135deg, #3d3dff 0%, #a020f0 100%);
+    /* New Gold Theme for Predictions */
+    --gold-bg: linear-gradient(135deg, rgba(255, 211, 109, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+    --gold-border: rgba(255, 211, 109, 0.3);
   }
   body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden; }
-  .wrap { max-width: 1200px; margin: auto; padding: 20px; background: transparent; }
+  .wrap { max-width: 1200px; margin: auto; padding: 20px; }
   
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-  .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
+  .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid var(--gold-border); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
 
-  /* NEW SHARE BUTTON STYLE */
-  .share-btn { 
-    cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); 
-    color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; 
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
-    display: flex; align-items: center; gap: 8px;
-  }
+  .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
   .share-btn:hover { background: var(--cyan); color: #000; box-shadow: 0 0 20px rgba(0, 245, 255, 0.4); }
 
-  /* NAVIGATION */
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
   .g-tab.active { background: var(--tile-grad); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); transform: translateY(-4px); }
@@ -36,9 +32,8 @@
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  /* TOP LAYOUT */
   .top-grid { display: flex; gap: 25px; margin-bottom: 40px; }
-  .hof-card { flex: 0 0 350px; background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
+  .hof-card { flex: 0 0 350px; background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; }
   .intel-section { flex: 1; }
   @media (max-width: 1000px) { .top-grid { flex-direction: column; } .hof-card { flex: none; width: auto; } }
 
@@ -46,13 +41,43 @@
   .p-name-cap { text-transform: uppercase; font-size: 18px; font-weight: 900; color: #fff; flex: 1; text-align: left; margin-left: 20px; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 24px; }
 
-  /* KPI GRID */
+  /* PREDICTIONS - GOLDEN STYLE FIX */
+  .va-title { color:var(--accent); font-weight:900; font-size:12px; letter-spacing:4px; margin: 30px 0 15px 0; opacity:0.8; text-transform: uppercase; }
+  .pred-box { 
+    background: var(--gold-bg); 
+    border: 1px solid var(--gold-border); 
+    border-radius: 16px; 
+    padding: 22px; 
+    text-align: left; 
+    margin-top: auto; /* Pushes to bottom of HOF card to fix gap */
+    box-shadow: inset 0 0 20px rgba(255, 211, 109, 0.05);
+  }
+  .pred-text-container { margin-bottom: 15px; }
+  .pred-line { 
+    font-size: 14px; 
+    color: #fff; 
+    margin-bottom: 12px; /* Fixed spacing between lines */
+    line-height: 1.5; 
+    font-style: italic; 
+    opacity: 0.95;
+    display: block;
+  }
+  .all-best { 
+    color: var(--accent); 
+    font-weight: 900; 
+    font-size: 11px; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    margin-top: 5px; 
+    display: block; 
+  }
+
+  /* TILES */
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); min-height: 120px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.8; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
 
-  /* Grad Tiles */
   .k-tile:nth-child(1) { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .k-tile:nth-child(2) { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .k-tile:nth-child(3) { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
@@ -63,38 +88,21 @@
   .k-tile:nth-child(8) { background: linear-gradient(135deg, #212529, #343a40); }
   .k-tile:nth-child(9) { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
 
-  /* PLAYER RANKING */
+  /* RANKING */
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; letter-spacing: 2px; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
-  
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 120px 1fr 300px 100px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
   @media (max-width: 950px) { .rank-row { grid-template-columns: 1fr; } }
-  
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
-
-  /* BAR WITH BUBBLE SAFETY ZONE */
-  .p-chart-container { 
-    height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; 
-    position: relative; overflow: hidden; display: flex; align-items: center; 
-    padding: 0 65px 0 0; 
-    border: 1px solid rgba(255,255,255,0.1); 
-  }
-  .p-chart-fill { 
-    height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); 
-    border-radius: 17px; transition: width 1.2s ease;
-  }
-  .perc-bubble { 
-    position: absolute; right: 4px; background: #00f5ff; color: #000; 
-    font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px;
-    z-index: 5;
-  }
-
+  .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
+  .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: width 1.2s ease; }
+  .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; }
   .data-table-block { display: flex; gap: 15px; justify-content: center; }
   .data-col { text-align: center; min-width: 40px; }
   .data-col label { display: block; font-size: 9px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 6px; }
   .data-col span { font-size: 15px; font-weight: 900; color: #fff; }
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; }
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; box-shadow: 0 4px 15px rgba(179,0,0,0.3); }
 </style>
 </head>
 <body id="capture-area">
@@ -118,10 +126,15 @@
   <div class="top-grid">
     <div class="hof-card">
       <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" style="width:55px; margin-bottom:15px;">
-      <h4 id="hof-title" style="margin:0; font-size:16px; color: var(--accent);">UNO ELITE HALL</h4>
-      <div id="podium-list" style="margin: 15px 0;"></div>
-      <p style="color:var(--accent); font-weight:900; font-size:12px; letter-spacing:4px; margin-top: 15px;">VICTORY AWAITS</p>
-      <div id="predictions-list" style="font-size:13px; font-style:italic; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; text-align: left;"></div>
+      <h4 id="hof-title" style="margin:0; font-size:18px; color: var(--accent);">UNO ELITE HALL</h4>
+      <div id="podium-list"></div>
+      
+      <p class="va-title">VICTORY AWAITS</p>
+      
+      <div class="pred-box">
+        <div id="predictions-list"></div>
+        <span class="all-best">ALL THE BEST!</span>
+      </div>
     </div>
 
     <div class="intel-section">
@@ -146,21 +159,12 @@ const gRef = collection(db, "games");
 let allData = [];
 let currentMode = 'UNO';
 
-// Snapshot Function
 window.takeSnapshot = () => {
-    const btn = document.querySelector('.share-btn');
-    btn.innerText = "Generating...";
-    
-    html2canvas(document.querySelector("#capture-area"), {
-        backgroundColor: "#0d0d1a",
-        scale: 2 // High resolution
-    }).then(canvas => {
-        const image = canvas.toDataURL("image/png");
+    html2canvas(document.querySelector("#capture-area"), { backgroundColor: "#0d0d1a", scale: 2 }).then(canvas => {
         const link = document.createElement('a');
         link.download = `GZ_Stats_${currentMode}.png`;
-        link.href = image;
+        link.href = canvas.toDataURL("image/png");
         link.click();
-        btn.innerText = "📸 Share Stats";
     });
 };
 
@@ -186,7 +190,7 @@ window.renderAll = () => {
 
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
-    lSelect.innerHTML = `<option value="ALL">Global History Statistics</option>` + 
+    lSelect.innerHTML = `<option value="ALL">Global Combined Statistics</option>` + 
         Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${lineups[k].names}]</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
@@ -210,19 +214,21 @@ window.renderAll = () => {
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item"><span class="rank-lbl">#${i+1}</span><b class="p-name-cap">${n}</b><span class="p-pts-big">${stats[n].pts}</span></div>`).join('');
 
+    // PREDICTIONS Logic - Fixed spacing and shape
     if(sorted.length >= 2) {
         const champ = sorted[0];
         const challengers = sorted.slice(1, 3);
         let predHtml = challengers.map(p => {
             const diff = stats[champ].pts - stats[p].pts;
-            return `<div>${p} needs <b>${diff + 1} pts</b> to beat ${champ}</div>`;
+            return `<span class="pred-line">${p} needs <b>${diff + 1} pts</b> to beat ${champ}</span>`;
         }).join('');
-        document.getElementById('predictions-list').innerHTML = predHtml + `<div style="color:var(--accent); font-weight:900; margin-top:10px; text-transform:uppercase; font-size:10px;">All the Best!</div>`;
+        document.getElementById('predictions-list').innerHTML = `<div class="pred-text-container">${predHtml}</div>`;
     }
 
     const mkTile = (lbl, val) => `<div class="k-tile"><small>${lbl}</small><div class="val">${val}</div></div>`;
     const king = sorted[0] || '—';
-    document.getElementById('kpi-container').innerHTML = mkTile('Total Rounds', filtered.length) + mkTile('Points King', king) + 
+    document.getElementById('kpi-container').innerHTML = 
+        mkTile('Total Rounds', filtered.length) + mkTile('Points King', king) + 
         mkTile('Last King', Object.keys(stats).sort((a,b)=>stats[b].rl-stats[a].rl)[0] || '—') + 
         mkTile('Highest Finisher', Object.keys(stats).sort((a,b)=>stats[b].r1-stats[a].r1)[0] || '—') + 
         mkTile('Comeback Expert', Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—') + 
