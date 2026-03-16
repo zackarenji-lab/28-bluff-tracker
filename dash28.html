@@ -62,7 +62,7 @@
   </header>
 
   <div class="panel">
-    <div style="font-size: 10px; font-weight: 900; color: var(--accent); margin-bottom: 10px; text-transform: uppercase;">Head-to-Head Lineups</div>
+    <div style="font-size: 10px; font-weight: 900; color: var(--accent); margin-bottom: 10px; text-transform: uppercase;">Matchup Selection</div>
     <select id="lineupFilter" onchange="render28()"></select>
   </div>
 
@@ -105,14 +105,11 @@ window.takeSnapshot = () => {
 window.render28 = () => {
     const rawGames = allData.filter(g => g.winner && g.loser);
     
-    // 1. Build Dropdown for Matchups (TeamA & TeamB vs TeamC & TeamD)
-    // We need to find where teamA/teamB are stored. Your index.html uses g.teamA and g.teamB in the 'conf28' init.
-    // Individual match logs might only have 'winner' and 'loser'. 
-    // We map every game to its parent series matchup.
-    
+    // Create a map of every series ID to its consistent Tournament name
     let seriesMatchups = {};
     allData.forEach(g => {
         if(g.seriesId && g.teamA && g.teamB) {
+            // Sort teams so 'A vs B' and 'B vs A' are identical keys
             seriesMatchups[g.seriesId] = [g.teamA, g.teamB].sort().join(" vs ");
         }
     });
@@ -125,8 +122,10 @@ window.render28 = () => {
 
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
+    
+    // Updated Dropdown mapping with "Tournament - " prefix
     lSelect.innerHTML = `<option value="ALL">All Pairings Combined</option>` + 
-        Object.keys(uniqueLineups).map(k => `<option value="${k}" ${k===saved?'selected':''}>${k}</option>`).join('');
+        Object.keys(uniqueLineups).map(k => `<option value="${k}" ${k===saved?'selected':''}>Tournament - ${k}</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
     const filtered = rawGames.filter(g => {
@@ -157,7 +156,7 @@ window.render28 = () => {
 
     // KPI Tiles
     const topTeam = sorted[0] || '—';
-    const mostDefeated = Object.keys(stats).sort((a,b)=>stats[b].losses-stats[a].losses)[0] || '—';
+    const mostDefeated = Object.keys(stats).sort((a,b) => stats[b].losses - stats[a].losses)[0] || '—';
     const winRate = (sorted.length && stats[topTeam].total > 0) ? ((stats[topTeam].wins / stats[topTeam].total) * 100).toFixed(0) + '%' : '0%';
 
     document.getElementById('kpi-container').innerHTML = `
