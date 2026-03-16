@@ -15,21 +15,6 @@
   header{display:flex;align-items:center;gap:10px;margin-bottom:15px}
   .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;}
   h1{margin:0;font-size:16px;flex:1}
-  
-  /* NEW DASHBOARD LINK STYLE */
-  .dash-link {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--gold);
-    text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 1px solid rgba(255, 211, 109, 0.3);
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    margin-right: 5px; /* Spacing to the left of Home button */
-  }
 
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -69,8 +54,6 @@
   <header>
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
-    <a href="dash28.html" class="dash-link">🏏 28 Dashboard</a>
-    <a href="dashboard.html" class="dash-link">📊 Dashboard</a>
     <button class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
     <button id="btn-home" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
   </header>
