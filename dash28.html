@@ -31,13 +31,13 @@
   
   .hof-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 15px; }
   .hof-rank { font-weight: 900; color: var(--accent); font-size: 18px; width: 40px; text-align: left; }
-  .hof-team-name { text-transform: uppercase; font-size: 13px; font-weight: 900; color: #fff; flex: 1; text-align: left; letter-spacing: 1px; }
-  .hof-wins { color: var(--cyan); font-weight: 900; font-size: 22px; }
+  .hof-team-name { text-transform: uppercase; font-size: 11px; font-weight: 900; color: #fff; flex: 1; text-align: left; letter-spacing: 1px; line-height: 1.4; }
+  .hof-wins { color: var(--cyan); font-weight: 900; font-size: 20px; }
 
   .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; height: 100%; }
   .k-tile { padding: 25px; border-radius: 20px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 10px; text-transform: uppercase; opacity: 0.8; letter-spacing: 1px; }
-  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
+  .k-tile .val { font-size: 16px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.3; }
 
   .c1 { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .c2 { background: linear-gradient(135deg, #00b4d8, #0077b6); }
@@ -47,10 +47,10 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--blue), transparent); }
   
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 60px 1fr 120px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 60px 1fr 140px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
-  .team-txt { font-weight: 800; font-size: 16px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-  .score-box { background: linear-gradient(135deg, #3a86ff, #7b2cbf); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 18px; text-align: center; }
+  .team-txt { font-weight: 800; font-size: 14px; color: #fff; text-transform: uppercase; letter-spacing: 1px; line-height: 1.4; }
+  .score-box { background: linear-gradient(135deg, #3a86ff, #7b2cbf); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 16px; text-align: center; }
 </style>
 </head>
 <body id="capture-area">
@@ -62,14 +62,14 @@
   </header>
 
   <div class="panel">
-    <div style="font-size: 10px; font-weight: 900; color: var(--accent); margin-bottom: 10px; text-transform: uppercase;">Matchup Selection</div>
+    <div style="font-size: 10px; font-weight: 900; color: var(--accent); margin-bottom: 10px; text-transform: uppercase;">Head-to-Head Lineups</div>
     <select id="lineupFilter" onchange="render28()"></select>
   </div>
 
   <div class="top-grid">
     <div class="hof-card">
       <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" class="cup-icon">
-      <h4 style="margin:0 0 20px 0; font-size:18px; color: var(--accent); font-weight:900; letter-spacing: 2px;">28 TEAM ELITE HALL</h4>
+      <h4 style="margin:0 0 20px 0; font-size:18px; color: var(--accent); font-weight:900; letter-spacing: 2px;">28 RIVALRY LEADERS</h4>
       <div id="podium-list"></div>
     </div>
 
@@ -78,7 +78,7 @@
     </div>
   </div>
 
-  <div class="ranking-header">Team Win Standings</div>
+  <div class="ranking-header">Head-to-Head Table</div>
   <div id="leaderboard-container"></div>
 </div>
 
@@ -96,46 +96,49 @@ let allData = [];
 window.takeSnapshot = () => {
     html2canvas(document.querySelector("#capture-area"), { backgroundColor: "#0d0d1a", scale: 2 }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `GZ_28_Stats.png`;
+        link.download = `GZ_28_Rivalry.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
     });
 };
 
 window.render28 = () => {
-    const rawGames = allData.filter(g => g.winner && g.loser && (g.seriesId || g.gameType === '28'));
+    const rawGames = allData.filter(g => g.winner && g.loser);
     
-    // 1. Build Dropdown for Matchups (Who vs Who)
-    let matchups = {};
-    rawGames.forEach(g => {
-        if(g.teamA && g.teamB) {
-            // Sort teams alphabetically so "A vs B" and "B vs A" are seen as the same matchup
-            const sortedTeams = [g.teamA, g.teamB].sort();
-            const key = `${sortedTeams[0]} vs ${sortedTeams[1]}`;
-            matchups[key] = true;
+    // 1. Build Dropdown for Matchups (TeamA & TeamB vs TeamC & TeamD)
+    // We need to find where teamA/teamB are stored. Your index.html uses g.teamA and g.teamB in the 'conf28' init.
+    // Individual match logs might only have 'winner' and 'loser'. 
+    // We map every game to its parent series matchup.
+    
+    let seriesMatchups = {};
+    allData.forEach(g => {
+        if(g.seriesId && g.teamA && g.teamB) {
+            seriesMatchups[g.seriesId] = [g.teamA, g.teamB].sort().join(" vs ");
         }
+    });
+
+    let uniqueLineups = {};
+    rawGames.forEach(g => {
+        const matchupName = seriesMatchups[g.seriesId];
+        if(matchupName) uniqueLineups[matchupName] = true;
     });
 
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
-    lSelect.innerHTML = `<option value="ALL">All Recorded Series</option>` + 
-        Object.keys(matchups).map(k => `<option value="${k}" ${k===saved?'selected':''}>${k}</option>`).join('');
+    lSelect.innerHTML = `<option value="ALL">All Pairings Combined</option>` + 
+        Object.keys(uniqueLineups).map(k => `<option value="${k}" ${k===saved?'selected':''}>${k}</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
-    
-    // 2. Filter based on selection
     const filtered = rawGames.filter(g => {
-        if(activeKey === 'ALL') return true;
-        const sortedTeams = [g.teamA, g.teamB].sort();
-        return `${sortedTeams[0]} vs ${sortedTeams[1]}` === activeKey;
+        if(activeKey === "ALL") return true;
+        return seriesMatchups[g.seriesId] === activeKey;
     });
 
-    // 3. Calculate Team Stats
     const stats = {};
     filtered.forEach(g => {
-        if(!stats[g.winner]) stats[g.winner] = { wins: 0, losses: 0, total: 0 };
-        if(!stats[g.loser]) stats[g.loser] = { wins: 0, losses: 0, total: 0 };
-        
+        [g.winner, g.loser].forEach(team => {
+            if(!stats[team]) stats[team] = { wins: 0, losses: 0, total: 0 };
+        });
         stats[g.winner].wins++;
         stats[g.winner].total++;
         stats[g.loser].losses++;
@@ -144,29 +147,27 @@ window.render28 = () => {
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].wins - stats[a].wins);
 
-    // 4. Elite Hall
+    // Elite Hall
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <span class="hof-rank">#${i+1}</span>
             <b class="hof-team-name">${n}</b>
-            <span class="hof-wins">${stats[n].wins}</span>
+            <span class="hof-wins">${stats[n].wins} W</span>
         </div>`).join('');
 
-    // 5. Intelligence Tiles
+    // KPI Tiles
     const topTeam = sorted[0] || '—';
     const mostDefeated = Object.keys(stats).sort((a,b)=>stats[b].losses-stats[a].losses)[0] || '—';
-    const winRate = (sorted.length && stats[topTeam].total > 0) 
-        ? ((stats[topTeam].wins / stats[topTeam].total) * 100).toFixed(0) + '%' 
-        : '0%';
+    const winRate = (sorted.length && stats[topTeam].total > 0) ? ((stats[topTeam].wins / stats[topTeam].total) * 100).toFixed(0) + '%' : '0%';
 
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile c1"><small>Total Matches</small><div class="val">${filtered.length} Played</div></div>
-        <div class="k-tile c2"><small>Lineup Leader</small><div class="val">${topTeam}</div></div>
-        <div class="k-tile c3"><small>Most Defeated</small><div class="val">${mostDefeated}</div></div>
+        <div class="k-tile c1"><small>Matches Played</small><div class="val">${filtered.length}</div></div>
+        <div class="k-tile c2"><small>Dominant Team</small><div class="val">${topTeam}</div></div>
+        <div class="k-tile c3"><small>Struggling Team</small><div class="val">${mostDefeated}</div></div>
         <div class="k-tile c4"><small>Win Rate</small><div class="val">${winRate}</div></div>
     `;
 
-    // 6. Leaderboard
+    // Leaderboard
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => `
         <div class="rank-row">
             <div class="num">#${i+1}</div>
