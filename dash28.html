@@ -103,14 +103,15 @@ window.takeSnapshot = () => {
 };
 
 window.render28 = () => {
-    // 1. Filter only 28 games that have winner/loser data
     const rawGames = allData.filter(g => g.winner && g.loser && (g.seriesId || g.gameType === '28'));
     
-    // 2. Build Dropdown for Matchups
+    // 1. Build Dropdown for Matchups (Who vs Who)
     let matchups = {};
     rawGames.forEach(g => {
         if(g.teamA && g.teamB) {
-            const key = `${g.teamA} vs ${g.teamB}`;
+            // Sort teams alphabetically so "A vs B" and "B vs A" are seen as the same matchup
+            const sortedTeams = [g.teamA, g.teamB].sort();
+            const key = `${sortedTeams[0]} vs ${sortedTeams[1]}`;
             matchups[key] = true;
         }
     });
@@ -121,9 +122,15 @@ window.render28 = () => {
         Object.keys(matchups).map(k => `<option value="${k}" ${k===saved?'selected':''}>${k}</option>`).join('');
 
     const activeKey = lSelect.value || "ALL";
-    const filtered = activeKey === 'ALL' ? rawGames : rawGames.filter(g => `${g.teamA} vs ${g.teamB}` === activeKey);
+    
+    // 2. Filter based on selection
+    const filtered = rawGames.filter(g => {
+        if(activeKey === 'ALL') return true;
+        const sortedTeams = [g.teamA, g.teamB].sort();
+        return `${sortedTeams[0]} vs ${sortedTeams[1]}` === activeKey;
+    });
 
-    // 3. Calculate Team Stats (Fixing the undefined error)
+    // 3. Calculate Team Stats
     const stats = {};
     filtered.forEach(g => {
         if(!stats[g.winner]) stats[g.winner] = { wins: 0, losses: 0, total: 0 };
@@ -154,7 +161,7 @@ window.render28 = () => {
 
     document.getElementById('kpi-container').innerHTML = `
         <div class="k-tile c1"><small>Total Matches</small><div class="val">${filtered.length} Played</div></div>
-        <div class="k-tile c2"><small>Series King</small><div class="val">${topTeam}</div></div>
+        <div class="k-tile c2"><small>Lineup Leader</small><div class="val">${topTeam}</div></div>
         <div class="k-tile c3"><small>Most Defeated</small><div class="val">${mostDefeated}</div></div>
         <div class="k-tile c4"><small>Win Rate</small><div class="val">${winRate}</div></div>
     `;
