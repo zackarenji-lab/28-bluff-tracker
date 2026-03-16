@@ -15,6 +15,12 @@
   header{display:flex;align-items:center;gap:10px;margin-bottom:15px}
   .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#ff6b6b,#ffd36d);display:flex;align-items:center;justify-content:center;font-weight:800;color:#07111a;}
   h1{margin:0;font-size:16px;flex:1}
+  
+  .dash-link {
+    font-size: 10px; font-weight: 800; color: var(--gold); text-decoration: none; text-transform: uppercase;
+    letter-spacing: 1px; border: 1px solid rgba(255, 211, 109, 0.3); padding: 6px 12px; border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05); margin-right: 5px;
+  }
 
   .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02)); border-radius:14px;padding:15px;box-shadow: 8px 8px 32px rgba(2,6,12,0.6); border:1px solid rgba(255,255,255,0.03); margin-bottom: 15px;}
   .hero-img { width:100%; border-radius:10px; display:block; margin-bottom:15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -23,16 +29,6 @@
   .game-box { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; }
   .game-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
   .game-name-overlay { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.75); color: #fff; font-size: 8px; font-weight: 800; padding: 4px 0; text-transform: uppercase; text-align: center; }
-
-  .dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 15px; }
-  .tile { background: var(--card); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; text-align: center; }
-  .tile small { display: block; color: var(--muted); font-size: 7px; text-transform: uppercase; margin-bottom: 4px; }
-  .tile .val { font-size: 13px; font-weight: 800; color: var(--gold); }
-
-  .analytics-row { margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 8px; }
-  .bar-container { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; display: flex; margin-top: 5px; }
-  .b-win { height: 100%; background: var(--accent); }
-  .b-last { height: 100%; background: var(--danger); }
 
   .neu-btn { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.1)); border-radius:8px; border:none; padding:8px 12px; color:#e6eef3; font-weight:700; cursor:pointer; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
   .neu-btn.primary { background: var(--accent); color: #061226; }
@@ -54,6 +50,7 @@
   <header>
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
+    <a href="dashboard.html" class="dash-link">📊 Dashboard</a>
     <button class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
     <button id="btn-home" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
   </header>
@@ -75,7 +72,7 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <h2 style="margin:0; font-size:16px;">Active Series</h2>
-        <button class="neu-btn small" onclick="openDeepStats('28')">📊 Stats</button>
+        <button class="neu-btn small" onclick="window.location.href='dash28.html'">📊 Stats</button>
       </div>
       <div id="list-28"></div>
       <button class="neu-btn primary" style="width:100%; margin-top:10px;" onclick="newSeries28()">➕ New Series</button>
@@ -86,7 +83,7 @@
     <div class="card" id="pane-setup">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 id="indiv-title" style="margin:0; font-size:16px;">Setup</h3>
-            <button class="neu-btn small" onclick="openDeepStats(window.activeMode)">📊 Stats</button>
+            <button class="neu-btn small" onclick="window.location.href='dashboard.html'">📊 Stats</button>
         </div>
         <input type="number" id="pCnt" min="3" max="10" placeholder="Players (3-10)" oninput="drawInputs()">
         <div id="pInputs"></div>
@@ -184,7 +181,6 @@ window.goScoring = () => {
 };
 
 window.saveWeightedResult = async () => {
-    const cnt = parseInt(document.getElementById('pCnt').value);
     const results = [];
     let win = '', lost = '';
     document.querySelectorAll('.rank-sel').forEach(sel => {
@@ -256,67 +252,12 @@ window.render28 = () => {
 
 window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
 
-window.openDeepStats = (m, pSize = 'ALL') => {
-    const is28 = m === '28';
-    let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
-    if(pSize !== 'ALL') data = data.filter(g => g.pCount === parseInt(pSize));
-
-    const st = {};
-    data.forEach(g => {
-        if(is28) {
-            [g.winner, g.loser].forEach(p => { if(!st[p]) st[p] = {w:0, l:0, pts:0, t:0} });
-            st[g.winner].w++; st[g.loser].l++; st[g.winner].t++; st[g.loser].t++;
-        } else if(g.players) {
-            g.players.forEach(p => {
-                if(!st[p.name]) st[p.name] = {w:0, l:0, pts:0, t:0};
-                st[p.name].pts += p.pts; st[p.name].t++;
-                if(p.rank === 1) st[p.name].w++; if(p.rank === 0) st[p.name].l++;
-            });
-        }
-    });
-
-    const sorted = Object.keys(st).sort((a,b) => is28 ? st[b].w - st[a].w : st[b].pts - st[a].pts);
-    const mvp = sorted[0] || '—';
-    const tgt = Object.keys(st).sort((a,b) => st[b].l - st[a].l)[0] || '—';
-
-    let h = `<div class="modal-box"><h3>${m} Dashboard</h3>
-        <select onchange="openDeepStats('${m}', this.value)" style="margin-bottom:15px">
-            <option value="ALL">Combined Stats</option>
-            ${[3,4,5,6,7,8,9,10].map(n => `<option value="${n}" ${pSize==''+n?'selected':''}>${n} Player Tourney</option>`).join('')}
-        </select>
-        <div class="dash-grid">
-            <div class="tile"><small>${is28?'WIN KING':'POINTS KING'}</small><div class="val">${mvp}</div></div>
-            <div class="tile"><small>💩 LAST KING</small><div class="val">${tgt}</div></div>
-            <div class="tile" style="grid-column: span 2"><small>🎮 SESSIONS RECORDED</small><div class="val">${data.length}</div></div>
-        </div>`;
-
-    sorted.forEach(n => {
-        const d = st[n]; const wP = (d.w/d.t)*100, lP = (d.l/d.t)*100;
-        h += `<div class="analytics-row"><div style="display:flex; justify-content:space-between; font-size:10px"><b>${n}</b><span>${is28 ? d.w+' Wins' : d.pts+' Pts'}</span></div>
-              <div class="bar-container"><div class="b-win" style="width:${wP}%"></div><div class="b-last" style="width:${lP}%"></div></div></div>`;
-    });
-
-    h += `<h4 style="margin-top:15px">History (Tap 🗑️ to delete)</h4>`;
-    data.slice(-8).reverse().forEach(g => h += `
-        <div class="log-item">
-            <div style="font-size:10px;">${new Date(g.time).toLocaleString()}<br>🏆 ${g.winner} | 💩 ${g.last||g.loser}</div>
-            <button class="neu-btn small danger" onclick="resetSystem('ROUND', '${g.time}', '${m}')">🗑️</button>
-        </div>`);
-    
-    h += `<div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;">
-            <button class="neu-btn" style="flex:1" onclick="shareStats('${m}', '${pSize}')">📤 Share</button>
-            <button class="neu-btn danger" style="flex:1" onclick="resetSystem('GAME', '${m}')">⚠️ Reset ${m}</button>
-            <button class="neu-btn primary" style="width:100%" onclick="closeM()">Close</button>
-          </div></div>`;
-    document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
-};
-
 window.renderGlobalTiles = () => {
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
     document.getElementById('summary-tiles').innerHTML = `
-        <div class="card" onclick="openDeepStats('28')">🏏 <b>28</b> - ${f('28')} Series</div>
-        <div class="card" onclick="openDeepStats('Bluff')">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
-        <div class="card" onclick="openDeepStats('UNO')">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
+        <div class="card" onclick="window.location.href='dash28.html'">🏏 <b>28</b> - ${f('28')} Series</div>
+        <div class="card" onclick="window.location.href='dashboard.html'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
+        <div class="card" onclick="window.location.href='dashboard.html'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
 };
 
 window.resetSystem = async (type, id, gameMode = '') => {
@@ -331,25 +272,7 @@ window.resetSystem = async (type, id, gameMode = '') => {
         return;
     }
     const ops = []; snap.forEach(d => ops.push(deleteDoc(d.ref))); await Promise.all(ops);
-    if(type === 'ROUND' || type === 'GAME') {
-        const up = await getDocs(query(gRef, orderBy("time"))); allG = up.docs.map(d => d.data());
-        openDeepStats(type === 'ROUND' ? gameMode : id);
-    } else location.reload();
-};
-
-window.shareStats = (m, pSize) => {
-    const is28 = m === '28';
-    let data = allG.filter(g => (is28 ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner);
-    if(pSize !== 'ALL') data = data.filter(g => g.pCount === parseInt(pSize));
-    const st = {};
-    data.forEach(g => {
-        if(is28) { if(!st[g.winner]) st[g.winner] = {w:0}; st[g.winner].w++; }
-        else { g.players.forEach(p => { if(!st[p.name]) st[p.name] = {pts:0}; st[p.name].pts += p.pts; }); }
-    });
-    const sorted = Object.keys(st).sort((a,b) => is28 ? st[b].w - st[a].w : st[b].pts - st[a].pts);
-    let msg = `🏆 ${m} ${pSize==='ALL'?'Overall':pSize+'P'} Leaderboard\n\n`;
-    sorted.forEach((n, i) => msg += `${i+1}. ${n}: ${is28 ? st[n].w+' Wins' : st[n].pts+' Pts'}\n`);
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`);
+    location.reload();
 };
 
 window.closeM = () => document.getElementById('modal-container').innerHTML = "";
