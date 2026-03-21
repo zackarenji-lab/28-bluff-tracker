@@ -42,8 +42,6 @@
   .neon-stats { display: flex; gap: 15px; font-size: 11px; font-weight: 900; }
   .n-w { color: var(--neon-green); } .n-l { color: var(--danger); } .n-28 { color: var(--accent); }
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 24px; text-align: center; }
-
-  @media (max-width: 800px) { .top-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -51,7 +49,7 @@
 <div class="wrap">
   <header>
     <a href="index.html" class="nav-link">🏠 HOME</a>
-    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan)">28 COMMAND</div>
+    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan)">28 ELITE HUB</div>
   </header>
 
   <div class="game-tabs">
@@ -73,7 +71,7 @@
     <div class="kpi-grid" id="kpi-container"></div>
   </div>
 
-  <h3 style="text-transform:uppercase; letter-spacing:2px; font-size:14px; margin-bottom:20px;">Live Team Performance</h3>
+  <h3 style="text-transform:uppercase; letter-spacing:2px; font-size:14px; margin-bottom:20px;">Live Team Standings</h3>
   <div id="leaderboard-container"></div>
 </div>
 
@@ -89,54 +87,70 @@ const gRef = collection(db, "games");
 let allData = [];
 
 window.render28 = () => {
-    // 1. Get all 28-related data
-    const games = allData.filter(g => (g.gameType === '28' || g.seriesId) && g.winner);
+    // 1. DATA EXTRACTION
+    // We look for ANY data where the game is 28, OR there is a seriesId
+    const games = allData.filter(g => (g.gameType === '28' || g.seriesId));
     
-    // Map of Tournament IDs to Names
     const tourneyMap = {};
     allData.forEach(g => { if(g.seriesId && g.teamA) tourneyMap[g.seriesId] = `${g.teamA} VS ${g.teamB}`; });
 
-    // Update Dropdown
     const dropdown = document.getElementById('lineupFilter');
     const currentFilter = dropdown.value || "ALL";
     const uniqueIDs = [...new Set(games.map(g => g.seriesId).filter(id => id))];
+    
     dropdown.innerHTML = `<option value="ALL">All Series Combined</option>` + 
-        uniqueIDs.map(id => `<option value="${id}" ${id===currentFilter?'selected':''}>${tourneyMap[id] || 'Unnamed Series'}</option>`).join('');
+        uniqueIDs.map(id => `<option value="${id}" ${id===currentFilter?'selected':''}>${tourneyMap[id] || 'Series: '+id}</option>`).join('');
 
     const filtered = currentFilter === "ALL" ? games : games.filter(g => g.seriesId === currentFilter);
 
-    // 2. Calculate Stats
+    // 2. STATS CALCULATION
     const stats = {};
     filtered.forEach(g => {
-        if(!g.winner || !g.loser) return;
-        [g.winner, g.loser].forEach(t => { if(!stats[t]) stats[t] = {w:0, l:0, s:0}; });
-        stats[g.winner].w++;
-        stats[g.loser].l++;
-        if(g.streakType && g.streakType !== 'standard') stats[g.winner].s++;
+        let winTeam = g.winner;
+        let loseTeam = g.loser;
+
+        // Fallback: If data is stored in 'players' array (like Uno)
+        if (!winTeam && g.players) {
+            const p1 = g.players.find(p => p.rank === 1);
+            const pL = g.players.find(p => p.rank === 0);
+            if (p1) winTeam = p1.name;
+            if (pL) loseTeam = pL.name;
+        }
+
+        if (winTeam) {
+            if(!stats[winTeam]) stats[winTeam] = {w:0, l:0, s:0, t:0};
+            stats[winTeam].w++; stats[winTeam].t++;
+            if(g.streakType && g.streakType !== 'standard') stats[winTeam].s++;
+        }
+        if (loseTeam) {
+            if(!stats[loseTeam]) stats[loseTeam] = {w:0, l:0, s:0, t:0};
+            stats[loseTeam].l++; stats[loseTeam].t++;
+        }
     });
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
 
-    // 3. Render Hall of Fame
-    document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
+    // 3. UI RENDERING
+    document.getElementById('podium-list').innerHTML = sorted.length ? sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <b style="color:var(--accent); width:25px;">#${i+1}</b>
             <span style="flex:1; text-align:left; font-size:12px; font-weight:900;">${n}</span>
             <span style="color:var(--cyan); font-weight:900;">${stats[n].w}W</span>
-        </div>`).join('');
+        </div>`).join('') : "Awaiting Data...";
 
-    // 4. Render Tiles
     const leader = sorted[0] || '—';
+    const leaderW = sorted.length ? stats[leader].w : 0;
+    const leaderT = sorted.length ? stats[leader].t : 1;
+
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>
-        <div class="k-tile" style="border-color:var(--cyan)"><small>Dominant Team</small><div class="val">${leader}</div></div>
-        <div class="k-tile"><small>Win Rate</small><div class="val">${sorted.length ? ((stats[leader].w/(stats[leader].w+stats[leader].l))*100).toFixed(0)+'%' : '0%'}</div></div>
+        <div class="k-tile"><small>Matches</small><div class="val">${filtered.length}</div></div>
+        <div class="k-tile" style="border-color:var(--cyan)"><small>Leader</small><div class="val">${leader}</div></div>
+        <div class="k-tile"><small>Win Rate</small><div class="val">${((leaderW/leaderT)*100).toFixed(0)}%</div></div>
     `;
 
-    // 5. Render Ranking Rows
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n];
-        const winP = ((d.w/(d.w+d.l))*100).toFixed(0);
+        const winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
         return `
         <div class="rank-row">
             <div style="font-weight:900; font-size:20px; color:var(--cyan)">#${i+1}</div>
@@ -157,6 +171,7 @@ window.render28 = () => {
     }).join('');
 };
 
+// Start listener
 onSnapshot(query(gRef, orderBy("time")), snap => { 
     allData = snap.docs.map(d => d.data()); 
     render28(); 
