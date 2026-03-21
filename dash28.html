@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
 <title>GZ - 28 Elite Arena</title>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <style>
   :root {
     --bg: #0d0d1a; --glass: rgba(255, 255, 255, 0.03);
@@ -15,7 +18,6 @@
   }
   body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
   .wrap { max-width: 1200px; margin: auto; padding: 20px; }
-  
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .nav-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 10px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 18px; border-radius: 30px; text-transform: uppercase; }
 
@@ -81,34 +83,43 @@
   <div id="leaderboard-container"></div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+<script>
+  // CONFIG
+  const firebaseConfig = { 
+    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
+    authDomain: "bluff-tracker-7542e.firebaseapp.com", 
+    projectId: "bluff-tracker-7542e", 
+    storageBucket: "bluff-tracker-7542e.appspot.com", 
+    messagingSenderId: "280965687037", 
+    appId: "1:280965687037:web:be0b05da36ef653ab68094" 
+  };
 
-const FIREBASE_CONFIG = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getFirestore(app);
-const gRef = collection(db, "games");
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  let allData = [];
 
-let allData = [];
-
-window.takeSnapshot = () => {
+  window.takeSnapshot = () => {
     html2canvas(document.body, { backgroundColor: "#0d0d1a" }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `GZ_28_Elite.png`; link.href = canvas.toDataURL(); link.click();
+      const link = document.createElement('a');
+      link.download = `GZ_28_Elite.png`; link.href = canvas.toDataURL(); link.click();
     });
-};
+  };
 
-window.render28 = () => {
-    const matches = allData.filter(g => g.winner && g.loser);
+  window.render28 = () => {
+    // UPDATED FILTER: Check seriesId OR gameType '28'
+    const matches = allData.filter(g => (g.gameType === '28' || g.seriesId) && g.winner && g.loser);
     
-    // 1. TOURNAMENT MAPPING (5s vs 10s logic)
+    if (matches.length === 0) {
+        document.getElementById('leaderboard-container').innerHTML = "<div style='text-align:center; padding:50px; color:var(--muted); font-weight:900;'>SYNCING DATA... (CHECK CONSOLE F12)</div>";
+        return;
+    }
+
     const tourneys = {};
     allData.forEach(g => {
-        if(g.seriesId && g.teamA) {
-            const type = g.seriesTarget === 10 ? "10s" : "5s";
-            tourneys[g.seriesId] = { name: `${g.teamA} VS ${g.teamB}`, type: type };
-        }
+      if(g.seriesId && g.teamA) {
+        const type = g.seriesTarget === 10 ? "10s" : "5s";
+        tourneys[g.seriesId] = { name: `${g.teamA} VS ${g.teamB}`, type: type };
+      }
     });
 
     const dropdown = document.getElementById('lineupFilter');
@@ -116,94 +127,100 @@ window.render28 = () => {
     const uniqueIDs = [...new Set(matches.map(m => m.seriesId).filter(i => i))];
     
     dropdown.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
-        uniqueIDs.map(id => `<option value="${id}" ${id===filter?'selected':''}>[${tourneys[id]?.type || '5s'}] ${tourneys[id]?.name || id}</option>`).join('');
+      uniqueIDs.map(id => `<option value="${id}" ${id===filter?'selected':''}>[${tourneys[id]?.type || '5s'}] ${tourneys[id]?.name || id}</option>`).join('');
 
-    const filtered = filter === "ALL" ? matches : matches.filter(m => m.seriesId === filter);
+    const filtered = (filter === "ALL" ? matches : matches.filter(m => m.seriesId === filter))
+                     .sort((a, b) => (a.time || 0) - (b.time || 0));
 
-    // 2. SCORING LOGIC (Combo Based)
     const stats = {};
-    let lastMatchWinner = null;
+    let lastWinner = null;
     let streakCount = 0;
     let hatrickCombo = "—";
 
     filtered.forEach(m => {
-        [m.winner, m.loser].forEach(team => {
-            if(!stats[team]) stats[team] = { w: 0, l: 0, t: 0, s: 0, matches5: 0, matches10: 0 };
-        });
-        
-        stats[m.winner].w++;
-        stats[m.loser].l++;
-        stats[m.winner].t++;
-        stats[m.loser].t++;
+      [m.winner, m.loser].forEach(team => {
+        if(!stats[team]) stats[team] = { w: 0, l: 0, t: 0, s2: 0, s3: 0, m5: 0, m10: 0 };
+      });
+      
+      stats[m.winner].w++;
+      stats[m.loser].l++;
+      stats[m.winner].t++;
+      stats[m.loser].t++;
 
-        // Tracking 5s/10s participation
-        const tType = tourneys[m.seriesId]?.type || "5s";
-        if(tType === "10s") { stats[m.winner].matches10++; stats[m.loser].matches10++; }
-        else { stats[m.winner].matches5++; stats[m.loser].matches5++; }
+      const tType = tourneys[m.seriesId]?.type || "5s";
+      if(tType === "10s") { stats[m.winner].m10++; stats[m.loser].m10++; }
+      else { stats[m.winner].m5++; stats[m.loser].m5++; }
 
-        // Hatrick Logic
-        if(m.winner === lastMatchWinner) {
-            streakCount++;
-            if(streakCount >= 3) hatrickCombo = m.winner;
-        } else {
-            lastMatchWinner = m.winner;
-            streakCount = 1;
-        }
+      if(m.is28Plus2) stats[m.winner].s2++;
+      if(m.is28Plus3) stats[m.winner].s3++;
+
+      if(m.winner === lastWinner) {
+        streakCount++;
+        if(streakCount >= 3) hatrickCombo = m.winner;
+      } else {
+        lastWinner = m.winner;
+        streakCount = 1;
+      }
     });
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
-    const lowSorted = [...sorted].reverse();
+    const lossSorted = [...Object.keys(stats)].sort((a,b) => stats[b].l - stats[a].l);
 
-    // 3. KPI LOGIC
     const hi = sorted[0] || '—';
-    const lo = lowSorted[0] || '—';
+    const lo = sorted[sorted.length - 1] || '—';
+    const bad = lossSorted[0] || '—';
 
+    // RENDER KPI GRID
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile c1"><small>1. Highest Winners</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w || 0} Wins (${stats[hi]?.matches5 || 0}x5s, ${stats[hi]?.matches10 || 0}x10s)</div></div>
-        <div class="k-tile c2"><small>2. Lowest Winners</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w || 0} Wins (${stats[lo]?.matches5 || 0}x5s, ${stats[lo]?.matches10 || 0}x10s)</div></div>
-        <div class="k-tile c3"><small>3. Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
-        <div class="k-tile c1"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Dominant pairing</div></div>
-        <div class="k-tile c3"><small>5. Most Losses</small><div class="val">${Object.keys(stats).sort((a,b) => stats[b].l - stats[a].l)[0] || '—'}</div><div class="sub">Struggling combo</div></div>
-        <div class="k-tile c2" style="border: 1px solid var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrickCombo}</div><div class="sub">3 Consecutive Wins</div></div>
+      <div class="k-tile"><small>1. Highest Winners</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w || 0} Wins (${stats[hi]?.m5 || 0}x5s, ${stats[hi]?.m10 || 0}x10s)</div></div>
+      <div class="k-tile"><small>2. Lowest Winners</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w || 0} Wins</div></div>
+      <div class="k-tile"><small>3. Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00 (Dummy)</div></div>
+      <div class="k-tile"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Dominant pairing</div></div>
+      <div class="k-tile"><small>5. Most Losses</small><div class="val">${bad}</div><div class="sub">${stats[bad]?.l || 0} Total Losses</div></div>
+      <div class="k-tile" style="border: 1px solid var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrickCombo}</div><div class="sub">3 Consecutive Wins</div></div>
     `;
 
-    // 4. ELITE HALL
+    // ELITE HALL
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
-        <div class="hof-item">
-            <b style="color:var(--accent); width:25px;">#${i+1}</b>
-            <span style="flex:1; text-align:left; font-size:11px; font-weight:900;">${n}</span>
-            <span style="color:var(--cyan); font-weight:900;">${stats[n].w} W</span>
-        </div>`).join('');
+      <div class="hof-item">
+        <b style="color:var(--accent); width:25px;">#${i+1}</b>
+        <span style="flex:1; text-align:left; font-size:11px; font-weight:900;">${n}</span>
+        <span style="color:var(--cyan); font-weight:900;">${stats[n].w} W</span>
+      </div>`).join('');
 
-    // 5. LIVE TEAM RANKINGS
+    // LIVE RANKINGS
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
-        const d = stats[n];
-        const winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
-        return `
-        <div class="rank-row">
-            <div class="num">#${i+1}</div>
-            <div>
-                <div style="font-weight:900; text-transform:uppercase; font-size:13px; letter-spacing:1px;">${n}</div>
-                <div class="p-chart-container">
-                    <div class="p-chart-fill" style="width:${winP}%"></div>
-                    <div class="bubble-wins">${d.w} Wins</div>
-                </div>
-                <div class="neon-stats">
-                    <span class="n-w">W: ${String(d.w).padStart(2,'0')}</span>
-                    <span class="n-l">L: ${String(d.l).padStart(2,'0')}</span>
-                    <span class="n-s2">28(+2): 00</span>
-                    <span class="n-s3">28(+3): 00</span>
-                </div>
-            </div>
-            <div class="score-box">${d.w}</div>
-        </div>`;
+      const d = stats[n];
+      const winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
+      return `
+      <div class="rank-row">
+        <div class="num">#${i+1}</div>
+        <div>
+          <div style="font-weight:900; text-transform:uppercase; font-size:13px; letter-spacing:1px;">${n}</div>
+          <div class="p-chart-container">
+            <div class="p-chart-fill" style="width:${winP}%"></div>
+            <div class="bubble-wins">${d.w} Wins</div>
+          </div>
+          <div class="neon-stats">
+            <span class="n-w">W: ${String(d.w).padStart(2,'0')}</span>
+            <span class="n-l">L: ${String(d.l).padStart(2,'0')}</span>
+            <span class="n-s2">28(+2): ${String(d.s2).padStart(2,'0')}</span>
+            <span class="n-s3">28(+3): ${String(d.s3).padStart(2,'0')}</span>
+          </div>
+        </div>
+        <div class="score-box">${d.w}</div>
+      </div>`;
     }).join('');
-};
+  };
 
-onSnapshot(query(gRef, orderBy("time")), snap => { 
-    allData = snap.docs.map(d => d.data()); 
-    render28(); 
-});
+  // FETCH DATA
+  db.collection("games").orderBy("time", "desc").onSnapshot(snap => {
+    allData = snap.docs.map(d => d.data());
+    console.log("Data loaded:", allData.length, "games found.");
+    render28();
+  }, err => {
+    console.error("Firebase Connection Error:", err);
+  });
 </script>
 </body>
 </html>
