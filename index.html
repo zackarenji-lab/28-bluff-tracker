@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
 <title>Gaming Zone</title>
 <link rel="icon" href="blufffavicon.png" />
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <style>
   :root {
     --bg1:#061226; --bg2:#081b31; --card:#0e2336;
@@ -99,38 +102,43 @@
 
 <div id="modal-container"></div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, getDocs, deleteDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+<script>
+  // CONFIG
+  const firebaseConfig = { 
+    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
+    authDomain: "bluff-tracker-7542e.firebaseapp.com", 
+    projectId: "bluff-tracker-7542e", 
+    storageBucket: "bluff-tracker-7542e.appspot.com", 
+    messagingSenderId: "280965687037", 
+    appId: "1:280965687037:web:be0b05da36ef653ab68094" 
+  };
 
-const FIREBASE_CONF = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
-const PASS = "zachariahrenji";
-const PLRS = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
-const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
+  const PASS = "zachariahrenji";
+  const PLRS = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
+  const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
 
-const app = initializeApp(FIREBASE_CONF);
-const db = getFirestore(app);
-const gRef = collection(db, "games");
-let allG = [];
-window.activeMode = '';
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  let allG = [];
+  window.activeMode = '';
 
-window.switchView = (v) => {
+  window.switchView = (v) => {
     ['HOME','28','INDIV','OVERALL'].forEach(x => { if(document.getElementById('view-'+x)) document.getElementById('view-'+x).style.display = (x===v?'block':'none'); });
     document.getElementById('btn-home').style.display = (v === 'HOME' ? 'none' : 'block');
     if(v === 'OVERALL') renderGlobalTiles();
-};
+  };
 
-window.launchGame = (m) => { window.activeMode = m; switchView(m==='28'?'28':'INDIV'); if(m!=='28') resetSetup(); };
+  window.launchGame = (m) => { window.activeMode = m; switchView(m==='28'?'28':'INDIV'); if(m!=='28') resetSetup(); };
 
-function resetSetup() {
+  function resetSetup() {
     document.getElementById('indiv-title').innerText = window.activeMode + ' Setup';
     document.getElementById('pCnt').value = ""; document.getElementById('pInputs').innerHTML = "";
     document.getElementById('btn-start').style.display = "none";
     document.getElementById('pane-setup').style.display = "block";
     document.getElementById('pane-play').style.display = "none";
-}
+  }
 
-window.drawInputs = () => {
+  window.drawInputs = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     const container = document.getElementById('pInputs'); container.innerHTML = "";
     if(isNaN(cnt) || cnt < 3 || cnt > 10) { document.getElementById('btn-start').style.display="none"; return; }
@@ -138,9 +146,9 @@ window.drawInputs = () => {
         container.innerHTML += `<select id="ps-${i}" onchange="refreshExclusion()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
     }
     document.getElementById('btn-start').style.display="block";
-};
+  };
 
-window.refreshExclusion = () => {
+  window.refreshExclusion = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     const used = [];
     for(let i=0; i<cnt; i++) {
@@ -151,9 +159,9 @@ window.refreshExclusion = () => {
         const sel = document.getElementById(`ps-${i}`);
         Array.from(sel.options).forEach(opt => { if(opt.value && opt.value !== "C") opt.disabled = used.includes(opt.value) && sel.value !== opt.value; });
     }
-};
+  };
 
-window.goScoring = () => {
+  window.goScoring = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     document.getElementById('play-subtitle').innerText = `${cnt} Player ${activeMode} Tournament`;
     const body = document.getElementById('table-score-body'); body.innerHTML = "";
@@ -170,9 +178,9 @@ window.goScoring = () => {
         </select></td></tr>`;
     }
     document.getElementById('pane-setup').style.display="none"; document.getElementById('pane-play').style.display="block";
-};
+  };
 
-window.saveWeightedResult = async () => {
+  window.saveWeightedResult = async () => {
     const results = [];
     let win = '', lost = '';
     document.querySelectorAll('.rank-sel').forEach(sel => {
@@ -186,13 +194,11 @@ window.saveWeightedResult = async () => {
         results.push({ name, rank, pts });
     });
     if(!win || !lost) return alert("Identify 1st and Last!");
-
-    // KEY FIX: Only UNO/Bluff save the 'players' array
-    await addDoc(gRef, { gameType: activeMode, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
+    await db.collection("games").add({ gameType: activeMode, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
     resetSetup();
-};
+  };
 
-window.newSeries28 = () => {
+  window.newSeries28 = () => {
     const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
     const h = `<div class="modal-box"><h3>28 Setup</h3>
         <select id="mTarget"><option value="5">First to 5</option><option value="10">First to 10</option></select>
@@ -201,20 +207,20 @@ window.newSeries28 = () => {
         <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="conf28()">Start</button>
         <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Close</button></div>`;
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
-};
+  };
 
-window.filterTMS = () => {
+  window.filterTMS = () => {
     const t1 = document.getElementById('mT1').value;
     Array.from(document.getElementById('mT2').options).forEach(o => { if(o.value) o.disabled = t1.split(' & ').some(m => o.value.includes(m)); });
-};
+  };
 
-window.conf28 = async () => {
+  window.conf28 = async () => {
     const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
-    await addDoc(gRef, { seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS });
+    await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS, gameType: '28' });
     closeM();
-};
+  };
 
-window.render28 = () => {
+  window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
         if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
@@ -246,40 +252,40 @@ window.render28 = () => {
                 <button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button>
             </div></div>`;
     });
-};
+  };
 
-window.score28 = async (id, w, l, type = 'standard') => { 
+  window.score28 = async (id, w, l, type = 'standard') => { 
     let pts = 1; if(type === 'master') pts = 4; if(type === 'lucky') pts = 3;
-    await addDoc(gRef, { seriesId: id, winner: w, loser: l, points: pts, streakType: type, time: new Date().toISOString(), secret: PASS }); 
-};
+    await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: pts, streakType: type, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
+  };
 
-window.finalize28 = async (id, wA, wB) => {
+  window.finalize28 = async (id, wA, wB) => {
     if(!confirm("End series and record as tournament?")) return;
     const tType = Math.max(wA, wB) >= 10 ? 10 : 5;
-    await addDoc(gRef, { seriesId: id, manualEnd: true, finalized: true, tourneyType: tType, time: new Date().toISOString(), secret: PASS });
-};
+    await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
+  };
 
-window.renderGlobalTiles = () => {
+  window.renderGlobalTiles = () => {
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
     document.getElementById('summary-tiles').innerHTML = `
         <div class="card" onclick="window.location.href='dash28.html'">🏏 <b>28</b> - ${f('28')} Series</div>
         <div class="card" onclick="window.location.href='dashboard.html?mode=Bluff'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
-        <div class="card" onclick="window.location.href='dashboard.html?mode=UNO'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
-};
+        <div class="card" onclick="window.location.href='dashboard.html'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
+  };
 
-window.resetSystem = async (type, id) => {
+  window.resetSystem = async (type, id) => {
     if(prompt(`Password:`) !== PASS) return;
-    const snap = await getDocs(type === 'ALL' ? gRef : query(gRef, where("seriesId", "==", id)));
-    const ops = []; snap.forEach(d => ops.push(deleteDoc(d.ref))); await Promise.all(ops);
+    const snap = await db.collection("games").where(type === 'ALL' ? "secret" : "seriesId", "==", type === 'ALL' ? PASS : id).get();
+    const ops = []; snap.forEach(d => ops.push(d.ref.delete())); await Promise.all(ops);
     location.reload();
-};
+  };
 
-window.closeM = () => document.getElementById('modal-container').innerHTML = "";
+  window.closeM = () => document.getElementById('modal-container').innerHTML = "";
 
-onSnapshot(query(gRef, orderBy("time")), snap => {
+  db.collection("games").orderBy("time").onSnapshot(snap => {
     allG = snap.docs.map(d => d.data());
     render28();
-});
+  });
 </script>
 </body>
 </html>
