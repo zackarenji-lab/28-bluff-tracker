@@ -42,6 +42,10 @@
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
   .log-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ffffff10; padding: 10px 0; }
+  
+  /* Streak Buttons */
+  .streak-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; }
+  .btn-streak { font-size: 8px !important; padding: 4px !important; opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -50,7 +54,6 @@
   <header>
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
-    <a href="home_new.html" class="dash-link" style="border-color: #00f5ff; color: #00f5ff;">🚀 TEST NEW UI</a>
     <a href="dashboard.html" class="dash-link">📊 Dashboard</a>
     <button class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
     <button id="btn-home" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
@@ -124,7 +127,10 @@ let allG = [];
 window.activeMode = '';
 
 window.switchView = (v) => {
-    ['HOME','28','INDIV','OVERALL'].forEach(x => document.getElementById('view-'+x).style.display = (x===v?'block':'none'));
+    ['HOME','28','INDIV','OVERALL'].forEach(x => {
+        const el = document.getElementById('view-'+x);
+        if(el) el.style.display = (x===v?'block':'none');
+    });
     document.getElementById('btn-home').style.display = (v === 'HOME' ? 'none' : 'block');
     if(v === 'OVERALL') renderGlobalTiles();
 };
@@ -196,13 +202,8 @@ window.saveWeightedResult = async () => {
     });
     if(!win || !lost) return alert("Identify 1st and Last!");
 
-    await addDoc(gRef, { gameType: activeMode, pCount: cnt, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
-    
-    if(confirm("Saved! Record another match for these players?")) {
-        document.querySelectorAll('.rank-sel').forEach(sel => sel.value = "99");
-    } else {
-        resetSetup();
-    }
+    await addDoc(gRef, { gameType: activeMode, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
+    resetSetup();
 };
 
 window.newSeries28 = () => {
@@ -240,38 +241,52 @@ window.render28 = () => {
     Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
         list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-            <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div></div>
+            <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div>
+                <div class="streak-row">
+                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamA}','${s.teamB}','master')">M (+3)</button>
+                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamA}','${s.teamB}','lucky')">L (+2)</button>
+                </div>
+            </div>
             <div style="font-weight:900; color:var(--muted)">VS</div>
-            <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div></div></div>
+            <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div>
+                <div class="streak-row">
+                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamB}','${s.teamA}','master')">M (+3)</button>
+                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamB}','${s.teamA}','lucky')">L (+2)</button>
+                </div>
+            </div></div>
             <div style="display:flex; gap:8px;">
                 <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
                 <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="resetSystem('SERIES', '${s.id}')">STOP</button>
+                <button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">STOP</button>
             </div></div>`;
     });
 };
 
-window.score28 = async (id, w, l) => { await addDoc(gRef, { seriesId: id, winner: w, loser: l, time: new Date().toISOString(), secret: PASS }); };
+window.score28 = async (id, w, l, type = 'standard') => { 
+    let pts = 1; 
+    if(type === 'master') pts = 4; // 1 (win) + 3 (bonus)
+    if(type === 'lucky') pts = 3;  // 1 (win) + 2 (bonus)
+    await addDoc(gRef, { seriesId: id, winner: w, loser: l, points: pts, streakType: type, time: new Date().toISOString(), secret: PASS }); 
+};
+
+window.finalize28 = async (id, wA, wB, tA, tB) => {
+    if(!confirm("End this series and record as a completed tournament?")) return;
+    const leaderWins = Math.max(wA, wB);
+    const tourneyType = leaderWins >= 10 ? 10 : 5;
+    await addDoc(gRef, { seriesId: id, manualEnd: true, finalized: true, tourneyType: tourneyType, time: new Date().toISOString(), secret: PASS });
+};
 
 window.renderGlobalTiles = () => {
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
     document.getElementById('summary-tiles').innerHTML = `
         <div class="card" onclick="window.location.href='dash28.html'">🏏 <b>28</b> - ${f('28')} Series</div>
-        <div class="card" onclick="window.location.href='dashboard.html'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
-        <div class="card" onclick="window.location.href='dashboard.html'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
+        <div class="card" onclick="window.location.href='dashboard.html?mode=Bluff'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
+        <div class="card" onclick="window.location.href='dashboard.html?mode=UNO'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
 };
 
-window.resetSystem = async (type, id, gameMode = '') => {
+window.resetSystem = async (type, id) => {
     if(prompt(`Password to ${type}:`) !== PASS) return;
-    let snap;
-    if(type === 'ALL') snap = await getDocs(gRef);
-    else if(type === 'GAME') snap = await getDocs(query(gRef, where("gameType", "==", id)));
-    else if(type === 'ROUND') snap = await getDocs(query(gRef, where("time", "==", id)));
-    else if(type === 'SERIES') {
-        const sSnap = await getDocs(query(gRef, where("seriesId", "==", id)));
-        sSnap.forEach(async d => await addDoc(gRef, { seriesId: id, manualEnd: true, time: new Date().toISOString(), secret: PASS }));
-        return;
-    }
+    const snap = await getDocs(type === 'ALL' ? gRef : query(gRef, where("seriesId", "==", id)));
     const ops = []; snap.forEach(d => ops.push(deleteDoc(d.ref))); await Promise.all(ops);
     location.reload();
 };
