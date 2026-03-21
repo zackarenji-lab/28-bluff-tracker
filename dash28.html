@@ -13,7 +13,7 @@
     --neon-green: #3fff3f; --danger: #ff4d4d;
     --grad: linear-gradient(135deg, #3d3dff 0%, #a020f0 100%);
   }
-  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
   .wrap { max-width: 1100px; margin: auto; padding: 20px; }
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .nav-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 10px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 18px; border-radius: 30px; text-transform: uppercase; }
@@ -23,25 +23,27 @@
   .g-tab.active { background: var(--grad); color: white; transform: translateY(-4px); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); }
 
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); }
-  select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; }
+  select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
 
-  .top-grid { display: grid; grid-template-columns: 350px 1fr; gap: 25px; margin-bottom: 40px; }
+  .top-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; align-items: stretch; }
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
   .hof-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px; }
   
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
-  .k-tile small { font-size: 9px; font-weight: 900; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
-  .k-tile .val { font-size: 16px; font-weight: 900; color: #fff; }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); display: flex; flex-direction: column; justify-content: center; }
+  .k-tile small { font-size: 9px; font-weight: 900; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 8px; }
+  .k-tile .val { font-size: 16px; font-weight: 900; color: #fff; text-transform: uppercase; }
 
   .rank-row { background: rgba(255, 255, 255, 0.02); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
-  .p-chart-container { height: 24px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; position: relative; overflow: hidden; margin: 10px 0; }
+  .p-chart-container { height: 26px; background: rgba(255, 255, 255, 0.05); border-radius: 13px; position: relative; overflow: hidden; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); width: 0%; transition: width 1s ease; }
-  .perc-label { position: absolute; right: 10px; top: 4px; font-size: 11px; font-weight: 900; color: #000; background: var(--cyan); padding: 1px 6px; border-radius: 4px; }
+  .perc-label { position: absolute; right: 8px; top: 4px; font-size: 10px; font-weight: 900; color: #000; background: var(--cyan); padding: 2px 6px; border-radius: 6px; }
   
-  .neon-stats { display: flex; gap: 15px; font-size: 11px; font-weight: 900; }
+  .neon-stats { display: flex; gap: 15px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
   .n-w { color: var(--neon-green); } .n-l { color: var(--danger); } .n-28 { color: var(--accent); }
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 24px; text-align: center; }
+
+  @media (max-width: 900px) { .top-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -49,7 +51,8 @@
 <div class="wrap">
   <header>
     <a href="index.html" class="nav-link">🏠 HOME</a>
-    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan)">28 ELITE HUB</div>
+    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan)">28 ELITE DASHBOARD</div>
+    <div class="share-btn" onclick="takeSnapshot()">📸 SHARE</div>
   </header>
 
   <div class="game-tabs">
@@ -65,13 +68,13 @@
   <div class="top-grid">
     <div class="hof-card">
       <div style="font-size:40px; margin-bottom:10px;">🏆</div>
-      <h3 style="margin:0 0 20px 0; color:var(--accent); letter-spacing:2px;">28 ELITE HALL</h3>
+      <h3 style="margin:0 0 20px 0; color:var(--accent); letter-spacing:2px; font-size: 16px;">28 ELITE HALL</h3>
       <div id="podium-list"></div>
     </div>
     <div class="kpi-grid" id="kpi-container"></div>
   </div>
 
-  <h3 style="text-transform:uppercase; letter-spacing:2px; font-size:14px; margin-bottom:20px;">Live Team Standings</h3>
+  <h3 style="text-transform:uppercase; letter-spacing:2px; font-size:14px; margin-bottom:20px; color: var(--muted);">Live Team Rankings</h3>
   <div id="leaderboard-container"></div>
 </div>
 
@@ -86,92 +89,88 @@ const gRef = collection(db, "games");
 
 let allData = [];
 
+window.takeSnapshot = () => {
+    html2canvas(document.querySelector("body"), { backgroundColor: "#0d0d1a" }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `GZ_28_Stats.png`; link.href = canvas.toDataURL(); link.click();
+    });
+};
+
 window.render28 = () => {
-    // 1. DATA EXTRACTION
-    // We look for ANY data where the game is 28, OR there is a seriesId
-    const games = allData.filter(g => (g.gameType === '28' || g.seriesId));
+    // 1. FILTER: Capture anything that looks like a 28 match (has winner AND loser)
+    const matches = allData.filter(g => g.winner && g.loser);
     
-    const tourneyMap = {};
-    allData.forEach(g => { if(g.seriesId && g.teamA) tourneyMap[g.seriesId] = `${g.teamA} VS ${g.teamB}`; });
+    const tournaments = {};
+    allData.forEach(g => { if(g.seriesId && g.teamA) tournaments[g.seriesId] = `${g.teamA} vs ${g.teamB}`; });
 
     const dropdown = document.getElementById('lineupFilter');
-    const currentFilter = dropdown.value || "ALL";
-    const uniqueIDs = [...new Set(games.map(g => g.seriesId).filter(id => id))];
+    const filter = dropdown.value || "ALL";
+    const ids = [...new Set(matches.map(m => m.seriesId).filter(i => i))];
     
-    dropdown.innerHTML = `<option value="ALL">All Series Combined</option>` + 
-        uniqueIDs.map(id => `<option value="${id}" ${id===currentFilter?'selected':''}>${tourneyMap[id] || 'Series: '+id}</option>`).join('');
+    dropdown.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
+        ids.map(id => `<option value="${id}" ${id===filter?'selected':''}>${tournaments[id] || 'Series: '+id}</option>`).join('');
 
-    const filtered = currentFilter === "ALL" ? games : games.filter(g => g.seriesId === currentFilter);
+    const filtered = filter === "ALL" ? matches : matches.filter(m => m.seriesId === filter);
 
-    // 2. STATS CALCULATION
+    // 2. COUNT LOGIC: No points, just counting wins and losses
     const stats = {};
-    filtered.forEach(g => {
-        let winTeam = g.winner;
-        let loseTeam = g.loser;
-
-        // Fallback: If data is stored in 'players' array (like Uno)
-        if (!winTeam && g.players) {
-            const p1 = g.players.find(p => p.rank === 1);
-            const pL = g.players.find(p => p.rank === 0);
-            if (p1) winTeam = p1.name;
-            if (pL) loseTeam = pL.name;
-        }
-
-        if (winTeam) {
-            if(!stats[winTeam]) stats[winTeam] = {w:0, l:0, s:0, t:0};
-            stats[winTeam].w++; stats[winTeam].t++;
-            if(g.streakType && g.streakType !== 'standard') stats[winTeam].s++;
-        }
-        if (loseTeam) {
-            if(!stats[loseTeam]) stats[loseTeam] = {w:0, l:0, s:0, t:0};
-            stats[loseTeam].l++; stats[loseTeam].t++;
-        }
+    filtered.forEach(m => {
+        [m.winner, m.loser].forEach(team => {
+            if(!stats[team]) stats[team] = { winCount: 0, lossCount: 0, streakCount: 0, totalMatches: 0 };
+        });
+        stats[m.winner].winCount++;
+        stats[m.winner].totalMatches++;
+        stats[m.loser].lossCount++;
+        stats[m.loser].totalMatches++;
+        
+        // Count streaks if they exist in the data
+        if(m.streakType && m.streakType !== 'standard') stats[m.winner].streakCount++;
     });
 
-    const sorted = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
+    const sorted = Object.keys(stats).sort((a,b) => stats[b].winCount - stats[a].winCount);
 
-    // 3. UI RENDERING
-    document.getElementById('podium-list').innerHTML = sorted.length ? sorted.slice(0,3).map((n, i) => `
+    // 3. RENDER ELITE HALL
+    document.getElementById('podium-list').innerHTML = sorted.length ? sorted.slice(0,3).map((name, i) => `
         <div class="hof-item">
-            <b style="color:var(--accent); width:25px;">#${i+1}</b>
-            <span style="flex:1; text-align:left; font-size:12px; font-weight:900;">${n}</span>
-            <span style="color:var(--cyan); font-weight:900;">${stats[n].w}W</span>
-        </div>`).join('') : "Awaiting Data...";
+            <b style="color:var(--accent); width:30px; font-size:16px;">#${i+1}</b>
+            <span style="flex:1; text-align:left; font-size:13px; font-weight:900; text-transform:uppercase;">${name}</span>
+            <span style="color:var(--cyan); font-weight:900;">${stats[name].winCount} Wins</span>
+        </div>`).join('') : "<div style='opacity:0.5; padding:20px;'>Awaiting match data...</div>";
 
+    // 4. RENDER KPI TILES
     const leader = sorted[0] || '—';
-    const leaderW = sorted.length ? stats[leader].w : 0;
-    const leaderT = sorted.length ? stats[leader].t : 1;
+    const winRate = sorted.length ? ((stats[leader].winCount / stats[leader].totalMatches) * 100).toFixed(0) + '%' : '0%';
 
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile"><small>Matches</small><div class="val">${filtered.length}</div></div>
-        <div class="k-tile" style="border-color:var(--cyan)"><small>Leader</small><div class="val">${leader}</div></div>
-        <div class="k-tile"><small>Win Rate</small><div class="val">${((leaderW/leaderT)*100).toFixed(0)}%</div></div>
+        <div class="k-tile"><small>Matches Analyzed</small><div class="val">${filtered.length}</div></div>
+        <div class="k-tile" style="border-color:var(--cyan)"><small>Dominant Team</small><div class="val">${leader}</div></div>
+        <div class="k-tile"><small>Leader Win Rate</small><div class="val">${winRate}</div></div>
     `;
 
-    document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
-        const d = stats[n];
-        const winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
+    // 5. RENDER RANKING ROWS
+    document.getElementById('leaderboard-container').innerHTML = sorted.map((name, i) => {
+        const d = stats[name];
+        const perc = d.totalMatches > 0 ? ((d.winCount/d.totalMatches)*100).toFixed(0) : 0;
         return `
         <div class="rank-row">
-            <div style="font-weight:900; font-size:20px; color:var(--cyan)">#${i+1}</div>
+            <div style="font-weight:900; font-size:24px; color:var(--cyan)">#${i+1}</div>
             <div>
-                <div style="font-weight:900; text-transform:uppercase;">${n}</div>
+                <div style="font-weight:900; text-transform:uppercase; letter-spacing:1px; font-size:14px;">${name}</div>
                 <div class="p-chart-container">
-                    <div class="p-chart-fill" style="width:${winP}%"></div>
-                    <span class="perc-label">${winP}%</span>
+                    <div class="p-chart-fill" style="width:${perc}%"></div>
+                    <span class="perc-label">${perc}%</span>
                 </div>
                 <div class="neon-stats">
-                    <span class="n-w">W: ${String(d.w).padStart(2,'0')}</span>
-                    <span class="n-l">L: ${String(d.l).padStart(2,'0')}</span>
-                    <span class="n-28">28: ${String(d.s).padStart(2,'0')}</span>
+                    <span class="n-w">W: ${String(d.winCount).padStart(2,'0')}</span>
+                    <span class="n-l">L: ${String(d.lossCount).padStart(2,'0')}</span>
+                    <span class="n-28">28: ${String(d.streakCount).padStart(2,'0')}</span>
                 </div>
             </div>
-            <div class="score-box">${d.w}</div>
+            <div class="score-box">${d.winCount}</div>
         </div>`;
     }).join('');
 };
 
-// Start listener
 onSnapshot(query(gRef, orderBy("time")), snap => { 
     allData = snap.docs.map(d => d.data()); 
     render28(); 
