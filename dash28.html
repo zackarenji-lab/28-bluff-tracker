@@ -47,7 +47,7 @@
   .ranking-header { font-weight: 900; font-size: 16px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; letter-spacing: 2px; }
 
   /* LIVE RANKING ROW STYLES (Uno/Bluff Style) */
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 1fr 120px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
   .num { font-weight: 900; color: var(--cyan); font-size: 22px; }
   .team-info-container { display: flex; flex-direction: column; gap: 8px; }
   .team-name-main { font-weight: 800; font-size: 15px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
@@ -164,7 +164,7 @@ window.render28 = () => {
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].wins - stats[a].wins);
 
-    // 1. ELITE HALL (FIXED)
+    // 1. ELITE HALL
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <span class="hof-rank">#${i+1}</span>
@@ -182,7 +182,7 @@ window.render28 = () => {
         <div class="k-tile c3"><small>Win Rate (Leader)</small><div class="val">${wRate}</div></div>
     `;
 
-    // 3. LIVE RANKINGS (UNO/BLUFF STYLE)
+    // 3. LIVE RANKINGS
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n];
         const winPercent = d.total > 0 ? ((d.wins / d.total) * 100).toFixed(0) : 0;
