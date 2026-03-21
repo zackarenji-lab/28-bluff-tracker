@@ -16,9 +16,9 @@
   body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; overflow-x: hidden; }
   .wrap { max-width: 1200px; margin: auto; padding: 20px; }
   
-  header { display: flex; align-items: center; justify-content: flex-start; gap: 10px; margin-bottom: 25px; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .nav-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 10px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 18px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; letter-spacing: 1px; }
-  .share-btn { margin-left: auto; cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
   .game-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
@@ -47,8 +47,6 @@
   .c2 { background: linear-gradient(135deg, #00b4d8, #0077b6); }
   .c3 { background: linear-gradient(135deg, #ef476f, #d00000); }
   .c4 { background: linear-gradient(135deg, #06d6a0, #00afb9); }
-  .c5 { background: linear-gradient(135deg, #5e60ce, #480ca8); }
-  .c6 { background: linear-gradient(135deg, #ff9f1c, #f3722c); }
 
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--blue), transparent); }
@@ -64,7 +62,6 @@
 <div class="wrap">
   <header>
     <a href="index.html" class="nav-link">🏠 HOME</a>
-    <a href="dashboard.html" class="nav-link">📊 UNO & BLUFF</a>
     <div class="share-btn" onclick="takeSnapshot()">📸 Share 28 Stats</div>
   </header>
 
@@ -117,16 +114,10 @@ window.takeSnapshot = () => {
 
 window.render28 = () => {
     const rawGames = allData.filter(g => g.winner && g.loser);
-    
     let seriesMatchups = {};
-    let tourneyStats = { t5: 0, t10: 0 };
-    
     allData.forEach(g => {
         if(g.seriesId && g.teamA && g.teamB) {
             seriesMatchups[g.seriesId] = [g.teamA, g.teamB].sort().join(" vs ");
-        }
-        if(g.finalized) {
-            if(g.tourneyType === 10) tourneyStats.t10++; else tourneyStats.t5++;
         }
     });
 
@@ -148,29 +139,17 @@ window.render28 = () => {
     });
 
     const stats = {};
-    const streakStats = {};
-
     filtered.forEach(g => {
         [g.winner, g.loser].forEach(team => {
-            if(!stats[team]) stats[team] = { wins: 0, losses: 0, total: 0, pts: 0 };
-            if(!streakStats[team]) streakStats[team] = 0;
+            if(!stats[team]) stats[team] = { wins: 0, losses: 0, total: 0 };
         });
-        
         stats[g.winner].wins++;
         stats[g.winner].total++;
-        stats[g.winner].pts += (g.points || 1);
-        
         stats[g.loser].losses++;
         stats[g.loser].total++;
-
-        if(g.streakType && g.streakType !== 'standard') {
-            streakStats[g.winner]++;
-        }
     });
 
     const sorted = Object.keys(stats).sort((a,b) => stats[b].wins - stats[a].wins);
-    const sortedStreaks = Object.keys(streakStats).sort((a,b) => streakStats[b] - streakStats[a]);
-
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <span class="hof-rank">#${i+1}</span>
@@ -179,17 +158,14 @@ window.render28 = () => {
         </div>`).join('');
 
     const topTeam = sorted[0] || '—';
-    const streakKing1 = sortedStreaks[0] || '—';
-    const streakKing2 = sortedStreaks[1] || '—';
-    
+    const mostDefeated = Object.keys(stats).sort((a,b) => stats[b].losses - stats[a].losses)[0] || '—';
     const winRate = (sorted.length && stats[topTeam].total > 0) ? ((stats[topTeam].wins / stats[topTeam].total) * 100).toFixed(0) + '%' : '0%';
 
     document.getElementById('kpi-container').innerHTML = `
         <div class="k-tile c1"><small>Matches Played</small><div class="val">${filtered.length}</div></div>
         <div class="k-tile c2"><small>Dominant Team</small><div class="val">${topTeam}</div></div>
-        <div class="k-tile c3"><small>Win Rate</small><div class="val">${winRate}</div></div>
-        <div class="k-tile c4"><small>Tournament Type Count</small><div class="val">5-T: ${tourneyStats.t5} | 10-T: ${tourneyStats.t10}</div></div>
-        <div class="k-tile c5" style="grid-column: span 2"><small>Top Streak Kings</small><div class="val">${streakKing1} (${streakStats[streakKing1]||0}) | ${streakKing2} (${streakStats[streakKing2]||0})</div></div>
+        <div class="k-tile c3"><small>Struggling Team</small><div class="val">${mostDefeated}</div></div>
+        <div class="k-tile c4"><small>Win Rate</small><div class="val">${winRate}</div></div>
     `;
 
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => `
