@@ -41,9 +41,9 @@
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-chart-container { height: 26px; background: rgba(255, 255, 255, 0.05); border-radius: 13px; position: relative; overflow: hidden; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); width: 0%; transition: width 1s ease; }
-  .bubble-wins { position: absolute; right: 5px; top: 3px; background: var(--cyan); color: #000; font-weight: 900; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+  .bubble-wins { position: absolute; right: 5px; top: 3px; background: var(--cyan); color: #000; font-weight: 900; font-size: 11px; padding: 2px 8px; border-radius: 10px; box-shadow: 0 0 10px var(--cyan); }
   
-  .neon-stats { display: flex; gap: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+  .neon-stats { display: flex; gap: 15px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
   .n-w { color: var(--neon-green); } .n-l { color: var(--danger); } .n-s2 { color: var(--accent); } .n-s3 { color: #ff00ff; }
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 24px; text-align: center; }
 
@@ -106,30 +106,40 @@ window.updateDropdown = () => {
     const dropdown = document.getElementById('lineupFilter');
     const savedFilter = dropdown.value;
 
-    // Get unique Rivalry Names and their Targets (5 or 10)
-    const pairings = {};
+    const labels10 = new Set();
+    const labels5 = new Set();
+
     allData.forEach(g => {
         if(g.seriesId && g.teamA) {
             const label = `${g.teamA} VS ${g.teamB}`;
-            if(!pairings[label]) pairings[label] = new Set();
-            pairings[label].add(g.seriesTarget || 5);
+            if(label.toLowerCase().includes(search)) {
+                if(g.seriesTarget === 10) labels10.add(label);
+                else labels5.add(label);
+            }
         }
     });
 
-    const labels = Object.keys(pairings).filter(l => l.toLowerCase().includes(search));
-    const labels10 = labels.filter(l => pairings[l].has(10));
-    const labels5 = labels.filter(l => pairings[l].has(5));
+    let html = `<option value="ALL">TOTAL COMBINED STATISTICS</option>`;
+    
+    if(labels10.size > 0) {
+        html += `<optgroup label="🏆 10-MATCH RIVALRIES">`;
+        Array.from(labels10).sort().forEach(l => html += `<option value="${l}_10" ${l+'_10'===savedFilter?'selected':''}>${l}</option>`);
+        html += `</optgroup>`;
+    }
 
-    dropdown.innerHTML = `<option value="ALL">TOTAL COMBINED STATISTICS</option>` + 
-        (labels10.length ? `<optgroup label="🏆 10-MATCH RIVALRIES">${labels10.map(l => `<option value="${l}_10" ${l+'_10'===savedFilter?'selected':''}>${l}</option>`).join('')}</optgroup>` : '') +
-        (labels5.length ? `<optgroup label="⚡ 5-MATCH RIVALRIES">${labels5.map(l => `<option value="${l}_5" ${l+'_5'===savedFilter?'selected':''}>${l}</option>`).join('')}</optgroup>` : '');
+    if(labels5.size > 0) {
+        html += `<optgroup label="⚡ 5-MATCH RIVALRIES">`;
+        Array.from(labels5).sort().forEach(l => html += `<option value="${l}_5" ${l+'_5'===savedFilter?'selected':''}>${l}</option>`);
+        html += `</optgroup>`;
+    }
+
+    dropdown.innerHTML = html;
 };
 
 window.render28 = () => {
     const matches = allData.filter(g => g.winner && g.loser);
     const filter = document.getElementById('lineupFilter').value || "ALL";
     
-    // Filtering Logic: Match by Label and Target
     const filtered = filter === "ALL" ? matches : matches.filter(m => {
         const [label, target] = filter.split('_');
         return tMap[m.seriesId]?.label === label && tMap[m.seriesId]?.target == target;
@@ -154,22 +164,25 @@ window.render28 = () => {
     const sorted = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
     const hi = sorted[0] || '—', lo = [...sorted].reverse()[0] || '—';
 
+    // KPI TILES
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile"><small>Highest Winner</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w||0}W (${stats[hi]?.m5||0}x5, ${stats[hi]?.m10||0}x10)</div></div>
-        <div class="k-tile"><small>Lowest Winner</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w||0} Wins</div></div>
-        <div class="k-tile"><small>Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
-        <div class="k-tile"><small>Highest Combo</small><div class="val">${hi}</div><div class="sub">Dominant</div></div>
-        <div class="k-tile"><small>Most Losses</small><div class="val">${Object.keys(stats).sort((a,b)=>stats[b].l-stats[a].l)[0] || '—'}</div><div class="sub">Struggling</div></div>
-        <div class="k-tile" style="border-color:var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Consecutive</div></div>
+        <div class="k-tile"><small>1. Highest Winners</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w||0} Wins</div></div>
+        <div class="k-tile"><small>2. Lowest Winners</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w||0} Wins</div></div>
+        <div class="k-tile"><small>3. Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
+        <div class="k-tile"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Dominance</div></div>
+        <div class="k-tile"><small>5. Most Losses</small><div class="val">${Object.keys(stats).sort((a,b)=>stats[b].l-stats[a].l)[0] || '—'}</div><div class="sub">Struggling</div></div>
+        <div class="k-tile" style="border-color:var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
     `;
 
+    // ELITE HALL
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <b style="color:var(--accent); width:25px;">#${i+1}</b>
             <span style="flex:1; text-align:left; font-size:11px; font-weight:900;">${n}</span>
-            <span style="color:var(--cyan); font-weight:900;">${stats[n].w}W</span>
+            <span style="color:var(--cyan); font-weight:900;">${stats[n].w} W</span>
         </div>`).join('');
 
+    // TEAM RANKINGS
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n], winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
         return `<div class="rank-row">
