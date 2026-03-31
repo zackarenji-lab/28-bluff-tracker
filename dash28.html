@@ -14,7 +14,8 @@
     --grad: linear-gradient(135deg, #3d3dff 0%, #a020f0 100%);
   }
   body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-  .wrap { max-width: 1200px; margin: auto; padding: 20px; }
+  .wrap { max-width: 1300px; margin: auto; padding: 20px; }
+  
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
   .nav-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 10px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 18px; border-radius: 30px; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -25,12 +26,9 @@
   .panel { background: var(--glass); border-radius: 20px; padding: 20px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.08); }
   .search-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px 15px; border-radius: 10px; color: white; width: 100%; margin-bottom: 10px; outline: none; font-size: 13px; box-sizing: border-box; }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; outline: none; font-size: 14px; }
-  optgroup { background: #161b22; color: var(--cyan); font-style: normal; }
 
   .top-grid { display: grid; grid-template-columns: 420px 1fr; gap: 25px; margin-bottom: 40px; }
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 35px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
-  
-  /* ELITE HALL NAMES ENLARGED */
   .hof-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px; }
   .hof-rank { color: var(--accent); width: 40px; font-size: 22px; font-weight: 900; text-align: left; }
   .hof-name { flex: 1; text-align: left; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
@@ -39,22 +37,25 @@
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
   .k-tile { padding: 25px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1.5px; }
-  
-  /* KPI TEXT ENLARGED */
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.2; letter-spacing: 1px; }
   .k-tile .sub { font-size: 13px; color: var(--cyan); margin-top: 6px; font-weight: 800; }
 
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 60px 1fr 100px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
-  .num { font-weight: 900; color: var(--cyan); font-size: 28px; }
-  .p-chart-container { height: 30px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; position: relative; overflow: hidden; margin: 12px 0; border: 1px solid rgba(255,255,255,0.1); }
-  .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); width: 0%; transition: width 1s ease; }
-  .bubble-wins { position: absolute; right: 6px; top: 4px; background: var(--cyan); color: #000; font-weight: 900; font-size: 13px; padding: 3px 10px; border-radius: 12px; box-shadow: 0 0 10px var(--cyan); }
+  /* WIDE TEAM RANKING STYLES (AS PER SCREENSHOT) */
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 15px; padding: 20px 30px; border-radius: 25px; display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.05); gap: 25px; }
+  .rank-num { font-weight: 900; color: var(--cyan); font-size: 32px; min-width: 60px; }
+  .team-label { font-weight: 900; text-transform: uppercase; font-size: 18px; letter-spacing: 1px; min-width: 200px; color: #fff; }
+  .progress-wrap { flex-grow: 1; position: relative; height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #8a2be2, #3a86ff); border-radius: 17px; transition: width 1s ease-in-out; }
+  .perc-tag { position: absolute; right: 5px; top: 4px; background: var(--cyan); color: #000; font-weight: 900; font-size: 14px; padding: 2px 12px; border-radius: 12px; box-shadow: 0 0 10px rgba(0, 245, 255, 0.3); }
   
-  .neon-stats { display: flex; gap: 15px; font-size: 12px; font-weight: 900; text-transform: uppercase; }
-  .n-w { color: var(--neon-green); } .n-l { color: var(--danger); } .n-s2 { color: var(--accent); } .n-s3 { color: #ff00ff; }
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 15px; border-radius: 15px; font-weight: 900; font-size: 28px; text-align: center; }
+  .stats-group { display: flex; gap: 25px; text-align: center; padding: 0 20px; }
+  .stat-item { display: flex; flex-direction: column; }
+  .stat-label { font-size: 10px; font-weight: 900; color: var(--neon-green); margin-bottom: 5px; letter-spacing: 1px; }
+  .stat-val { font-size: 18px; font-weight: 900; color: #fff; }
+  
+  .total-btn { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 15px 35px; border-radius: 18px; font-weight: 900; font-size: 32px; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3); min-width: 100px; text-align: center; }
 
-  @media (max-width: 1000px) { .top-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 1100px) { .rank-row { flex-wrap: wrap; justify-content: center; } .progress-wrap { width: 100%; order: 3; } }
 </style>
 </head>
 <body>
@@ -73,7 +74,7 @@
   </div>
 
   <div class="panel">
-    <input type="text" id="tourneySearch" class="search-box" placeholder="🔍 Search Team or Rivalry..." oninput="updateDropdown()">
+    <input type="text" id="tourneySearch" class="search-box" placeholder="🔍 Search Team Pairing..." oninput="updateDropdown()">
     <select id="lineupFilter" onchange="render28()"></select>
   </div>
 
@@ -104,7 +105,7 @@ let tMap = {};
 window.takeSnapshot = () => {
     html2canvas(document.body, { backgroundColor: "#0d0d1a" }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `GZ_28_Elite.png`; link.href = canvas.toDataURL(); link.click();
+        link.download = `GZ_28_Rankings.png`; link.href = canvas.toDataURL(); link.click();
     });
 };
 
@@ -112,7 +113,6 @@ window.updateDropdown = () => {
     const search = document.getElementById('tourneySearch').value.toLowerCase();
     const dropdown = document.getElementById('lineupFilter');
     const savedFilter = dropdown.value;
-
     const labels10 = new Set();
     const labels5 = new Set();
 
@@ -127,26 +127,22 @@ window.updateDropdown = () => {
     });
 
     let html = `<option value="ALL">TOTAL COMBINED STATISTICS</option>`;
-    
     if(labels10.size > 0) {
         html += `<optgroup label="🏆 10-MATCH RIVALRIES">`;
         Array.from(labels10).sort().forEach(l => html += `<option value="${l}_10" ${l+'_10'===savedFilter?'selected':''}>${l}</option>`);
         html += `</optgroup>`;
     }
-
     if(labels5.size > 0) {
         html += `<optgroup label="⚡ 5-MATCH RIVALRIES">`;
         Array.from(labels5).sort().forEach(l => html += `<option value="${l}_5" ${l+'_5'===savedFilter?'selected':''}>${l}</option>`);
         html += `</optgroup>`;
     }
-
     dropdown.innerHTML = html;
 };
 
 window.render28 = () => {
     const matches = allData.filter(g => g.winner && g.loser);
     const filter = document.getElementById('lineupFilter').value || "ALL";
-    
     const filtered = filter === "ALL" ? matches : matches.filter(m => {
         const [label, target] = filter.split('_');
         return tMap[m.seriesId]?.label === label && tMap[m.seriesId]?.target == target;
@@ -157,13 +153,9 @@ window.render28 = () => {
 
     filtered.forEach(m => {
         [m.winner, m.loser].forEach(team => {
-            if(!stats[team]) stats[team] = { w: 0, l: 0, t: 0, m5: 0, m10: 0 };
+            if(!stats[team]) stats[team] = { w: 0, l: 0, t: 0 };
         });
         stats[m.winner].w++; stats[m.loser].l++; stats[m.winner].t++; stats[m.loser].t++;
-
-        const target = tMap[m.seriesId]?.target || 5;
-        if(target === 10) stats[m.winner].m10++; else stats[m.winner].m5++;
-
         if(m.winner === lastW) { streak++; if(streak >= 3) hatrick = m.winner; }
         else { lastW = m.winner; streak = 1; }
     });
@@ -171,17 +163,17 @@ window.render28 = () => {
     const sorted = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
     const hi = sorted[0] || '—', lo = [...sorted].reverse()[0] || '—';
 
-    // KPI TILES RENDER
+    // KPI TILES
     document.getElementById('kpi-container').innerHTML = `
         <div class="k-tile"><small>1. Highest Winners</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w||0} Wins</div></div>
         <div class="k-tile"><small>2. Lowest Winners</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w||0} Wins</div></div>
         <div class="k-tile"><small>3. Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
         <div class="k-tile"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Peak Power</div></div>
         <div class="k-tile"><small>5. Most Losses</small><div class="val">${Object.keys(stats).sort((a,b)=>stats[b].l-stats[a].l)[0] || '—'}</div><div class="sub">Struggling</div></div>
-        <div class="k-tile" style="border: 1px solid var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
+        <div class="k-tile" style="border-color:var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
     `;
 
-    // ELITE HALL RENDER
+    // ELITE HALL
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
             <span class="hof-rank">#${i+1}</span>
@@ -189,20 +181,24 @@ window.render28 = () => {
             <span class="hof-val">${stats[n].w} W</span>
         </div>`).join('');
 
-    // RANKINGS RENDER
+    // TEAM RANKINGS RENDER (SCREENSHOT STYLE)
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n], winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
-        return `<div class="rank-row">
-            <div class="num">#${i+1}</div>
-            <div>
-                <div style="font-weight:900; text-transform:uppercase; font-size:16px; letter-spacing:1px;">${n}</div>
-                <div class="p-chart-container"><div class="p-chart-fill" style="width:${winP}%"></div><div class="bubble-wins">${d.w} Wins</div></div>
-                <div class="neon-stats">
-                    <span class="n-w">W: ${d.w}</span> <span class="n-l">L: ${d.l}</span>
-                    <span class="n-s2">28(+2): 00</span> <span class="n-s3">28(+3): 00</span>
-                </div>
+        return `
+        <div class="rank-row">
+            <div class="rank-num">#${i+1}</div>
+            <div class="team-label">${n}</div>
+            <div class="progress-wrap">
+                <div class="progress-fill" style="width: ${winP}%"></div>
+                <div class="perc-tag">${winP}%</div>
             </div>
-            <div class="score-box">${d.w}</div>
+            <div class="stats-group">
+                <div class="stat-item"><span class="stat-label">WINS</span><span class="stat-val">${String(d.w).padStart(2, '0')}</span></div>
+                <div class="stat-item"><span class="stat-label">LOST</span><span class="stat-val">${String(d.l).padStart(2, '0')}</span></div>
+                <div class="stat-item"><span class="stat-label" style="color:var(--accent)">28+2</span><span class="stat-val">00</span></div>
+                <div class="stat-item"><span class="stat-label" style="color:#ff00ff">28+3</span><span class="stat-val">00</span></div>
+            </div>
+            <div class="total-btn">${d.w}</div>
         </div>`;
     }).join('');
 };
