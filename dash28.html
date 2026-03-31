@@ -27,27 +27,34 @@
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; outline: none; font-size: 14px; }
   optgroup { background: #161b22; color: var(--cyan); font-style: normal; }
 
-  .top-grid { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
-  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
-  .hof-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 10px; }
+  .top-grid { display: grid; grid-template-columns: 420px 1fr; gap: 25px; margin-bottom: 40px; }
+  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 35px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
   
-  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
-  .k-tile small { font-size: 8px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
-  .k-tile .val { font-size: 12px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.2; }
-  .k-tile .sub { font-size: 9px; color: var(--cyan); margin-top: 4px; font-weight: 800; }
+  /* ELITE HALL NAMES ENLARGED */
+  .hof-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px; }
+  .hof-rank { color: var(--accent); width: 40px; font-size: 22px; font-weight: 900; text-align: left; }
+  .hof-name { flex: 1; text-align: left; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
+  .hof-val { color: var(--cyan); font-weight: 900; font-size: 22px; }
 
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
-  .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
-  .p-chart-container { height: 26px; background: rgba(255, 255, 255, 0.05); border-radius: 13px; position: relative; overflow: hidden; margin: 10px 0; border: 1px solid rgba(255,255,255,0.1); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+  .k-tile { padding: 25px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
+  .k-tile small { font-size: 10px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1.5px; }
+  
+  /* KPI TEXT ENLARGED */
+  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.2; letter-spacing: 1px; }
+  .k-tile .sub { font-size: 13px; color: var(--cyan); margin-top: 6px; font-weight: 800; }
+
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 60px 1fr 100px; align-items: center; gap: 20px; border: 1px solid rgba(255,255,255,0.05); }
+  .num { font-weight: 900; color: var(--cyan); font-size: 28px; }
+  .p-chart-container { height: 30px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; position: relative; overflow: hidden; margin: 12px 0; border: 1px solid rgba(255,255,255,0.1); }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); width: 0%; transition: width 1s ease; }
-  .bubble-wins { position: absolute; right: 5px; top: 3px; background: var(--cyan); color: #000; font-weight: 900; font-size: 11px; padding: 2px 8px; border-radius: 10px; box-shadow: 0 0 10px var(--cyan); }
+  .bubble-wins { position: absolute; right: 6px; top: 4px; background: var(--cyan); color: #000; font-weight: 900; font-size: 13px; padding: 3px 10px; border-radius: 12px; box-shadow: 0 0 10px var(--cyan); }
   
-  .neon-stats { display: flex; gap: 15px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+  .neon-stats { display: flex; gap: 15px; font-size: 12px; font-weight: 900; text-transform: uppercase; }
   .n-w { color: var(--neon-green); } .n-l { color: var(--danger); } .n-s2 { color: var(--accent); } .n-s3 { color: #ff00ff; }
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px; border-radius: 12px; font-weight: 900; font-size: 24px; text-align: center; }
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 15px; border-radius: 15px; font-weight: 900; font-size: 28px; text-align: center; }
 
-  @media (max-width: 900px) { .top-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 1000px) { .top-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
 <body>
@@ -55,7 +62,7 @@
 <div class="wrap">
   <header>
     <a href="index.html" class="nav-link">🏠 HOME</a>
-    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan); font-size: 14px;">28 ELITE HUB</div>
+    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan); font-size: 16px;">28 ELITE HUB</div>
     <div class="nav-link" onclick="takeSnapshot()" style="cursor:pointer">📸 SNAP</div>
   </header>
 
@@ -72,8 +79,8 @@
 
   <div class="top-grid">
     <div class="hof-card">
-      <div style="font-size:35px; margin-bottom:10px;">🏆</div>
-      <h3 style="margin:0 0 20px 0; color:var(--accent); letter-spacing:3px; font-size: 14px;">TEAM ELITE HALL</h3>
+      <div style="font-size:45px; margin-bottom:15px;">🏆</div>
+      <h3 style="margin:0 0 25px 0; color:var(--accent); letter-spacing:3px; font-size: 18px; font-weight:900;">TEAM ELITE HALL</h3>
       <div id="podium-list"></div>
     </div>
     <div class="kpi-grid" id="kpi-container"></div>
@@ -97,7 +104,7 @@ let tMap = {};
 window.takeSnapshot = () => {
     html2canvas(document.body, { backgroundColor: "#0d0d1a" }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `GZ_28.png`; link.href = canvas.toDataURL(); link.click();
+        link.download = `GZ_28_Elite.png`; link.href = canvas.toDataURL(); link.click();
     });
 };
 
@@ -164,31 +171,31 @@ window.render28 = () => {
     const sorted = Object.keys(stats).sort((a,b) => stats[b].w - stats[a].w);
     const hi = sorted[0] || '—', lo = [...sorted].reverse()[0] || '—';
 
-    // KPI TILES
+    // KPI TILES RENDER
     document.getElementById('kpi-container').innerHTML = `
         <div class="k-tile"><small>1. Highest Winners</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w||0} Wins</div></div>
         <div class="k-tile"><small>2. Lowest Winners</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w||0} Wins</div></div>
         <div class="k-tile"><small>3. Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
-        <div class="k-tile"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Dominance</div></div>
+        <div class="k-tile"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Peak Power</div></div>
         <div class="k-tile"><small>5. Most Losses</small><div class="val">${Object.keys(stats).sort((a,b)=>stats[b].l-stats[a].l)[0] || '—'}</div><div class="sub">Struggling</div></div>
-        <div class="k-tile" style="border-color:var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
+        <div class="k-tile" style="border: 1px solid var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
     `;
 
-    // ELITE HALL
+    // ELITE HALL RENDER
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
         <div class="hof-item">
-            <b style="color:var(--accent); width:25px;">#${i+1}</b>
-            <span style="flex:1; text-align:left; font-size:11px; font-weight:900;">${n}</span>
-            <span style="color:var(--cyan); font-weight:900;">${stats[n].w} W</span>
+            <span class="hof-rank">#${i+1}</span>
+            <span class="hof-name">${n}</span>
+            <span class="hof-val">${stats[n].w} W</span>
         </div>`).join('');
 
-    // TEAM RANKINGS
+    // RANKINGS RENDER
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
         const d = stats[n], winP = d.t > 0 ? ((d.w/d.t)*100).toFixed(0) : 0;
         return `<div class="rank-row">
             <div class="num">#${i+1}</div>
             <div>
-                <div style="font-weight:900; text-transform:uppercase; font-size:13px;">${n}</div>
+                <div style="font-weight:900; text-transform:uppercase; font-size:16px; letter-spacing:1px;">${n}</div>
                 <div class="p-chart-container"><div class="p-chart-fill" style="width:${winP}%"></div><div class="bubble-wins">${d.w} Wins</div></div>
                 <div class="neon-stats">
                     <span class="n-w">W: ${d.w}</span> <span class="n-l">L: ${d.l}</span>
