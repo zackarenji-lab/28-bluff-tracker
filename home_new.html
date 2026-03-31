@@ -16,10 +16,17 @@
   body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
   .wrap { max-width: 1450px; margin: auto; padding: 20px; }
   
-  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
-  .header-btns { display: flex; gap: 10px; }
-  .nav-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 10px; border: 1px solid rgba(255,211,109,0.3); padding: 10px 18px; border-radius: 30px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; white-space: nowrap; transition: 0.2s; }
-  .nav-link:hover { background: rgba(255,211,109,0.1); }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+  .logo-area { font-weight: 900; letter-spacing: 2px; color: var(--cyan); font-size: 18px; text-transform: uppercase; }
+  
+  .header-btns { display: flex; gap: 12px; align-items: center; }
+  
+  /* Buttons Styling */
+  .btn-base { text-decoration: none; font-weight: 900; font-size: 11px; padding: 10px 20px; border-radius: 30px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; background: transparent; white-space: nowrap; }
+  .btn-home { color: var(--accent); border: 1px solid rgba(255,211,109,0.3); }
+  .btn-details { color: var(--cyan); border: 1px solid var(--cyan); box-shadow: inset 0 0 10px rgba(0, 245, 255, 0.1); }
+  .btn-snap { color: #fff; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); }
+  .btn-base:hover { transform: translateY(-2px); opacity: 0.8; }
 
   .game-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
   .g-tab { padding: 16px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; background: var(--glass); color: var(--muted); border: 1px solid rgba(255,255,255,0.05); }
@@ -30,16 +37,16 @@
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; outline: none; font-size: 14px; }
 
   .top-grid { display: grid; grid-template-columns: 420px 1fr; gap: 25px; margin-bottom: 40px; }
-  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 35px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; }
+  .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 35px; border: 1px solid rgba(123, 44, 191, 0.5); text-align: center; }
   .hof-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px; }
   .hof-rank { color: var(--accent); width: 40px; font-size: 22px; font-weight: 900; text-align: left; }
-  .hof-name { flex: 1; text-align: left; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #fff; }
+  .hof-name { flex: 1; text-align: left; font-size: 18px; font-weight: 900; text-transform: uppercase; color: #fff; }
   .hof-val { color: var(--cyan); font-weight: 900; font-size: 22px; }
 
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
   .k-tile { padding: 25px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1.5px; }
-  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.2; letter-spacing: 1px; }
+  .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; }
   .k-tile .sub { font-size: 13px; color: var(--cyan); margin-top: 6px; font-weight: 800; }
 
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 15px; padding: 20px 30px; border-radius: 25px; display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.05); gap: 20px; }
@@ -58,26 +65,25 @@
   .total-btn { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 15px 30px; border-radius: 18px; font-weight: 900; font-size: 32px; box-shadow: 0 4px 15px rgba(255, 77, 77, 0.3); min-width: 80px; text-align: center; margin-left: 10px; }
 
   /* MODAL STYLES */
-  #detailsModal { display: none; position: fixed; inset: 0; background: rgba(5, 5, 10, 0.95); z-index: 1000; padding: 20px; overflow-y: auto; backdrop-filter: blur(10px); }
-  .modal-content { background: #161b22; max-width: 900px; margin: 40px auto; border-radius: 24px; border: 1px solid rgba(123, 44, 191, 0.5); padding: 30px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,1); }
-  .close-modal { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: var(--danger); font-weight: 900; }
+  #detailsModal { display: none; position: fixed; inset: 0; background: rgba(5, 5, 10, 0.98); z-index: 9999; padding: 20px; overflow-y: auto; backdrop-filter: blur(15px); }
+  .modal-content { background: #161b22; max-width: 900px; margin: 40px auto; border-radius: 24px; border: 1px solid var(--violet); padding: 30px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,1); }
+  .close-modal { position: absolute; top: 20px; right: 20px; font-size: 35px; cursor: pointer; color: var(--danger); font-weight: 900; }
   .log-row { display: grid; grid-template-columns: 50px 1.5fr 1.5fr 1fr 60px; align-items: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; gap: 15px; }
-  .log-head { font-weight: 900; color: var(--cyan); text-transform: uppercase; font-size: 11px; border-bottom: 2px solid var(--violet); margin-bottom: 10px; padding-bottom: 15px; letter-spacing: 1px; }
-  .del-btn { color: var(--danger); cursor: pointer; font-size: 18px; transition: 0.3s; text-align: center; }
-  .del-btn:hover { transform: scale(1.3); filter: drop-shadow(0 0 5px var(--danger)); }
+  .log-head { font-weight: 900; color: var(--cyan); text-transform: uppercase; font-size: 11px; border-bottom: 2px solid var(--violet); margin-bottom: 10px; padding-bottom: 15px; }
+  .del-btn { color: var(--danger); cursor: pointer; font-size: 18px; text-align: center; }
 
-  @media (max-width: 1200px) { .rank-row { flex-wrap: wrap; height: auto; padding: 20px; } .progress-wrap { width: 100%; order: 3; } }
+  @media (max-width: 1200px) { .rank-row { flex-wrap: wrap; height: auto; } .progress-wrap { width: 100%; order: 3; } }
 </style>
 </head>
 <body>
 
 <div class="wrap">
   <header>
-    <a href="index.html" class="nav-link">🏠 HOME</a>
-    <div style="font-weight:900; letter-spacing:2px; color:var(--cyan); font-size: 16px;">28 ELITE HUB</div>
+    <div class="logo-area">28 Elite Dashboard</div>
     <div class="header-btns">
-        <div class="nav-link" onclick="openDetails()" style="color:var(--cyan); border-color:var(--cyan)">📋 Game Details</div>
-        <div class="nav-link" onclick="takeSnapshot()">📸 SNAP</div>
+        <a href="index.html" class="btn-base btn-home">🏠 Home</a>
+        <button class="btn-base btn-details" onclick="openDetails()">📋 Game Details</button>
+        <button class="btn-base btn-snap" onclick="takeSnapshot()">📸 Snap</button>
     </div>
   </header>
 
@@ -107,9 +113,9 @@
 <div id="detailsModal">
     <div class="modal-content">
         <span class="close-modal" onclick="closeDetails()">&times;</span>
-        <h2 style="color:var(--accent); text-transform:uppercase; letter-spacing:2px; margin-bottom:25px; border-left: 5px solid var(--violet); padding-left: 15px;">Match Log History</h2>
+        <h2 style="color:var(--accent); text-transform:uppercase; letter-spacing:2px; margin-bottom:25px; border-left: 5px solid var(--violet); padding-left: 15px;">Match History Log</h2>
         <div class="log-row log-head">
-            <div>#</div><div>Winner Combo</div><div>Loser Combo</div><div>Played Date</div><div>Action</div>
+            <div>#</div><div>Winner</div><div>Loser</div><div>Date</div><div>Delete</div>
         </div>
         <div id="modal-list"></div>
     </div>
@@ -131,23 +137,21 @@ let filteredMatches = [];
 window.takeSnapshot = () => {
     html2canvas(document.body, { backgroundColor: "#0d0d1a" }).then(canvas => {
         const link = document.createElement('a');
-        link.download = `GZ_28_Rankings.png`; link.href = canvas.toDataURL(); link.click();
+        link.download = `GZ_28_Elite.png`; link.href = canvas.toDataURL(); link.click();
     });
 };
 
 window.openDetails = () => {
     const list = document.getElementById('modal-list');
-    // Reverse to show newest games at the top of the details modal
     list.innerHTML = [...filteredMatches].reverse().map((m, i) => {
-        const dateObj = m.time ? new Date(m.time) : null;
-        const dateStr = dateObj ? dateObj.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'2-digit'}) : '---';
+        const d = m.time ? new Date(m.time).toLocaleDateString('en-GB', {day:'2-digit', month:'short'}) : '---';
         return `
         <div class="log-row">
             <div style="color:var(--muted); font-weight:bold;">${filteredMatches.length - i}</div>
             <div style="color:var(--neon-green); font-weight:800;">${m.winner}</div>
             <div style="color:var(--danger); font-weight:800;">${m.loser}</div>
-            <div style="color:var(--muted)">${dateStr}</div>
-            <div class="del-btn" onclick="deleteGame('${m.id}')" title="Delete Match">🗑️</div>
+            <div style="color:var(--muted)">${d}</div>
+            <div class="del-btn" onclick="deleteGame('${m.id}')">🗑️</div>
         </div>`;
     }).join('');
     document.getElementById('detailsModal').style.display = 'block';
@@ -156,15 +160,11 @@ window.openDetails = () => {
 window.closeDetails = () => document.getElementById('detailsModal').style.display = 'none';
 
 window.deleteGame = async (id) => {
-    const pw = prompt("Enter Admin Password to Delete Record:");
+    const pw = prompt("Enter Password to Delete:");
     if(pw === "zachariahrenji") {
-        try {
-            await deleteDoc(doc(db, "games", id));
-            // Snapshot listener will update UI automatically
-        } catch(e) { alert("Delete failed. Check connection."); }
-    } else if (pw !== null) {
-        alert("Access Denied: Incorrect Password");
-    }
+        try { await deleteDoc(doc(db, "games", id)); } 
+        catch(e) { alert("Fail"); }
+    } else if (pw !== null) { alert("Wrong Password"); }
 };
 
 window.updateDropdown = () => {
@@ -222,12 +222,12 @@ window.render28 = () => {
     const hi = sorted[0] || '—', lo = [...sorted].reverse()[0] || '—';
 
     document.getElementById('kpi-container').innerHTML = `
-        <div class="k-tile"><small>1. Highest Winners</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w||0} Wins</div></div>
-        <div class="k-tile"><small>2. Lowest Winners</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w||0} Wins</div></div>
-        <div class="k-tile"><small>3. Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
-        <div class="k-tile"><small>4. Highest Combo</small><div class="val">${hi}</div><div class="sub">Peak Power</div></div>
-        <div class="k-tile"><small>5. Most Losses</small><div class="val">${Object.keys(stats).sort((a,b)=>stats[b].l-stats[a].l)[0] || '—'}</div><div class="sub">Struggling</div></div>
-        <div class="k-tile" style="border-color:var(--cyan)"><small>6. Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
+        <div class="k-tile"><small>Highest Winner</small><div class="val">${hi}</div><div class="sub">${stats[hi]?.w||0} Wins</div></div>
+        <div class="k-tile"><small>Lowest Winner</small><div class="val">${lo}</div><div class="sub">${stats[lo]?.w||0} Wins</div></div>
+        <div class="k-tile"><small>Max 28 Streaks</small><div class="val">Team A</div><div class="sub">Count: 00</div></div>
+        <div class="k-tile"><small>Highest Combo</small><div class="val">${hi}</div><div class="sub">Peak Power</div></div>
+        <div class="k-tile"><small>Most Losses</small><div class="val">${Object.keys(stats).sort((a,b)=>stats[b].l-stats[a].l)[0] || '—'}</div><div class="sub">Struggling</div></div>
+        <div class="k-tile" style="border-color:var(--cyan)"><small>Hatrick Win</small><div class="val">${hatrick}</div><div class="sub">3 Streak</div></div>
     `;
 
     document.getElementById('podium-list').innerHTML = sorted.slice(0,3).map((n, i) => `
