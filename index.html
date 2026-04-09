@@ -32,13 +32,12 @@
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
   
-  /* UPDATED STREAK ROW - SHARED CENTER */
   .streak-row-shared { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; }
-  .btn-streak-lg { font-size: 12px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; }
+  .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; }
   .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
   
   .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
@@ -123,7 +122,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allG = [];
-  let globalMultiplier = {}; // Keyed by seriesId
+  let globalMultiplier = {};
   window.activeMode = '';
 
   window.switchView = (v) => {
@@ -213,7 +212,6 @@
     closeM();
   };
 
-  // UPDATED SHARED MULTIPLIER HANDLER
   window.setGlobalMulti = (sid, val, btn) => {
     if(globalMultiplier[sid] === val) {
         delete globalMultiplier[sid];
@@ -236,14 +234,19 @@
   window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false };
+        if (!seriesMap[g.seriesId]) {
+            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false };
+        }
         const s = seriesMap[g.seriesId];
         if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; }
-        else if (g.manualEnd) s.stop = true;
-        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
+        if (g.manualEnd || g.finalized) { s.stop = true; s.isFinalized = true; }
+        if (g.winner && !g.manualEnd) {
+            s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
+        }
     });
+
     const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
-    Object.values(seriesMap).filter(s => s.teamA && !s.stop).forEach(s => {
+    Object.values(seriesMap).filter(s => s.teamA && !s.isFinalized).forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
         const reachedTarget = (wA >= s.target || wB >= s.target);
         const tourneyWinner = wA >= s.target ? s.teamA : s.teamB;
@@ -292,7 +295,7 @@
   window.score28 = async (id, w, l) => { 
     const pts = globalMultiplier[id] || 1;
     await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: pts, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
-    delete globalMultiplier[id]; // Reset for next hand
+    delete globalMultiplier[id]; 
     render28();
   };
 
@@ -301,12 +304,10 @@
     const tType = Math.max(wA, wB) >= 10 ? 10 : 5;
     await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
     
-    if(tA && tB) {
-        if(confirm(`Play again with same opponents (${tA} vs ${tB})?`)) {
-            const nextTarget = prompt("New Tournament Target (5 or 10):", tType);
-            if(nextTarget == "5" || nextTarget == "10") {
-                await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: tA, teamB: tB, seriesTarget: parseInt(nextTarget), time: new Date().toISOString(), secret: PASS, gameType: '28' });
-            }
+    if(tA && tB && confirm(`Play again with same opponents (${tA} vs ${tB})?`)) {
+        const nextTarget = prompt("New Tournament Target (5 or 10):", tType);
+        if(nextTarget == "5" || nextTarget == "10") {
+            await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: tA, teamB: tB, seriesTarget: parseInt(nextTarget), time: new Date().toISOString(), secret: PASS, gameType: '28' });
         }
     }
   };
