@@ -41,6 +41,7 @@
   .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
   
   .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
+  .time-stamp { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; display: block; }
 </style>
 </head>
 <body>
@@ -235,13 +236,16 @@
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
         if (!seriesMap[g.seriesId]) {
-            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false };
+            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, start: null, last: null };
         }
         const s = seriesMap[g.seriesId];
-        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; }
+        if (g.isInit) { 
+            s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; s.start = g.time; 
+        }
         if (g.manualEnd || g.finalized) { s.stop = true; s.isFinalized = true; }
         if (g.winner && !g.manualEnd) {
             s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
+            s.last = g.time; // Track the time of the last point
         }
     });
 
@@ -250,6 +254,11 @@
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
         const reachedTarget = (wA >= s.target || wB >= s.target);
         const tourneyWinner = wA >= s.target ? s.teamA : s.teamB;
+
+        // Formatting timestamps
+        const startTime = s.start ? new Date(s.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '---';
+        const lastTime = s.last ? new Date(s.last).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : startTime;
+        const startDate = s.start ? new Date(s.start).toLocaleDateString([], { day: '2-digit', month: 'short' }) : '';
 
         let actionContent = '';
         if (reachedTarget) {
@@ -276,6 +285,16 @@
         }
 
         list.innerHTML += `<div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
+                <div style="text-align:left;">
+                    <span style="font-size:10px; color:var(--cyan); font-weight:800; letter-spacing:1px;">STARTED</span>
+                    <div style="font-size:11px; font-weight:700;">${startDate} @ ${startTime}</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:10px; color:var(--accent); font-weight:800; letter-spacing:1px;">LAST ACTIVE</span>
+                    <div style="font-size:11px; font-weight:700;">${lastTime}</div>
+                </div>
+            </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div style="text-align:center; flex:1">
                     <div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamA}</div>
