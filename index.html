@@ -30,13 +30,18 @@
   .neu-btn.danger { color: var(--danger); border: 1px solid rgba(255,107,107,0.2); }
   .neu-btn.small { padding: 4px 8px; font-size: 9px; }
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
-  .score-val { font-size: 24px; font-weight: 800; color: var(--gold); }
+  .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
   .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
-  .streak-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
-  .btn-streak { font-size: 8px !important; padding: 4px !important; opacity: 0.8; border: 1px solid rgba(255,255,255,0.1); }
+  
+  /* UPDATED STREAK ROW - SHARED CENTER */
+  .streak-row-shared { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; }
+  .btn-streak-lg { font-size: 12px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; }
+  .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
+  
+  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -45,7 +50,7 @@
   <header>
     <div class="logo">GZ</div>
     <h1>Gaming Zone</h1>
-    <a href="dashboard.html" class="dash-link">📊 Dashboard</a>
+    <a href="dash28.html" class="dash-link">📊 Dashboard</a>
     <button class="neu-btn small" onclick="switchView('OVERALL')">📊 Overall Stat</button>
     <button id="btn-home" class="neu-btn small" style="display:none" onclick="location.reload()">🏠 Home</button>
   </header>
@@ -57,7 +62,7 @@
       <h2 style="margin:0 0 10px 0; font-size:12px; text-align:center; color: var(--gold); letter-spacing: 1px;">CHOOSE YOUR GAME</h2>
       <div class="game-grid">
         <div class="game-box" onclick="launchGame('28')"><img src="28 button.png" alt="28"><div class="game-name-overlay">28 Game</div></div>
-        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff"><div class="game-name-overlay">Bluff</div></div>
+        <div class="game-box" onclick="launchGame('Bluff')"><img src="bluff button.png" alt="Bluff"><div class="game-name-overlay">Bluff masters</div></div>
         <div class="game-box" onclick="launchGame('UNO')"><img src="uno button.png" alt="UNO"><div class="game-name-overlay">UNO</div></div>
       </div>
     </div>
@@ -78,7 +83,6 @@
     <div class="card" id="pane-setup">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 id="indiv-title" style="margin:0; font-size:16px;">Setup</h3>
-            <button class="neu-btn small" onclick="window.location.href='dashboard.html'">📊 Stats</button>
         </div>
         <input type="number" id="pCnt" min="3" max="10" placeholder="Players (3-10)" oninput="drawInputs()">
         <div id="pInputs"></div>
@@ -103,7 +107,6 @@
 <div id="modal-container"></div>
 
 <script>
-  // CONFIG
   const firebaseConfig = { 
     apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
     authDomain: "bluff-tracker-7542e.firebaseapp.com", 
@@ -120,7 +123,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allG = [];
-  let activeMultipliers = {}; // NEW: To track multiplier selection
+  let globalMultiplier = {}; // Keyed by seriesId
   window.activeMode = '';
 
   window.switchView = (v) => {
@@ -164,19 +167,11 @@
 
   window.goScoring = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
-    document.getElementById('play-subtitle').innerText = `${cnt} Player ${activeMode} Tournament`;
     const body = document.getElementById('table-score-body'); body.innerHTML = "";
     for(let i=0; i<cnt; i++) {
         const sel = document.getElementById(`ps-${i}`).value;
         const name = (sel === 'C' ? document.getElementById(`pc-${i}`).value : sel);
-        if(!name) return alert("Fill all names");
-        body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}">
-            <option value="99" selected>Other (1 Pt)</option>
-            <option value="1">1st (10 Pts)</option>
-            <option value="2">2nd (5 Pts)</option>
-            ${cnt > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}
-            <option value="0">Last (0 Pts)</option>
-        </select></td></tr>`;
+        body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}"><option value="99" selected>Other (1 Pt)</option><option value="1">1st (10 Pts)</option><option value="2">2nd (5 Pts)</option>${cnt > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}<option value="0">Last (0 Pts)</option></select></td></tr>`;
     }
     document.getElementById('pane-setup').style.display="none"; document.getElementById('pane-play').style.display="block";
   };
@@ -187,14 +182,10 @@
     document.querySelectorAll('.rank-sel').forEach(sel => {
         const rank = parseInt(sel.value);
         const name = sel.getAttribute('data-player');
-        let pts = 1;
-        if(rank === 1) { pts = 10; win = name; }
-        else if(rank === 2) pts = 5;
-        else if(rank === 3) pts = 3;
-        else if(rank === 0) { pts = 0; lost = name; }
+        let pts = (rank === 1 ? 10 : rank === 2 ? 5 : rank === 3 ? 3 : rank === 0 ? 0 : 1);
+        if(rank === 1) win = name; if(rank === 0) lost = name;
         results.push({ name, rank, pts });
     });
-    if(!win || !lost) return alert("Identify 1st and Last!");
     await db.collection("games").add({ gameType: activeMode, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
     resetSetup();
   };
@@ -217,27 +208,29 @@
 
   window.conf28 = async () => {
     const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
+    if(!t1 || !t2) return alert("Select Teams");
     await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS, gameType: '28' });
     closeM();
   };
 
-  // MULTIPLIER HANDLER
-  window.setMulti = (sid, side, val, btn) => {
-    const key = sid + side;
-    activeMultipliers[key] = (activeMultipliers[key] === val) ? 1 : val;
-    btn.parentElement.querySelectorAll('.btn-streak').forEach(b => b.style.borderColor = "rgba(255,255,255,0.1)");
-    if(activeMultipliers[key] > 1) btn.style.borderColor = "#00f5ff";
+  // UPDATED SHARED MULTIPLIER HANDLER
+  window.setGlobalMulti = (sid, val, btn) => {
+    if(globalMultiplier[sid] === val) {
+        delete globalMultiplier[sid];
+        btn.classList.remove('active');
+    } else {
+        globalMultiplier[sid] = val;
+        btn.parentElement.querySelectorAll('.btn-streak-lg').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
   };
 
-  // MANUAL SCORE EDIT
   window.editScore = async (sid, team, cur) => {
-    if(prompt("Enter Admin Password:") !== PASS) return alert("Denied");
-    const val = prompt(`Manually set score for ${team}:`, cur);
+    if(prompt("Password:") !== PASS) return alert("Denied");
+    const val = prompt(`Set score for ${team}:`, cur);
     if(val === null || isNaN(val)) return;
     const diff = parseInt(val) - cur;
-    if(diff !== 0) {
-      await db.collection("games").add({ seriesId: sid, winner: team, loser: "Manual Edit", points: diff, time: new Date().toISOString(), secret: PASS, gameType: '28' });
-    }
+    if(diff !== 0) await db.collection("games").add({ seriesId: sid, winner: team, loser: "Edit", points: diff, time: new Date().toISOString(), secret: PASS, gameType: '28' });
   };
 
   window.render28 = () => {
@@ -250,55 +243,77 @@
         else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
     });
     const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
-    Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
+    Object.values(seriesMap).filter(s => s.teamA && !s.stop).forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-            <div style="text-align:center; flex:1">
-                <div style="font-size:10px; margin-bottom:5px;">${s.teamA}</div>
-                <span class="score-val">${wA}</span><span style="cursor:pointer;opacity:0.5;margin-left:8px" onclick="editScore('${s.id}','${s.teamA}', ${wA})">✏️</span>
-                <div class="streak-row">
-                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','A',2,this)">24(+2)</button>
-                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','A',2,this)">28(+2)</button>
-                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','A',3,this)">28(+3)</button>
+        const reachedTarget = (wA >= s.target || wB >= s.target);
+        const tourneyWinner = wA >= s.target ? s.teamA : s.teamB;
+
+        let actionContent = '';
+        if (reachedTarget) {
+            actionContent = `
+            <div class="conclusion-card">
+                <div style="font-weight:800; color:var(--accent); margin-bottom:10px;">🏆 ${tourneyWinner} won!</div>
+                <div style="display:flex; gap:8px;">
+                    <button class="neu-btn primary small" style="flex:1" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">Confirm Closure</button>
+                    <button class="neu-btn danger small" style="flex:1" onclick="editScore('${s.id}','${tourneyWinner}', ${s.wins[tourneyWinner]})">Mistake? Edit</button>
+                </div>
+            </div>`;
+        } else {
+            actionContent = `
+            <div class="streak-row-shared">
+                <button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">24(+2)</button>
+                <button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">28(+2)</button>
+                <button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 3, this)">28(+3)</button>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
+                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
+                <button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button>
+            </div>`;
+        }
+
+        list.innerHTML += `<div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="text-align:center; flex:1">
+                    <div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamA}</div>
+                    <span class="score-val">${wA}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamA}', ${wA})">✏️</span>
+                </div>
+                <div style="font-weight:900; color:var(--muted); margin: 0 15px;">VS</div>
+                <div style="text-align:center; flex:1">
+                    <div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamB}</div>
+                    <span class="score-val">${wB}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamB}', ${wB})">✏️</span>
                 </div>
             </div>
-            <div style="font-weight:900; color:var(--muted)">VS</div>
-            <div style="text-align:center; flex:1">
-                <div style="font-size:10px; margin-bottom:5px;">${s.teamB}</div>
-                <span class="score-val">${wB}</span><span style="cursor:pointer;opacity:0.5;margin-left:8px" onclick="editScore('${s.id}','${s.teamB}', ${wB})">✏️</span>
-                <div class="streak-row">
-                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','B',2,this)">24(+2)</button>
-                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','B',2,this)">28(+2)</button>
-                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','B',3,this)">28(+3)</button>
-                </div>
-            </div></div>
-            <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}','A')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}','B')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button>
-            </div></div>`;
+            ${actionContent}
+        </div>`;
     });
   };
 
-  window.score28 = async (id, w, l, side) => { 
-    const pts = activeMultipliers[id + side] || 1;
+  window.score28 = async (id, w, l) => { 
+    const pts = globalMultiplier[id] || 1;
     await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: pts, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
-    delete activeMultipliers[id + side]; 
+    delete globalMultiplier[id]; // Reset for next hand
     render28();
   };
 
-  window.finalize28 = async (id, wA, wB) => {
-    if(!confirm("End series and record as tournament?")) return;
+  window.finalize28 = async (id, wA, wB, tA = '', tB = '') => {
+    if(!confirm("Confirm tournament closure?")) return;
     const tType = Math.max(wA, wB) >= 10 ? 10 : 5;
     await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
+    
+    if(tA && tB) {
+        if(confirm(`Play again with same opponents (${tA} vs ${tB})?`)) {
+            const nextTarget = prompt("New Tournament Target (5 or 10):", tType);
+            if(nextTarget == "5" || nextTarget == "10") {
+                await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: tA, teamB: tB, seriesTarget: parseInt(nextTarget), time: new Date().toISOString(), secret: PASS, gameType: '28' });
+            }
+        }
+    }
   };
 
   window.renderGlobalTiles = () => {
     const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
-    document.getElementById('summary-tiles').innerHTML = `
-        <div class="card" onclick="window.location.href='dash28.html'">🏏 <b>28</b> - ${f('28')} Series</div>
-        <div class="card" onclick="window.location.href='dashboard.html?mode=Bluff'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div>
-        <div class="card" onclick="window.location.href='dashboard.html'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
+    document.getElementById('summary-tiles').innerHTML = `<div class="card" onclick="window.location.href='dash28.html'">🏏 <b>28</b> - ${f('28')} Series</div><div class="card" onclick="window.location.href='dashboard.html?mode=Bluff'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div><div class="card" onclick="window.location.href='dashboard.html'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
   };
 
   window.resetSystem = async (type, id) => {
