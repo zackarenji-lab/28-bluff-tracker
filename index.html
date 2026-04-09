@@ -32,17 +32,19 @@
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
-  .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 92%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
   
-  /* SHARED MULTIPLIER STYLES */
   .streak-row-shared { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; }
   .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; transition: 0.3s; }
   .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
   
   .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
   .time-stamp { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; }
+
+  /* BIDDER MODAL BUTTONS */
+  .bidder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+  .btn-bidder { background: var(--card); border: 1px solid var(--cyan); color: #fff; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; transition: 0.2s; }
+  .btn-bidder:hover { background: var(--cyan); color: #000; }
 </style>
 </head>
 <body>
@@ -108,24 +110,14 @@
 <div id="modal-container"></div>
 
 <script>
-  // FIREBASE INIT
-  const firebaseConfig = { 
-    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
-    authDomain: "bluff-tracker-7542e.firebaseapp.com", 
-    projectId: "bluff-tracker-7542e", 
-    storageBucket: "bluff-tracker-7542e.appspot.com", 
-    messagingSenderId: "280965687037", 
-    appId: "1:280965687037:web:be0b05da36ef653ab68094" 
-  };
-
+  const firebaseConfig = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
   const PASS = "zachariahrenji";
-  const PLRS = ["Rohan", "Roopa", "Zach", "Annu", "Rikku", "Megha", "Bibin", "Bimal"];
   const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allG = [];
-  let globalMultiplier = {}; // Track multipliers for each active seriesId
+  let globalMultiplier = {};
   window.activeMode = '';
 
   window.switchView = (v) => {
@@ -149,7 +141,7 @@
     const container = document.getElementById('pInputs'); container.innerHTML = "";
     if(isNaN(cnt) || cnt < 3 || cnt > 10) { document.getElementById('btn-start').style.display="none"; return; }
     for(let i=0; i<cnt; i++) {
-        container.innerHTML += `<select id="ps-${i}" onchange="refreshExclusion()"><option value="" selected disabled>Player ${i+1}</option>${PLRS.map(p=>`<option value="${p}">${p}</option>`).join('')}<option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
+        container.innerHTML += `<select id="ps-${i}" onchange="refreshExclusion()"><option value="" selected disabled>Player ${i+1}</option><option value="Rohan">Rohan</option><option value="Roopa">Roopa</option><option value="Zach">Zach</option><option value="Annu">Annu</option><option value="Rikku">Rikku</option><option value="Megha">Megha</option><option value="Bibin">Bibin</option><option value="Bimal">Bimal</option><option value="C">Custom</option></select><input type="text" id="pc-${i}" style="display:none" placeholder="Enter Name">`;
     }
     document.getElementById('btn-start').style.display="block";
   };
@@ -215,16 +207,9 @@
     closeM();
   };
 
-  // MULTIPLIER AND EDIT HELPERS
   window.setGlobalMulti = (sid, val, btn) => {
-    if(globalMultiplier[sid] === val) {
-        delete globalMultiplier[sid];
-        btn.classList.remove('active');
-    } else {
-        globalMultiplier[sid] = val;
-        btn.parentElement.querySelectorAll('.btn-streak-lg').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
+    if(globalMultiplier[sid] === val) { delete globalMultiplier[sid]; btn.classList.remove('active'); }
+    else { globalMultiplier[sid] = val; btn.parentElement.querySelectorAll('.btn-streak-lg').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
   };
 
   window.editScore = async (sid, team, cur) => {
@@ -238,18 +223,13 @@
   window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) {
-            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, isReplay: false, start: null, last: null };
-        }
+        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, isReplay: false, start: null, last: null };
         const s = seriesMap[g.seriesId];
         if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; s.start = g.time; }
         if (g.finalized) { s.stop = true; s.isFinalized = true; }
         if (g.isReplay) s.isReplay = true;
         if (g.manualEnd && !g.finalized) s.stop = true; 
-        if (g.winner && !g.manualEnd) {
-            s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
-            s.last = g.time;
-        }
+        if (g.winner && !g.manualEnd) { s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1); s.last = g.time; }
     });
 
     const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
@@ -287,8 +267,23 @@
 
   window.score28 = async (id, w, l) => { 
     const pts = globalMultiplier[id] || 1;
-    await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: pts, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
-    delete globalMultiplier[id]; 
+    if(pts > 1) {
+        // GET PLAYER NAMES FROM THE TEAM STRINGS
+        const players = [...w.split(' & '), ...l.split(' & ')];
+        const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-top:0;">Who was the Bidder?</h3>
+            <div class="bidder-grid">${players.map(p => `<button class="btn-bidder" onclick="saveWithBidder('${id}','${w}','${l}',${pts},'${p}')">${p}</button>`).join('')}</div>
+            <button class="neu-btn small" style="width:100%; margin-top:15px; border-color:var(--danger); color:var(--danger)" onclick="closeM()">Cancel</button></div>`;
+        document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
+    } else {
+        await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: 1, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
+        render28();
+    }
+  };
+
+  window.saveWithBidder = async (sid, w, l, pts, bidder) => {
+    await db.collection("games").add({ seriesId: sid, winner: w, loser: l, points: pts, bidder: bidder, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
+    delete globalMultiplier[sid];
+    closeM();
     render28();
   };
 
@@ -296,9 +291,8 @@
     if(!confirm("Confirm tournament closure?")) return;
     const tType = Math.max(wA, wB) >= 10 ? 10 : 5;
     await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
-    
-    if(tA && tB && confirm(`Play again with same opponents (${tA} vs ${tB})?`)) {
-        const nextTarget = prompt("New Tournament Target (5 or 10):", tType);
+    if(tA && tB && confirm(`Play again with same opponents?`)) {
+        const nextTarget = prompt("Target (5 or 10):", tType);
         if(nextTarget == "5" || nextTarget == "10") {
             await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: tA, teamB: tB, seriesTarget: parseInt(nextTarget), time: new Date().toISOString(), secret: PASS, gameType: '28' });
         }
@@ -311,7 +305,7 @@
   };
 
   window.resetSystem = async (type, id) => {
-    if(prompt(`Enter Admin Password:`) !== PASS) return;
+    if(prompt(`Password:`) !== PASS) return;
     const snap = await db.collection("games").where(type === 'ALL' ? "secret" : "seriesId", "==", type === 'ALL' ? PASS : id).get();
     const ops = []; snap.forEach(d => ops.push(d.ref.delete())); await Promise.all(ops);
     location.reload();
