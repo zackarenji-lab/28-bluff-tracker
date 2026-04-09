@@ -32,19 +32,17 @@
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
-  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 92%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 92%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
   
   .streak-row-shared { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; }
   .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; transition: 0.3s; }
   .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
   
-  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
+  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
   .time-stamp { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; }
 
-  /* BIDDER MODAL BUTTONS */
   .bidder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-  .btn-bidder { background: var(--card); border: 1px solid var(--cyan); color: #fff; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; transition: 0.2s; }
-  .btn-bidder:hover { background: var(--cyan); color: #000; }
+  .btn-bidder { background: var(--card); border: 1px solid var(--cyan); color: #fff; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -110,7 +108,15 @@
 <div id="modal-container"></div>
 
 <script>
-  const firebaseConfig = { apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", authDomain: "bluff-tracker-7542e.firebaseapp.com", projectId: "bluff-tracker-7542e", storageBucket: "bluff-tracker-7542e.appspot.com", messagingSenderId: "280965687037", appId: "1:280965687037:web:be0b05da36ef653ab68094" };
+  const firebaseConfig = { 
+    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
+    authDomain: "bluff-tracker-7542e.firebaseapp.com", 
+    projectId: "bluff-tracker-7542e", 
+    storageBucket: "bluff-tracker-7542e.appspot.com", 
+    messagingSenderId: "280965687037", 
+    appId: "1:280965687037:web:be0b05da36ef653ab68094" 
+  };
+
   const PASS = "zachariahrenji";
   const TMS = ["Bibin & Zach","Bimal & Annu","Bibin & Annu","Zach & Daddy","Bibin & Bimal","Zach & Rikku","Bibin & Daddy"];
 
@@ -213,7 +219,7 @@
   };
 
   window.editScore = async (sid, team, cur) => {
-    if(prompt("Enter Admin Password:") !== PASS) return alert("Denied");
+    if(prompt("Password:") !== PASS) return alert("Denied");
     const val = prompt(`Set total wins for ${team}:`, cur);
     if(val === null || isNaN(val)) return;
     const diff = parseInt(val) - cur;
@@ -223,12 +229,14 @@
   window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (!seriesMap[g.seriesId]) seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, isReplay: false, start: null, last: null };
+        if (!seriesMap[g.seriesId]) {
+            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, isReplay: false, start: null, last: null };
+        }
         const s = seriesMap[g.seriesId];
         if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; s.start = g.time; }
-        if (g.finalized) { s.stop = true; s.isFinalized = true; }
+        // HARD LOCK: If finalized or manually ended, mark as finalized
+        if (g.finalized || g.manualEnd) { s.isFinalized = true; }
         if (g.isReplay) s.isReplay = true;
-        if (g.manualEnd && !g.finalized) s.stop = true; 
         if (g.winner && !g.manualEnd) { s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1); s.last = g.time; }
     });
 
@@ -245,7 +253,7 @@
 
         let actionContent = '';
         if (reachedTarget) {
-            actionContent = `<div class="conclusion-card"><div style="font-weight:800; color:var(--accent); margin-bottom:10px;">🏆 ${tourneyWinner} won this Tournament!</div><div style="display:flex; gap:8px;"><button class="neu-btn primary small" style="flex:1" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">Confirm Closure</button><button class="neu-btn danger small" style="flex:1" onclick="editScore('${s.id}','${tourneyWinner}', ${s.wins[tourneyWinner]})">Mistake? Edit</button></div></div>`;
+            actionContent = `<div class="conclusion-card"><div style="font-weight:800; color:var(--accent); margin-bottom:10px;">🏆 ${tourneyWinner} won!</div><div style="display:flex; gap:8px;"><button class="neu-btn primary small" style="flex:1" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">Confirm Closure</button><button class="neu-btn danger small" style="flex:1" onclick="editScore('${s.id}','${tourneyWinner}', ${s.wins[tourneyWinner]})">Mistake? Edit</button></div></div>`;
         } else {
             actionContent = `<div class="streak-row-shared"><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">24(+2)</button><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">28(+2)</button><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 3, this)">28(+3)</button></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button><button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button></div>`;
         }
@@ -268,7 +276,6 @@
   window.score28 = async (id, w, l) => { 
     const pts = globalMultiplier[id] || 1;
     if(pts > 1) {
-        // GET PLAYER NAMES FROM THE TEAM STRINGS
         const players = [...w.split(' & '), ...l.split(' & ')];
         const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-top:0;">Who was the Bidder?</h3>
             <div class="bidder-grid">${players.map(p => `<button class="btn-bidder" onclick="saveWithBidder('${id}','${w}','${l}',${pts},'${p}')">${p}</button>`).join('')}</div>
@@ -282,15 +289,14 @@
 
   window.saveWithBidder = async (sid, w, l, pts, bidder) => {
     await db.collection("games").add({ seriesId: sid, winner: w, loser: l, points: pts, bidder: bidder, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
-    delete globalMultiplier[sid];
-    closeM();
-    render28();
+    delete globalMultiplier[sid]; closeM(); render28();
   };
 
   window.finalize28 = async (id, wA, wB, tA = '', tB = '') => {
     if(!confirm("Confirm tournament closure?")) return;
     const tType = Math.max(wA, wB) >= 10 ? 10 : 5;
-    await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
+    // Set BOTH flags and clear Replay to ensure it hides
+    await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, isReplay: false, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
     if(tA && tB && confirm(`Play again with same opponents?`)) {
         const nextTarget = prompt("Target (5 or 10):", tType);
         if(nextTarget == "5" || nextTarget == "10") {
