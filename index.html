@@ -11,7 +11,7 @@
 <style>
   :root {
     --bg1:#061226; --bg2:#081b31; --card:#0e2336;
-    --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db;
+    --muted:#9fb7bf; --accent:#2ecc71; --gold:#ffd36d; --danger:#ff6b6b; --info: #3498db; --cyan: #00f5ff;
   }
   html,body{height:100%;margin:0;font-family:Inter,-apple-system,sans-serif;background:radial-gradient(circle at 10% 10%,var(--bg1),var(--bg2) 60%);color:#e6eef3;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:800px;margin:15px auto;padding:15px;}
@@ -35,8 +35,8 @@
   .modal-box { background: #0b1622; padding: 20px; border-radius: 20px; width: 92%; max-width: 400px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
-  .streak-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 8px; }
-  .btn-streak { font-size: 8px !important; padding: 4px !important; opacity: 0.8; }
+  .streak-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 8px; }
+  .btn-streak { font-size: 8px !important; padding: 4px !important; opacity: 0.8; border: 1px solid rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -120,6 +120,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allG = [];
+  let activeMultipliers = {}; // NEW: To track multiplier selection
   window.activeMode = '';
 
   window.switchView = (v) => {
@@ -220,6 +221,25 @@
     closeM();
   };
 
+  // MULTIPLIER HANDLER
+  window.setMulti = (sid, side, val, btn) => {
+    const key = sid + side;
+    activeMultipliers[key] = (activeMultipliers[key] === val) ? 1 : val;
+    btn.parentElement.querySelectorAll('.btn-streak').forEach(b => b.style.borderColor = "rgba(255,255,255,0.1)");
+    if(activeMultipliers[key] > 1) btn.style.borderColor = "#00f5ff";
+  };
+
+  // MANUAL SCORE EDIT
+  window.editScore = async (sid, team, cur) => {
+    if(prompt("Enter Admin Password:") !== PASS) return alert("Denied");
+    const val = prompt(`Manually set score for ${team}:`, cur);
+    if(val === null || isNaN(val)) return;
+    const diff = parseInt(val) - cur;
+    if(diff !== 0) {
+      await db.collection("games").add({ seriesId: sid, winner: team, loser: "Manual Edit", points: diff, time: new Date().toISOString(), secret: PASS, gameType: '28' });
+    }
+  };
+
   window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
@@ -227,36 +247,44 @@
         const s = seriesMap[g.seriesId];
         if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; }
         else if (g.manualEnd) s.stop = true;
-        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + 1;
+        else if (g.winner) s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
     });
     const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
     Object.values(seriesMap).filter(s => s.teamA && !s.stop && !Object.values(s.wins).some(w => w >= s.target)).forEach(s => {
         const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
         list.innerHTML += `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
-            <div style="text-align:center; flex:1"><b>${s.teamA}</b><div class="score-val">${wA}</div>
+            <div style="text-align:center; flex:1">
+                <div style="font-size:10px; margin-bottom:5px;">${s.teamA}</div>
+                <span class="score-val">${wA}</span><span style="cursor:pointer;opacity:0.5;margin-left:8px" onclick="editScore('${s.id}','${s.teamA}', ${wA})">✏️</span>
                 <div class="streak-row">
-                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamA}','${s.teamB}','master')">M (+3)</button>
-                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamA}','${s.teamB}','lucky')">L (+2)</button>
+                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','A',2,this)">24(+2)</button>
+                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','A',2,this)">28(+2)</button>
+                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','A',3,this)">28(+3)</button>
                 </div>
             </div>
             <div style="font-weight:900; color:var(--muted)">VS</div>
-            <div style="text-align:center; flex:1"><b>${s.teamB}</b><div class="score-val">${wB}</div>
+            <div style="text-align:center; flex:1">
+                <div style="font-size:10px; margin-bottom:5px;">${s.teamB}</div>
+                <span class="score-val">${wB}</span><span style="cursor:pointer;opacity:0.5;margin-left:8px" onclick="editScore('${s.id}','${s.teamB}', ${wB})">✏️</span>
                 <div class="streak-row">
-                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamB}','${s.teamA}','master')">M (+3)</button>
-                    <button class="neu-btn small btn-streak" onclick="score28('${s.id}','${s.teamB}','${s.teamA}','lucky')">L (+2)</button>
+                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','B',2,this)">24(+2)</button>
+                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','B',2,this)">28(+2)</button>
+                    <button class="neu-btn small btn-streak" onclick="setMulti('${s.id}','B',3,this)">28(+3)</button>
                 </div>
             </div></div>
             <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
+                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}','A')">Win ${s.teamA.split(' ')[0]}</button>
+                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}','B')">Win ${s.teamB.split(' ')[0]}</button>
                 <button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button>
             </div></div>`;
     });
   };
 
-  window.score28 = async (id, w, l, type = 'standard') => { 
-    let pts = 1; if(type === 'master') pts = 4; if(type === 'lucky') pts = 3;
-    await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: pts, streakType: type, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
+  window.score28 = async (id, w, l, side) => { 
+    const pts = activeMultipliers[id + side] || 1;
+    await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: pts, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
+    delete activeMultipliers[id + side]; 
+    render28();
   };
 
   window.finalize28 = async (id, wA, wB) => {
