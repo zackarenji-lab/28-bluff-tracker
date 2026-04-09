@@ -36,12 +36,13 @@
   table { width: 100%; border-collapse: collapse; }
   th, td { padding: 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
   
+  /* SHARED MULTIPLIER STYLES */
   .streak-row-shared { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; }
-  .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; }
+  .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; transition: 0.3s; }
   .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
   
-  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
-  .time-stamp { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; display: block; }
+  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
+  .time-stamp { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; }
 </style>
 </head>
 <body>
@@ -107,6 +108,7 @@
 <div id="modal-container"></div>
 
 <script>
+  // FIREBASE INIT
   const firebaseConfig = { 
     apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
     authDomain: "bluff-tracker-7542e.firebaseapp.com", 
@@ -123,7 +125,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allG = [];
-  let globalMultiplier = {};
+  let globalMultiplier = {}; // Track multipliers for each active seriesId
   window.activeMode = '';
 
   window.switchView = (v) => {
@@ -213,6 +215,7 @@
     closeM();
   };
 
+  // MULTIPLIER AND EDIT HELPERS
   window.setGlobalMulti = (sid, val, btn) => {
     if(globalMultiplier[sid] === val) {
         delete globalMultiplier[sid];
@@ -225,27 +228,27 @@
   };
 
   window.editScore = async (sid, team, cur) => {
-    if(prompt("Password:") !== PASS) return alert("Denied");
-    const val = prompt(`Set score for ${team}:`, cur);
+    if(prompt("Enter Admin Password:") !== PASS) return alert("Denied");
+    const val = prompt(`Set total wins for ${team}:`, cur);
     if(val === null || isNaN(val)) return;
     const diff = parseInt(val) - cur;
-    if(diff !== 0) await db.collection("games").add({ seriesId: sid, winner: team, loser: "Edit", points: diff, time: new Date().toISOString(), secret: PASS, gameType: '28' });
+    if(diff !== 0) await db.collection("games").add({ seriesId: sid, winner: team, loser: "Manual Edit", points: diff, time: new Date().toISOString(), secret: PASS, gameType: '28' });
   };
 
   window.render28 = () => {
     const seriesMap = {};
     allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
         if (!seriesMap[g.seriesId]) {
-            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, start: null, last: null };
+            seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', stop: false, isFinalized: false, isReplay: false, start: null, last: null };
         }
         const s = seriesMap[g.seriesId];
-        if (g.isInit) { 
-            s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; s.start = g.time; 
-        }
-        if (g.manualEnd || g.finalized) { s.stop = true; s.isFinalized = true; }
+        if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; s.start = g.time; }
+        if (g.finalized) { s.stop = true; s.isFinalized = true; }
+        if (g.isReplay) s.isReplay = true;
+        if (g.manualEnd && !g.finalized) s.stop = true; 
         if (g.winner && !g.manualEnd) {
             s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1);
-            s.last = g.time; // Track the time of the last point
+            s.last = g.time;
         }
     });
 
@@ -255,56 +258,27 @@
         const reachedTarget = (wA >= s.target || wB >= s.target);
         const tourneyWinner = wA >= s.target ? s.teamA : s.teamB;
 
-        // Formatting timestamps
         const startTime = s.start ? new Date(s.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '---';
         const lastTime = s.last ? new Date(s.last).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : startTime;
         const startDate = s.start ? new Date(s.start).toLocaleDateString([], { day: '2-digit', month: 'short' }) : '';
+        const replayBadge = s.isReplay ? `<span style="background:var(--danger); font-size:9px; padding:2px 6px; border-radius:4px; margin-left:8px; vertical-align:middle;">FINAL RE-PLAY</span>` : '';
 
         let actionContent = '';
         if (reachedTarget) {
-            actionContent = `
-            <div class="conclusion-card">
-                <div style="font-weight:800; color:var(--accent); margin-bottom:10px;">🏆 ${tourneyWinner} won!</div>
-                <div style="display:flex; gap:8px;">
-                    <button class="neu-btn primary small" style="flex:1" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">Confirm Closure</button>
-                    <button class="neu-btn danger small" style="flex:1" onclick="editScore('${s.id}','${tourneyWinner}', ${s.wins[tourneyWinner]})">Mistake? Edit</button>
-                </div>
-            </div>`;
+            actionContent = `<div class="conclusion-card"><div style="font-weight:800; color:var(--accent); margin-bottom:10px;">🏆 ${tourneyWinner} won this Tournament!</div><div style="display:flex; gap:8px;"><button class="neu-btn primary small" style="flex:1" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">Confirm Closure</button><button class="neu-btn danger small" style="flex:1" onclick="editScore('${s.id}','${tourneyWinner}', ${s.wins[tourneyWinner]})">Mistake? Edit</button></div></div>`;
         } else {
-            actionContent = `
-            <div class="streak-row-shared">
-                <button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">24(+2)</button>
-                <button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">28(+2)</button>
-                <button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 3, this)">28(+3)</button>
-            </div>
-            <div style="display:flex; gap:8px;">
-                <button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button>
-                <button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button>
-                <button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button>
-            </div>`;
+            actionContent = `<div class="streak-row-shared"><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">24(+2)</button><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">28(+2)</button><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 3, this)">28(+3)</button></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button><button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button></div>`;
         }
 
         list.innerHTML += `<div class="card">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
-                <div style="text-align:left;">
-                    <span style="font-size:10px; color:var(--cyan); font-weight:800; letter-spacing:1px;">STARTED</span>
-                    <div style="font-size:11px; font-weight:700;">${startDate} @ ${startTime}</div>
-                </div>
-                <div style="text-align:right;">
-                    <span style="font-size:10px; color:var(--accent); font-weight:800; letter-spacing:1px;">LAST ACTIVE</span>
-                    <div style="font-size:11px; font-weight:700;">${lastTime}</div>
-                </div>
+                <div style="text-align:left;"><span style="font-size:10px; color:var(--cyan); font-weight:800; letter-spacing:1px;">STARTED</span> ${replayBadge}<div class="time-stamp">${startDate} @ ${startTime}</div></div>
+                <div style="text-align:right;"><span style="font-size:10px; color:var(--accent); font-weight:800; letter-spacing:1px;">LAST ACTIVE</span><div class="time-stamp">${lastTime}</div></div>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="text-align:center; flex:1">
-                    <div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamA}</div>
-                    <span class="score-val">${wA}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamA}', ${wA})">✏️</span>
-                </div>
+                <div style="text-align:center; flex:1"><div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamA}</div><span class="score-val">${wA}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamA}', ${wA})">✏️</span></div>
                 <div style="font-weight:900; color:var(--muted); margin: 0 15px;">VS</div>
-                <div style="text-align:center; flex:1">
-                    <div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamB}</div>
-                    <span class="score-val">${wB}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamB}', ${wB})">✏️</span>
-                </div>
+                <div style="text-align:center; flex:1"><div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamB}</div><span class="score-val">${wB}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamB}', ${wB})">✏️</span></div>
             </div>
             ${actionContent}
         </div>`;
@@ -337,7 +311,7 @@
   };
 
   window.resetSystem = async (type, id) => {
-    if(prompt(`Password:`) !== PASS) return;
+    if(prompt(`Enter Admin Password:`) !== PASS) return;
     const snap = await db.collection("games").where(type === 'ALL' ? "secret" : "seriesId", "==", type === 'ALL' ? PASS : id).get();
     const ops = []; snap.forEach(d => ops.push(d.ref.delete())); await Promise.all(ops);
     location.reload();
