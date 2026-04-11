@@ -38,8 +38,17 @@
   .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; transition: 0.3s; }
   .btn-streak-lg.active { border-color: var(--cyan) !important; color: var(--cyan) !important; background: rgba(0, 245, 255, 0.1); box-shadow: 0 0 15px rgba(0, 245, 255, 0.2); }
   
-  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
+  .conclusion-card { background: rgba(46, 204, 113, 0.1); border: 1px solid var(--accent); padding: 15px; border-radius: 12px; text-align: center; margin-top: 10px; }
   .time-stamp { font-size: 9px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; }
+
+  /* BACKLOG STYLING */
+  .backlog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+  .backlog-team { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+  .backlog-team label { font-size: 10px; font-weight: 800; color: var(--gold); display: block; margin-bottom: 8px; }
+  .streak-counter { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
+  .streak-counter span { font-size: 10px; font-weight: 600; }
+  .sc-val { color: var(--cyan); font-weight: 800; }
+  .sc-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0 8px; border-radius: 4px; cursor: pointer; }
 
   .bidder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
   .btn-bidder { background: var(--card); border: 1px solid var(--cyan); color: #fff; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
@@ -78,7 +87,7 @@
       <div id="list-28"></div>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
           <button class="neu-btn primary" onclick="newSeries28()">➕ New Series</button>
-          <button class="neu-btn" style="border: 1px solid var(--gold); color:var(--gold)" onclick="manualHistoryEntry()">📜 Add Old Game</button>
+          <button class="neu-btn" style="border: 1px solid var(--gold); color:var(--gold)" onclick="manualHistoryEntry()">📜 Add Old Session</button>
       </div>
     </div>
   </section>
@@ -196,39 +205,93 @@
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
 
-  // FIXED BACKLOG ENTRY: WITH POINTS PICKER AND PASSWORD
+  // UPDATED BACKLOG FEATURE: MANUAL SCORE + STREAK CAPTURE
   window.manualHistoryEntry = () => {
       const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
-      const h = `<div class="modal-box"><h3 style="color:var(--gold)">Add Manual Match Record</h3>
-          <select id="histWinner"><option value="" selected disabled>Winner Team</option>${o}</select>
-          <select id="histLoser"><option value="" selected disabled>Loser Team</option>${o}</select>
-          <div style="margin-bottom:10px;"><label style="font-size:10px; display:block; margin-bottom:5px;">WIN TYPE</label>
-          <select id="histPts">
-            <option value="1">Standard (1 Win)</option>
-            <option value="2">24(+2) / 28(+2)</option>
-            <option value="3">28(+3)</option>
-          </select></div>
-          <div style="margin-bottom:10px;"><label style="font-size:10px; display:block; margin-bottom:5px;">MATCH DATE</label>
+      const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-bottom:15px;">Add Historical Session</h3>
+          <div class="backlog-grid">
+              <select id="histT1"><option value="" selected disabled>Team 1</option>${o}</select>
+              <select id="histT2"><option value="" selected disabled>Team 2</option>${o}</select>
+          </div>
+          
+          <div class="backlog-grid">
+              <div class="backlog-team">
+                  <label>T1 TOTAL WINS</label>
+                  <input type="number" id="score1" value="0" min="0">
+                  <div class="streak-counter"><span>24/28 (+2)</span> <div><button class="sc-btn" onclick="adj('s1_2',-1)">-</button> <span id="s1_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_2',1)">+</button></div></div>
+                  <div class="streak-counter"><span>28 (+3)</span> <div><button class="sc-btn" onclick="adj('s1_3',-1)">-</button> <span id="s1_3" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_3',1)">+</button></div></div>
+              </div>
+              <div class="backlog-team">
+                  <label>T2 TOTAL WINS</label>
+                  <input type="number" id="score2" value="0" min="0">
+                  <div class="streak-counter"><span>24/28 (+2)</span> <div><button class="sc-btn" onclick="adj('s2_2',-1)">-</button> <span id="s2_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_2',1)">+</button></div></div>
+                  <div class="streak-counter"><span>28 (+3)</span> <div><button class="sc-btn" onclick="adj('s2_3',-1)">-</button> <span id="s2_3" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_3',1)">+</button></div></div>
+              </div>
+          </div>
+
+          <div style="margin-top:15px;"><label style="font-size:10px;">SESSION DATE</label>
           <input type="date" id="histDate"></div>
-          <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="saveManualMatch()">Save to History</button>
+          
+          <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveBacklogSession()">Record Full Session</button>
           <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Cancel</button></div>`;
       document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
 
-  window.saveManualMatch = async () => {
-      const w = document.getElementById('histWinner').value, l = document.getElementById('histLoser').value;
-      const pts = parseInt(document.getElementById('histPts').value), date = document.getElementById('histDate').value;
-      if(!w || !l || !date) return alert("Fill all fields");
-      if(w === l) return alert("Teams cannot be the same");
+  window.adj = (id, val) => {
+      const el = document.getElementById(id);
+      let cur = parseInt(el.innerText);
+      if(cur + val >= 0) el.innerText = cur + val;
+  };
+
+  window.saveBacklogSession = async () => {
+      const t1 = document.getElementById('histT1').value, t2 = document.getElementById('histT2').value;
+      const w1 = parseInt(document.getElementById('score1').value), w2 = parseInt(document.getElementById('score2').value);
+      const s1_2 = parseInt(document.getElementById('s1_2').innerText), s1_3 = parseInt(document.getElementById('s1_3').innerText);
+      const s2_2 = parseInt(document.getElementById('s2_2').innerText), s2_3 = parseInt(document.getElementById('s2_3').innerText);
+      const date = document.getElementById('histDate').value;
+
+      if(!t1 || !t2 || !date) return alert("Fill Teams and Date");
+      if(t1 === t2) return alert("Select different teams");
       
-      if(prompt("Enter Admin Password:") !== PASS) return alert("Access Denied");
-      
-      const entryTime = new Date(date).toISOString();
-      await db.collection("games").add({ 
-          winner: w, loser: l, points: pts, 
-          time: entryTime, secret: PASS, gameType: '28', manualEntry: true 
-      });
-      alert("Match Added to History!"); closeM();
+      const totalS1 = s1_2 + s1_3;
+      const totalS2 = s2_2 + s2_3;
+      if(totalS1 > w1 || totalS2 > w2) return alert("Streaks cannot exceed total wins!");
+
+      if(prompt("Admin Password:") !== PASS) return alert("Access Denied");
+
+      const baseTime = new Date(date).getTime();
+      const batch = db.batch();
+      const seriesId = "manual_" + Date.now();
+
+      // Helper to add matches
+      const addMatches = (winner, loser, count, streakPts, startTimeOffset) => {
+          for(let i=0; i<count; i++) {
+              const ref = db.collection("games").doc();
+              batch.set(ref, {
+                  seriesId, winner, loser, points: streakPts,
+                  time: new Date(baseTime + startTimeOffset + i).toISOString(),
+                  gameType: '28', manualEntry: true, secret: PASS
+              });
+          }
+      };
+
+      // Record Team 1 matches: Streaks then Standards
+      addMatches(t1, t2, s1_2, 2, 1000);
+      addMatches(t1, t2, s1_3, 3, 2000);
+      addMatches(t1, t2, (w1 - totalS1), 1, 3000);
+
+      // Record Team 2 matches
+      addMatches(t2, t1, s2_2, 2, 4000);
+      addMatches(t2, t1, s2_3, 3, 5000);
+      addMatches(t2, t1, (w2 - totalS2), 1, 6000);
+
+      // Mark the entire session as finalized
+      const finalRef = db.collection("games").doc();
+      batch.set(finalRef, { seriesId, manualEnd: true, finalized: true, tourneyType: Math.max(w1, w2) >= 10 ? 10 : 5, time: new Date(baseTime + 10000).toISOString(), gameType: '28', secret: PASS });
+
+      await batch.commit();
+      alert("Historical Session Recorded Successfully!");
+      closeM();
   };
 
   window.filterTMS = () => {
