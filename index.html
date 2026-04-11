@@ -215,11 +215,10 @@
       const pts = parseInt(document.getElementById('histPts').value), date = document.getElementById('histDate').value;
       if(!w || !l || !date) return alert("Fill all details");
       if(w === l) return alert("Same teams selected");
-      
-      // PASSWORD PROTECTION
       if(prompt("Enter Admin Password:") !== PASS) return alert("Access Denied");
       
       const entryTime = new Date(date).toISOString();
+      // Record precisely so the Dashboard picks up streaks
       await db.collection("games").add({ winner: w, loser: l, points: pts, time: entryTime, secret: PASS, gameType: '28', manualEntry: true });
       alert("Manual match recorded!"); closeM();
   };
