@@ -196,16 +196,21 @@
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
 
+  // FIXED BACKLOG ENTRY: WITH POINTS PICKER AND PASSWORD
   window.manualHistoryEntry = () => {
       const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
       const h = `<div class="modal-box"><h3 style="color:var(--gold)">Add Manual Match Record</h3>
-          <p style="font-size:10px; color:var(--muted); margin-bottom:15px;">Use this to add games that were played in the past.</p>
           <select id="histWinner"><option value="" selected disabled>Winner Team</option>${o}</select>
           <select id="histLoser"><option value="" selected disabled>Loser Team</option>${o}</select>
-          <select id="histPts"><option value="1">Standard (1 Win)</option><option value="2">24(+2) / 28(+2)</option><option value="3">28(+3)</option></select>
+          <div style="margin-bottom:10px;"><label style="font-size:10px; display:block; margin-bottom:5px;">WIN TYPE</label>
+          <select id="histPts">
+            <option value="1">Standard (1 Win)</option>
+            <option value="2">24(+2) / 28(+2)</option>
+            <option value="3">28(+3)</option>
+          </select></div>
           <div style="margin-bottom:10px;"><label style="font-size:10px; display:block; margin-bottom:5px;">MATCH DATE</label>
-          <input type="date" id="histDate" style="background:#fff !important; color:#000 !important"></div>
-          <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="saveManualMatch()">Add match to Record</button>
+          <input type="date" id="histDate"></div>
+          <button class="neu-btn primary" style="width:100%; margin-top:10px" onclick="saveManualMatch()">Save to History</button>
           <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Cancel</button></div>`;
       document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
@@ -213,14 +218,17 @@
   window.saveManualMatch = async () => {
       const w = document.getElementById('histWinner').value, l = document.getElementById('histLoser').value;
       const pts = parseInt(document.getElementById('histPts').value), date = document.getElementById('histDate').value;
-      if(!w || !l || !date) return alert("Fill all details");
-      if(w === l) return alert("Same teams selected");
+      if(!w || !l || !date) return alert("Fill all fields");
+      if(w === l) return alert("Teams cannot be the same");
+      
       if(prompt("Enter Admin Password:") !== PASS) return alert("Access Denied");
       
       const entryTime = new Date(date).toISOString();
-      // Record precisely so the Dashboard picks up streaks
-      await db.collection("games").add({ winner: w, loser: l, points: pts, time: entryTime, secret: PASS, gameType: '28', manualEntry: true });
-      alert("Manual match recorded!"); closeM();
+      await db.collection("games").add({ 
+          winner: w, loser: l, points: pts, 
+          time: entryTime, secret: PASS, gameType: '28', manualEntry: true 
+      });
+      alert("Match Added to History!"); closeM();
   };
 
   window.filterTMS = () => {
