@@ -32,7 +32,7 @@
   select, input { background: #fff !important; color: #000 !important; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; font-weight: 600; border: none; font-size: 13px; box-sizing: border-box; }
   .score-val { font-size: 28px; font-weight: 800; color: var(--gold); }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(12px); }
-  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 92%; max-width: 450px; border: 1px solid rgba(255,255,255,0.1); }
+  .modal-box { background: #0b1622; padding: 25px; border-radius: 20px; width: 92%; max-width: 480px; border: 1px solid rgba(255,255,255,0.1); max-height: 90vh; overflow-y: auto; }
   
   .streak-row-shared { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 10px; }
   .btn-streak-lg { font-size: 11px !important; padding: 10px 5px !important; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); color: var(--muted); text-align: center; justify-content: center; transition: 0.3s; }
@@ -46,8 +46,8 @@
   .backlog-team { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
   .backlog-team label { font-size: 10px; font-weight: 800; color: var(--gold); display: block; margin-bottom: 8px; }
   .streak-counter { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 5px; }
-  .streak-counter span { font-size: 10px; font-weight: 600; }
-  .sc-val { color: var(--cyan); font-weight: 800; }
+  .streak-counter span { font-size: 9px; font-weight: 600; }
+  .sc-val { color: var(--cyan); font-weight: 800; min-width: 15px; text-align: center; }
   .sc-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0 8px; border-radius: 4px; cursor: pointer; }
 
   .bidder-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
@@ -205,34 +205,33 @@
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
 
-  // UPDATED BACKLOG FEATURE: MANUAL SCORE + STREAK CAPTURE
+  // BACKLOG ENTRY: 3 SEPARATE OPTIONS PER TEAM
   window.manualHistoryEntry = () => {
       const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
-      const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-bottom:15px;">Add Historical Session</h3>
+      const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-bottom:15px;">Historical Session</h3>
           <div class="backlog-grid">
               <select id="histT1"><option value="" selected disabled>Team 1</option>${o}</select>
               <select id="histT2"><option value="" selected disabled>Team 2</option>${o}</select>
           </div>
-          
           <div class="backlog-grid">
               <div class="backlog-team">
                   <label>T1 TOTAL WINS</label>
                   <input type="number" id="score1" value="0" min="0">
-                  <div class="streak-counter"><span>24/28 (+2)</span> <div><button class="sc-btn" onclick="adj('s1_2',-1)">-</button> <span id="s1_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_2',1)">+</button></div></div>
-                  <div class="streak-counter"><span>28 (+3)</span> <div><button class="sc-btn" onclick="adj('s1_3',-1)">-</button> <span id="s1_3" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_3',1)">+</button></div></div>
+                  <div class="streak-counter"><span>24 (+2)</span> <div><button class="sc-btn" onclick="adj('s1_24_2',-1)">-</button> <span id="s1_24_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_24_2',1)">+</button></div></div>
+                  <div class="streak-counter"><span>28 (+2)</span> <div><button class="sc-btn" onclick="adj('s1_28_2',-1)">-</button> <span id="s1_28_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_28_2',1)">+</button></div></div>
+                  <div class="streak-counter"><span>28 (+3)</span> <div><button class="sc-btn" onclick="adj('s1_28_3',-1)">-</button> <span id="s1_28_3" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s1_28_3',1)">+</button></div></div>
               </div>
               <div class="backlog-team">
                   <label>T2 TOTAL WINS</label>
                   <input type="number" id="score2" value="0" min="0">
-                  <div class="streak-counter"><span>24/28 (+2)</span> <div><button class="sc-btn" onclick="adj('s2_2',-1)">-</button> <span id="s2_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_2',1)">+</button></div></div>
-                  <div class="streak-counter"><span>28 (+3)</span> <div><button class="sc-btn" onclick="adj('s2_3',-1)">-</button> <span id="s2_3" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_3',1)">+</button></div></div>
+                  <div class="streak-counter"><span>24 (+2)</span> <div><button class="sc-btn" onclick="adj('s2_24_2',-1)">-</button> <span id="s2_24_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_24_2',1)">+</button></div></div>
+                  <div class="streak-counter"><span>28 (+2)</span> <div><button class="sc-btn" onclick="adj('s2_28_2',-1)">-</button> <span id="s2_28_2" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_28_2',1)">+</button></div></div>
+                  <div class="streak-counter"><span>28 (+3)</span> <div><button class="sc-btn" onclick="adj('s2_28_3',-1)">-</button> <span id="s2_28_3" class="sc-val">0</span> <button class="sc-btn" onclick="adj('s2_28_3',1)">+</button></div></div>
               </div>
           </div>
-
           <div style="margin-top:15px;"><label style="font-size:10px;">SESSION DATE</label>
           <input type="date" id="histDate"></div>
-          
-          <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveBacklogSession()">Record Full Session</button>
+          <button class="neu-btn primary" style="width:100%; margin-top:15px" onclick="saveBacklogSession()">Record Session</button>
           <button class="neu-btn" style="width:100%; margin-top:10px" onclick="closeM()">Cancel</button></div>`;
       document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
@@ -246,52 +245,45 @@
   window.saveBacklogSession = async () => {
       const t1 = document.getElementById('histT1').value, t2 = document.getElementById('histT2').value;
       const w1 = parseInt(document.getElementById('score1').value), w2 = parseInt(document.getElementById('score2').value);
-      const s1_2 = parseInt(document.getElementById('s1_2').innerText), s1_3 = parseInt(document.getElementById('s1_3').innerText);
-      const s2_2 = parseInt(document.getElementById('s2_2').innerText), s2_3 = parseInt(document.getElementById('s2_3').innerText);
+      const s1_24_2 = parseInt(document.getElementById('s1_24_2').innerText), s1_28_2 = parseInt(document.getElementById('s1_28_2').innerText), s1_28_3 = parseInt(document.getElementById('s1_28_3').innerText);
+      const s2_24_2 = parseInt(document.getElementById('s2_24_2').innerText), s2_28_2 = parseInt(document.getElementById('s2_28_2').innerText), s2_28_3 = parseInt(document.getElementById('s2_28_3').innerText);
       const date = document.getElementById('histDate').value;
 
       if(!t1 || !t2 || !date) return alert("Fill Teams and Date");
-      if(t1 === t2) return alert("Select different teams");
+      if(t1 === t2) return alert("Different teams required");
       
-      const totalS1 = s1_2 + s1_3;
-      const totalS2 = s2_2 + s2_3;
-      if(totalS1 > w1 || totalS2 > w2) return alert("Streaks cannot exceed total wins!");
+      if((s1_24_2 + s1_28_2 + s1_28_3) > w1 || (s2_24_2 + s2_28_2 + s2_28_3) > w2) return alert("Streaks exceed total wins!");
 
-      if(prompt("Admin Password:") !== PASS) return alert("Access Denied");
+      if(prompt("Password:") !== PASS) return alert("Denied");
 
-      const baseTime = new Date(date).getTime();
       const batch = db.batch();
       const seriesId = "manual_" + Date.now();
+      const baseTime = new Date(date).getTime();
 
-      // Helper to add matches
-      const addMatches = (winner, loser, count, streakPts, startTimeOffset) => {
+      const pushMatch = (winner, loser, count, pts, offset) => {
           for(let i=0; i<count; i++) {
               const ref = db.collection("games").doc();
-              batch.set(ref, {
-                  seriesId, winner, loser, points: streakPts,
-                  time: new Date(baseTime + startTimeOffset + i).toISOString(),
-                  gameType: '28', manualEntry: true, secret: PASS
-              });
+              batch.set(ref, { seriesId, winner, loser, points: pts, time: new Date(baseTime + offset + i).toISOString(), gameType: '28', manualEntry: true, secret: PASS });
           }
       };
 
-      // Record Team 1 matches: Streaks then Standards
-      addMatches(t1, t2, s1_2, 2, 1000);
-      addMatches(t1, t2, s1_3, 3, 2000);
-      addMatches(t1, t2, (w1 - totalS1), 1, 3000);
+      // T1
+      pushMatch(t1, t2, s1_24_2, 2, 100);
+      pushMatch(t1, t2, s1_28_2, 2, 200);
+      pushMatch(t1, t2, s1_28_3, 3, 300);
+      pushMatch(t1, t2, (w1 - (s1_24_2 + s1_28_2 + s1_28_3)), 1, 400);
 
-      // Record Team 2 matches
-      addMatches(t2, t1, s2_2, 2, 4000);
-      addMatches(t2, t1, s2_3, 3, 5000);
-      addMatches(t2, t1, (w2 - totalS2), 1, 6000);
+      // T2
+      pushMatch(t2, t1, s2_24_2, 500);
+      pushMatch(t2, t1, s2_28_2, 2, 600);
+      pushMatch(t2, t1, s2_28_3, 3, 700);
+      pushMatch(t2, t1, (w2 - (s2_24_2 + s2_28_2 + s2_28_3)), 1, 800);
 
-      // Mark the entire session as finalized
       const finalRef = db.collection("games").doc();
-      batch.set(finalRef, { seriesId, manualEnd: true, finalized: true, tourneyType: Math.max(w1, w2) >= 10 ? 10 : 5, time: new Date(baseTime + 10000).toISOString(), gameType: '28', secret: PASS });
+      batch.set(finalRef, { seriesId, manualEnd: true, finalized: true, tourneyType: Math.max(w1, w2) >= 10 ? 10 : 5, time: new Date(baseTime + 2000).toISOString(), gameType: '28', secret: PASS });
 
       await batch.commit();
-      alert("Historical Session Recorded Successfully!");
-      closeM();
+      alert("Session Added!"); closeM();
   };
 
   window.filterTMS = () => {
