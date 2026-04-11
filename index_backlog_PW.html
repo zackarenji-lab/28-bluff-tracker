@@ -196,7 +196,6 @@
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
 
-  // BACKLOG ENTRY FEATURE
   window.manualHistoryEntry = () => {
       const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
       const h = `<div class="modal-box"><h3 style="color:var(--gold)">Add Manual Match Record</h3>
@@ -217,13 +216,12 @@
       if(!w || !l || !date) return alert("Fill all details");
       if(w === l) return alert("Same teams selected");
       
+      // PASSWORD PROTECTION
+      if(prompt("Enter Admin Password:") !== PASS) return alert("Access Denied");
+      
       const entryTime = new Date(date).toISOString();
-      await db.collection("games").add({ 
-          winner: w, loser: l, points: pts, 
-          time: entryTime, secret: PASS, gameType: '28', manualEntry: true 
-      });
-      alert("Manual match recorded!");
-      closeM();
+      await db.collection("games").add({ winner: w, loser: l, points: pts, time: entryTime, secret: PASS, gameType: '28', manualEntry: true });
+      alert("Manual match recorded!"); closeM();
   };
 
   window.filterTMS = () => {
