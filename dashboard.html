@@ -43,6 +43,8 @@
   .pencil-edit-btn:hover { transform: scale(1.2); opacity: 1; }
 
   .top-section { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
+  
+  /* Desktop layout fallback threshold */
   @media (max-width: 1100px) { .top-section { grid-template-columns: 1fr; } }
 
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; align-items: center; }
@@ -81,7 +83,7 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
-  /* PERFECT DESKTOP TRACK MANAGEMENT GRID */
+  /* BASE GENERIC DESKTOP GRID MAPPING */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 16px; padding: 20px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 140px 1fr 140px 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); transition: background 0.3s, border-color 0.3s; }
   .rank-row.row-champion { background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.25); }
   .rank-row.row-runnerup { background: rgba(192, 192, 192, 0.05); border-color: rgba(0, 245, 255, 0.2); }
@@ -106,21 +108,20 @@
 
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); justify-self: end; }
 
-  /* COMPLETE FLEXBOX MOBILE OVERWRITE SCHEME - CRUSHES ALL MISALIGNMENTS */
-  @media (max-width: 900px) {
+  /* UPDATED BREAKPOINT CRITERIA: CAPTURES SMALL SCREEN WIDTHS *AND* MOBILE LANDSCAPE VIEWS */
+  @media (max-width: 950px), screen and (max-device-width: 950px) and (orientation: landscape) {
     .rank-row { 
       display: flex !important; 
       flex-direction: row !important;
       align-items: center !important; 
       justify-content: space-between !important;
-      gap: 8px !important; 
+      gap: 6px !important; 
       padding: 10px 8px !important; 
       border-radius: 16px !important; 
     }
     
-    /* Lock structural width parameters for identity cluster items */
-    .num { flex-basis: 25px !important; font-size: 15px !important; text-align: left; shrink: 0; }
-    .p-avatar { width: 34px !important; height: 34px !important; flex-basis: 34px !important; shrink: 0; }
+    .num { flex-basis: 25px !important; font-size: 15px !important; text-align: left; flex-shrink: 0; }
+    .p-avatar { width: 34px !important; height: 34px !important; flex-basis: 34px !important; flex-shrink: 0; }
     .p-name { 
       font-size: 11px !important; 
       flex-basis: 52px !important; 
@@ -129,11 +130,10 @@
       text-overflow: ellipsis; 
       white-space: nowrap; 
       text-align: left;
-      shrink: 0;
+      flex-shrink: 0;
       margin-right: 2px;
     }
     
-    /* Center attributes container block scales natively into remaining space */
     .data-table-block { 
       flex: 1 !important;
       display: flex !important;
@@ -150,7 +150,7 @@
     .data-col label { font-size: 7px !important; margin-bottom: 2px !important; text-align: center; }
     .data-col span { font-size: 11px !important; text-align: center; display: block; }
     
-    .tier-badge { display: none !important; } /* Stripped on mobile layouts to keep data elements uncrowded */
+    .tier-badge { display: none !important; } 
     
     .score-box { 
       flex-basis: 42px !important;
@@ -160,7 +160,7 @@
       font-size: 14px !important; 
       border-radius: 8px !important; 
       text-align: center;
-      shrink: 0;
+      flex-shrink: 0;
       margin-left: 2px;
     }
   }
