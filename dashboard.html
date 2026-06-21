@@ -51,7 +51,6 @@
   .hof-rank-lbl { font-weight: 900; font-size: 15px; color: var(--accent); width: 30px; text-align: left; }
   .hof-avatar { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid var(--cyan); object-fit: cover; }
   .p-name-cap { text-transform: uppercase; font-size: 15px; font-weight: 900; color: #fff; flex: 1; text-align: left; }
-  .p-name-cap b { text-transform: uppercase; }
   .p-pts-big { color: var(--accent); font-weight: 900; font-size: 20px; }
   .va-title { color:var(--accent); font-weight:900; font-size:12px; letter-spacing:4px; margin: 25px 0 15px 0; opacity:0.8; text-transform: uppercase; }
   .pred-box { background: var(--gold-bg); border: 1px solid var(--gold-border); border-radius: 16px; padding: 22px; text-align: left; margin-top: auto; width: 85%; }
@@ -82,12 +81,10 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
-  /* BASE CONFIGURATION RUNTIME GRID FOR ROWS */
+  /* PERFECT DESKTOP TRACK MANAGEMENT GRID */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 16px; padding: 20px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 140px 1fr 140px 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); transition: background 0.3s, border-color 0.3s; }
-  
-  /* NEW: SPECIAL HIGHLIGHT THEME INJECTORS */
-  .rank-row.row-champion { background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.25); box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.02); }
-  .rank-row.row-runnerup { background: rgba(192, 192, 192, 0.05); border-color: rgba(0, 245, 255, 0.2); box-shadow: inset 0 0 15px rgba(0, 245, 255, 0.01); }
+  .rank-row.row-champion { background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.25); }
+  .rank-row.row-runnerup { background: rgba(192, 192, 192, 0.05); border-color: rgba(0, 245, 255, 0.2); }
 
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
@@ -109,44 +106,62 @@
 
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); justify-self: end; }
 
+  /* COMPLETE FLEXBOX MOBILE OVERWRITE SCHEME - CRUSHES ALL MISALIGNMENTS */
   @media (max-width: 900px) {
     .rank-row { 
-      grid-template-columns: 8% 12% 18% 44% 18% !important; 
-      gap: 6px !important; 
-      padding: 12px 6px !important; 
+      display: flex !important; 
+      flex-direction: row !important;
+      align-items: center !important; 
+      justify-content: space-between !important;
+      gap: 8px !important; 
+      padding: 10px 8px !important; 
       border-radius: 16px !important; 
     }
-    .num { font-size: 16px !important; text-align: center; }
-    .p-avatar { width: 36px !important; height: 36px !important; justify-self: center; }
+    
+    /* Lock structural width parameters for identity cluster items */
+    .num { flex-basis: 25px !important; font-size: 15px !important; text-align: left; shrink: 0; }
+    .p-avatar { width: 34px !important; height: 34px !important; flex-basis: 34px !important; shrink: 0; }
     .p-name { 
-      font-size: 12px !important; 
-      max-width: 100% !important; 
+      font-size: 11px !important; 
+      flex-basis: 52px !important; 
+      max-width: 52px !important;
       overflow: hidden; 
       text-overflow: ellipsis; 
       white-space: nowrap; 
       text-align: left;
+      shrink: 0;
+      margin-right: 2px;
     }
+    
+    /* Center attributes container block scales natively into remaining space */
     .data-table-block { 
+      flex: 1 !important;
+      display: flex !important;
       gap: 3px !important; 
       justify-content: space-between !important; 
-      width: 100% !important;
+      width: auto !important;
     }
     .data-col { 
       min-width: 0 !important; 
       flex: 1 !important; 
       padding: 4px 0 !important; 
-      border-radius: 4px !important; 
+      border-radius: 5px !important; 
     }
-    .data-col label { font-size: 7px !important; margin-bottom: 1px !important; }
-    .data-col span { font-size: 11px !important; }
-    .tier-badge { display: none !important; }
+    .data-col label { font-size: 7px !important; margin-bottom: 2px !important; text-align: center; }
+    .data-col span { font-size: 11px !important; text-align: center; display: block; }
+    
+    .tier-badge { display: none !important; } /* Stripped on mobile layouts to keep data elements uncrowded */
+    
     .score-box { 
+      flex-basis: 42px !important;
+      min-width: 42px !important;
+      max-width: 42px !important;
       padding: 8px 0 !important; 
-      font-size: 15px !important; 
-      width: 100% !important; 
-      min-width: 0 !important; 
+      font-size: 14px !important; 
       border-radius: 8px !important; 
-      justify-self: center;
+      text-align: center;
+      shrink: 0;
+      margin-left: 2px;
     }
   }
 </style>
@@ -394,16 +409,16 @@
       
       let tierClass = "tier-relief";
       let tierLabel = "RELIEF";
-      let highlightClass = ""; // Row highlighting target reference
+      let highlightClass = ""; 
 
       if (i === 0) {
           tierClass = "tier-champ";
           tierLabel = "CHAMPION";
-          highlightClass = "row-champion"; // Gold background tag
+          highlightClass = "row-champion"; 
       } else if (i === 1) {
           tierClass = "tier-runner";
           tierLabel = "RUNNERUP";
-          highlightClass = "row-runnerup"; // Silver/Cyan background tag
+          highlightClass = "row-runnerup"; 
       } else if (i === 2) {
           tierClass = "tier-fighter";
           tierLabel = "FIGHTER";
