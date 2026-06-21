@@ -183,6 +183,7 @@
   window.saveWeightedResult = async () => {
     const results = [];
     let win = '', lost = '';
+
     document.querySelectorAll('.rank-sel').forEach(sel => {
         const rank = parseInt(sel.value);
         const name = sel.getAttribute('data-player');
@@ -190,8 +191,17 @@
         if(rank === 1) win = name; if(rank === 0) lost = name;
         results.push({ name, rank, pts });
     });
+
     await db.collection("games").add({ gameType: activeMode, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
-    resetSetup();
+    
+    // Rematch prompt loop logic implementation
+    if(confirm(`Play another round of ${activeMode} with the same players?`)) {
+        document.querySelectorAll('.rank-sel').forEach(sel => {
+            sel.value = "99";
+        });
+    } else {
+        resetSetup();
+    }
   };
 
   window.newSeries28 = () => {
@@ -205,7 +215,6 @@
     document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
   };
 
-  // BACKLOG ENTRY: 3 SEPARATE OPTIONS PER TEAM
   window.manualHistoryEntry = () => {
       const o = TMS.map(t => `<option value="${t}">${t}</option>`).join("");
       const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-bottom:15px;">Historical Session</h3>
@@ -253,7 +262,6 @@
       if(t1 === t2) return alert("Different teams required");
       
       if((s1_24_2 + s1_28_2 + s1_28_3) > w1 || (s2_24_2 + s2_28_2 + s2_28_3) > w2) return alert("Streaks exceed total wins!");
-
       if(prompt("Password:") !== PASS) return alert("Denied");
 
       const batch = db.batch();
@@ -267,14 +275,12 @@
           }
       };
 
-      // T1
       pushMatch(t1, t2, s1_24_2, 2, 100);
       pushMatch(t1, t2, s1_28_2, 2, 200);
       pushMatch(t1, t2, s1_28_3, 3, 300);
       pushMatch(t1, t2, (w1 - (s1_24_2 + s1_28_2 + s1_28_3)), 1, 400);
 
-      // T2
-      pushMatch(t2, t1, s2_24_2, 500);
+      pushMatch(t2, t1, s2_24_2, 2, 500);
       pushMatch(t2, t1, s2_28_2, 2, 600);
       pushMatch(t2, t1, s2_28_3, 3, 700);
       pushMatch(t2, t1, (w2 - (s2_24_2 + s2_28_2 + s2_28_3)), 1, 800);
