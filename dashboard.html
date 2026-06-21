@@ -52,13 +52,19 @@
   .pred-line { font-size: 13px; color: #fff; margin-bottom: 8px; line-height: 1.4; font-style: italic; display: block; }
 
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+  
+  /* CRITICAL MOBILE RESILIENT BOUNDARY CORRECTION LAYER */
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative !important; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; z-index: 2; }
   
-  /* Top Right corner metrics absolute placement handling */
-  .tile-stat-num { position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: 900; color: rgba(255, 255, 255, 0.9); z-index: 2; font-family: monospace; }
+  /* Absolute Top Right positioning values matching card bounds */
+  .tile-stat-num { position: absolute !important; top: 12px !important; right: 16px !important; font-size: 22px !important; font-weight: 900; color: rgba(255, 255, 255, 0.85); z-index: 5; font-family: monospace; }
   .tile-avatar { position: absolute; bottom: 10px; right: 10px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; z-index: 1; }
+
+  @media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
 
   .c1 { background: linear-gradient(135deg, #3d3dff, #a020f0); }
   .c2 { background: linear-gradient(135deg, #00b4d8, #0077b6); }
@@ -72,7 +78,11 @@
 
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 340px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 340px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
+  @media (max-width: 900px) {
+    .rank-row { grid-template-columns: 40px 50px 1fr 1fr; gap: 10px; padding: 12px; }
+    .p-chart-container { display: none !important; }
+  }
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
@@ -240,7 +250,6 @@
       document.getElementById('predictions-list').innerHTML = predHtml;
     }
 
-    // Extended helper to insert absolute stats numbers inside the cards cleanly
     const mkT = (lbl, val, c, scoreVal) => {
       const path = getAvatarPath(val);
       const img = path ? `<img class="tile-avatar" src="${path}" onerror="this.style.display='none'">` : '';
@@ -254,7 +263,6 @@
     const cbK = Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—';
     const consP = Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—';
 
-    // Extract raw numerical values safely for top right corner injectors
     const kingPts = stats[king] ? stats[king].pts : 0;
     const lossCount = stats[lastK] ? stats[lastK].rl : 0;
     const winCount = stats[finisher] ? stats[finisher].r1 : 0;
@@ -264,7 +272,7 @@
     document.getElementById('kpi-container').innerHTML = 
       `<div class="k-tile c1"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>` +
       mkT('Points King', king, 'c2', kingPts) + 
-      mkT('Top Loss', lastK, 'c3', lossCount) + // Corrected label parameter to match layout image
+      mkT('Top Loss', lastK, 'c3', lossCount) + 
       mkT('Most Wins', finisher, 'c4', winCount) + 
       mkT('Comeback Pro', cbK, 'c5', cbWins) +
       mkT('Consistent Pro', consP, 'c6', consRounds) + 
