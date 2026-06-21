@@ -65,16 +65,19 @@
 
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 300px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
+  
+  /* Adjusted grid-template-columns width parameters dynamically to safely incorporate 4th block without formatting shifts */
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 340px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255,255,255,0.05); }
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
   .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
   .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255,255,255,0.1); }
   .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: width 1.2s ease; }
   .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; }
-  .data-table-block { display: flex; gap: 15px; justify-content: center; }
+  .data-table-block { display: flex; gap: 12px; justify-content: center; }
   .data-col { text-align: center; min-width: 40px; }
   .data-col label { display: block; font-size: 9px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; }
+  .data-col label.lbl-yellow { color: var(--accent) !important; } /* Uses existing gold/yellow parameter */
   .data-col span { font-size: 14px; font-weight: 900; color: #fff; }
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; }
 </style>
@@ -183,11 +186,12 @@
     const stats = {};
     filtered.forEach(g => {
       (g.players || []).forEach(p => {
-        if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, rl:0};
+        if(!stats[p.name]) stats[p.name] = {pts:0, t:0, r1:0, r2:0, r3:0, r4:0, rl:0};
         stats[p.name].pts += (p.pts || 0); stats[p.name].t++;
         if(p.rank === 1) stats[p.name].r1++;
         else if(p.rank === 2) stats[p.name].r2++;
         else if(p.rank === 3) stats[p.name].r3++;
+        else if(p.rank === 4) stats[p.name].r4++; // Safe capture parameter added
         else if(p.rank === 0) stats[p.name].rl++;
       });
     });
@@ -243,6 +247,8 @@
           <div class="data-col"><label>1st</label><span>${d.r1.toString().padStart(2,'0')}</span></div>
           <div class="data-col"><label>2nd</label><span>${d.r2.toString().padStart(2,'0')}</span></div>
           <div class="data-col"><label>3rd</label><span>${d.r3.toString().padStart(2,'0')}</span></div>
+          <!-- Injected 4th place block parameter stylized safely in yellow text directly -->
+          <div class="data-col"><label class="lbl-yellow">4th</label><span>${d.r4.toString().padStart(2,'0')}</span></div>
           <div class="data-col"><label>Lost</label><span>${d.rl.toString().padStart(2,'0')}</span></div>
         </div>
         <div class="score-box">${d.pts}</div>
