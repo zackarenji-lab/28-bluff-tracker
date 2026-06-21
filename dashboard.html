@@ -26,7 +26,6 @@
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid var(--gold-border); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
   .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
   
-  /* Log redirection button styles */
   .log-link-btn { text-decoration: none; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
   .log-link-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--cyan); color: var(--cyan); }
 
@@ -36,7 +35,14 @@
 
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
-  .lineup-sub { font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  
+  /* Unified inline subhead alignment settings */
+  .lineup-control-wrapper { display: flex; align-items: center; margin-top: 10px; gap: 8px; min-height: 24px; }
+  .lineup-sub { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+  
+  /* Minimal styled pencil round trigger wrapper */
+  .pencil-edit-btn { background: none; border: none; color: var(--cyan); padding: 4px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; outline: none; opacity: 0.8; }
+  .pencil-edit-btn:hover { transform: scale(1.2); opacity: 1; }
 
   .top-section { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
   @media (max-width: 1100px) { .top-section { grid-template-columns: 1fr; } }
@@ -104,7 +110,10 @@
 
   <div class="panel">
     <select id="lineupFilter" onchange="renderAll()"></select>
-    <div id="lineup-names-label" class="lineup-sub"></div>
+    <div class="lineup-control-wrapper">
+        <div id="lineup-names-label" class="lineup-sub"></div>
+        <button id="btnRenameLineup" class="pencil-edit-btn" style="display:none;" onclick="triggerLineupRename()">✏️</button>
+    </div>
   </div>
 
   <div class="top-section">
@@ -142,6 +151,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allData = [];
+  let databaseLineupNames = {}; 
   let currentMode = 'UNO';
 
   const getAvatarPath = (name) => {
@@ -165,15 +175,40 @@
     el.classList.add('active');
     document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
     
-    // Dyn-map log destination target matching current active view
     document.getElementById('btnLinkLog').href = `gamelog.html?mode=${m}`;
     renderAll();
+  };
+
+  window.triggerLineupRename = async () => {
+    const lSelect = document.getElementById('lineupFilter');
+    const playerKey = lSelect.value;
+    if(!playerKey || playerKey === "ALL") return;
+
+    const currentAlias = databaseLineupNames[playerKey] || "";
+    const newAlias = prompt(`Enter custom friendly name for this lineup:\n[${playerKey}]`, currentAlias);
+    
+    if(newAlias === null) return; 
+
+    try {
+        const docId = btoa(playerKey).replace(/=/g, ""); 
+        
+        if(newAlias.trim() === "") {
+            await db.collection("lineup_names").doc(docId).delete();
+        } else {
+            await db.collection("lineup_names").doc(docId).set({
+                playerString: playerKey,
+                customName: newAlias.trim()
+            });
+        }
+    } catch(e) {
+        console.error("Error committing lineup changes: ", e);
+    }
   };
 
   window.renderAll = () => {
     if(!allData.length) return;
     const rawGames = allData.filter(g => g.gameType === currentMode && g.winner);
-    const activeGames = rawGames.filter(g => !g.isDeleted); // Completely skip soft-deleted rows
+    const activeGames = rawGames.filter(g => !g.isDeleted);
     
     let lineups = {};
     activeGames.forEach(g => {
@@ -184,13 +219,25 @@
 
     const lSelect = document.getElementById('lineupFilter');
     const saved = lSelect.value;
+    
     lSelect.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
-      Object.keys(lineups).map((k, i) => `<option value="${k}" ${k===saved?'selected':''}>Lineup ${i+1} (${lineups[k].count}P) [${k}]</option>`).join('');
+      Object.keys(lineups).map((k, i) => {
+          const friendlyName = databaseLineupNames[k] ? databaseLineupNames[k] : `Lineup ${i+1}`;
+          return `<option value="${k}" ${k===saved?'selected':''}>${friendlyName} (${lineups[k].count}P) [${k}]</option>`;
+      }).join('');
 
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? activeGames : activeGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
 
-    document.getElementById('lineup-names-label').innerText = activeKey === 'ALL' ? "Global Statistics" : `Group: ${activeKey}`;
+    const renameBtn = document.getElementById('btnRenameLineup');
+    if(activeKey === "ALL") {
+        renameBtn.style.display = "none";
+        document.getElementById('lineup-names-label').innerText = "Global Statistics";
+    } else {
+        renameBtn.style.display = "inline-flex";
+        const currentDisplayLabel = databaseLineupNames[activeKey] ? databaseLineupNames[activeKey] : activeKey;
+        document.getElementById('lineup-names-label').innerText = `Group: ${currentDisplayLabel}`;
+    }
 
     const stats = {};
     filtered.forEach(g => {
@@ -263,6 +310,17 @@
       </div>`;
     }).join('');
   };
+
+  db.collection("lineup_names").onSnapshot(snap => {
+      databaseLineupNames = {};
+      snap.forEach(doc => {
+          const data = doc.data();
+          if(data.playerString && data.customName) {
+              databaseLineupNames[data.playerString] = data.customName;
+          }
+      });
+      renderAll();
+  });
 
   db.collection("games").orderBy("time").onSnapshot(snap => { 
     allData = snap.docs.map(d => d.data()); 
