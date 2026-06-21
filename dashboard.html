@@ -151,6 +151,7 @@
   let allData = [];
   let databaseLineupNames = {}; 
   let currentMode = 'UNO';
+  let targetSelectionKey = "ALL"; // State anchor variable
 
   const getAvatarPath = (name) => {
     if(!name || name === '—') return null;
@@ -169,6 +170,7 @@
   window.setMode = (m, el) => {
     if(m === '28') { window.location.href='dash28.html'; return; }
     currentMode = m;
+    targetSelectionKey = "ALL"; // Revert filter selection smoothly
     document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
@@ -186,6 +188,10 @@
     const newAlias = prompt(`Enter custom friendly name for this lineup:\n[${playerKey}]`, currentAlias);
     
     if(newAlias === null) return; 
+    if(!confirm(`Confirm saving name change to "${newAlias || playerKey}"?`)) return;
+
+    // Anchor active choice state explicitly so snapshot loops don't clear selections
+    targetSelectionKey = playerKey;
 
     try {
         const docId = btoa(playerKey).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_"); 
@@ -217,19 +223,22 @@
 
     const lSelect = document.getElementById('lineupFilter');
     
-    // Save selection before clearing dropdown so it stays selected after database reload
-    const currentSelection = lSelect.value || "ALL";
+    // Sync current UI changes directly back to our layout state parameter anchor
+    if(lSelect.value && lSelect.value !== "") {
+        targetSelectionKey = lSelect.value;
+    }
     
-    let dropdownHtml = `<option value="ALL" ${currentSelection === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
+    let dropdownHtml = `<option value="ALL" ${targetSelectionKey === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
     
     Object.keys(lineups).forEach((k, i) => {
         const friendlyName = databaseLineupNames[k] ? databaseLineupNames[k] : `Lineup ${i+1}`;
-        const isSelected = (k === currentSelection) ? 'selected' : '';
+        const isSelected = (k === targetSelectionKey) ? 'selected' : '';
         dropdownHtml += `<option value="${k}" ${isSelected}>${friendlyName} (${lineups[k].count}P) [${k}]</option>`;
     });
     
     lSelect.innerHTML = dropdownHtml;
 
+    // Direct match protection fallback check
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? activeGames : activeGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
 
