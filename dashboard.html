@@ -76,34 +76,34 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 12px; padding: 15px 20px; border-radius: 20px; display: grid; grid-template-columns: 50px 65px 120px 1fr 340px 100px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.05); }
+  /* REDESIGNED CONTAINER GRID - EXCLUDED GRAPH WRAPPERS FOR DIRECT DOCKING */
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 14px; padding: 18px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 160px 1fr 110px; align-items: center; gap: 20px; border: 1px solid rgba(255, 255, 255, 0.06); }
   
-  /* FIXED RESPONSIVE GRID RULE CONFIGURATION FOR SMALL SCREENS */
-  @media (max-width: 900px) {
-    .rank-row { grid-template-columns: 32px 42px 1fr auto auto; gap: 8px; padding: 10px 12px; border-radius: 14px; }
-    .p-chart-container { display: none !important; } /* Hides chart bar cleanly */
-    .num { font-size: 18px !important; }
-    .p-avatar { width: 42px !important; height: 42px !important; }
-    .p-name { font-size: 13px !important; max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .data-table-block { gap: 5px !important; }
-    .data-col { min-width: 28px !important; }
-    .data-col label { font-size: 8px !important; margin-bottom: 2px !important; }
-    .data-col span { font-size: 12px !important; }
-    .score-box { padding: 8px 12px !important; font-size: 16px !important; min-width: 35px; }
-  }
-
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
-  .p-name { font-weight: 800; font-size: 17px; color: #fff; text-transform: uppercase; }
-  .p-chart-container { height: 34px; background: rgba(255, 255, 255, 0.05); border-radius: 17px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 0 65px 0 0; border: 1px solid rgba(255, 255, 255, 0.1); }
-  .p-chart-fill { height: 100%; background: linear-gradient(to right, #bc13fe, #3a86ff); border-radius: 17px; transition: width 1.2s ease; }
-  .perc-bubble { position: absolute; right: 4px; background: #00f5ff; color: #000; font-weight: 900; font-size: 13px; padding: 4px 10px; border-radius: 12px; }
-  .data-table-block { display: flex; gap: 12px; justify-content: center; }
-  .data-col { text-align: center; min-width: 40px; }
-  .data-col label { display: block; font-size: 9px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; }
+  .p-name { font-weight: 800; font-size: 18px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+  
+  /* HIGHLY ENHANCED ATTRIBUTE GRID LAYOUT SYSTEM */
+  .data-table-block { display: flex; gap: 16px; justify-content: flex-end; width: 100%; }
+  .data-col { text-align: center; min-width: 55px; background: rgba(255, 255, 255, 0.02); padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.04); }
+  .data-col label { display: block; font-size: 10px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
   .data-col label.lbl-yellow { color: var(--accent) !important; }
-  .data-col span { font-size: 14px; font-weight: 900; color: #fff; }
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 12px 20px; border-radius: 12px; font-weight: 900; font-size: 22px; text-align: center; }
+  .data-col span { font-size: 16px; font-weight: 900; color: #fff; font-family: monospace; }
+  
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); }
+
+  /* ULTRA-CLEAN MOBILE ADAPTIVITY BREAKPOINTS */
+  @media (max-width: 900px) {
+    .rank-row { grid-template-columns: 32px 45px 85px 1fr auto; gap: 10px; padding: 12px 14px; border-radius: 16px; }
+    .num { font-size: 18px !important; }
+    .p-avatar { width: 45px !important; height: 45px !important; }
+    .p-name { font-size: 14px !important; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .data-table-block { gap: 4px !important; }
+    .data-col { min-width: 36px !important; padding: 4px 2px !important; border-radius: 6px; }
+    .data-col label { font-size: 8px !important; margin-bottom: 2px !important; }
+    .data-col span { font-size: 13px !important; }
+    .score-box { padding: 10px 14px !important; font-size: 18px !important; min-width: 40px; border-radius: 10px; }
+  }
 </style>
 </head>
 <body id="capture-area">
@@ -291,13 +291,11 @@
 
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
       const d = stats[n];
-      const winPercent = ((d.r1/d.t)*100).toFixed(0);
       return `
       <div class="rank-row">
         <div class="num">#${i+1}</div>
         <img class="p-avatar" src="${getAvatarPath(n)}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/847/847969.png'">
         <div class="p-name">${n}</div>
-        <div class="p-chart-container"><div class="p-chart-fill" style="width:${winPercent}%"></div><div class="perc-bubble">${winPercent}%</div></div>
         <div class="data-table-block">
           <div class="data-col"><label>Diff</label><span>${(i==0?0:stats[sorted[i-1]].pts-d.pts).toString().padStart(2,'0')}</span></div>
           <div class="data-col"><label>1st</label><span>${d.r1.toString().padStart(2,'0')}</span></div>
