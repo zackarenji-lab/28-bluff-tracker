@@ -43,8 +43,6 @@
   .pencil-edit-btn:hover { transform: scale(1.2); opacity: 1; }
 
   .top-section { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
-  
-  /* Desktop layout fallback threshold */
   @media (max-width: 1100px) { .top-section { grid-template-columns: 1fr; } }
 
   .hof-card { background: linear-gradient(160deg, #111122 0%, #1a1a3a 100%); border-radius: 24px; padding: 30px; border: 1px solid rgba(123, 44, 191, 0.3); text-align: center; display: flex; flex-direction: column; align-items: center; }
@@ -83,7 +81,6 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
-  /* BASE GENERIC DESKTOP GRID MAPPING */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 16px; padding: 20px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 140px 1fr 140px 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); transition: background 0.3s, border-color 0.3s; }
   .rank-row.row-champion { background: rgba(255, 215, 0, 0.05); border-color: rgba(255, 215, 0, 0.25); }
   .rank-row.row-runnerup { background: rgba(192, 192, 192, 0.05); border-color: rgba(0, 245, 255, 0.2); }
@@ -98,7 +95,7 @@
   .data-col label.lbl-yellow { color: var(--accent) !important; }
   .data-col span { font-size: 17px; font-weight: 900; color: #fff; font-family: monospace; }
   
-  .tier-badge { font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; width: 100%; }
+  .tier-badge { font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; width: 100%; display: block; }
   .tier-champ { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
   .tier-runner { color: #00f5ff; text-shadow: 0 0 10px rgba(0, 245, 255, 0.3); }
   .tier-fighter { color: #ff9f1c; text-shadow: 0 0 10px rgba(255, 159, 28, 0.3); }
@@ -108,7 +105,7 @@
 
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); justify-self: end; }
 
-  /* UPDATED BREAKPOINT CRITERIA: CAPTURES SMALL SCREEN WIDTHS *AND* MOBILE LANDSCAPE VIEWS */
+  /* FLEXBOX BREAKPOINTS THAT DO NOT DROP THE TIER LABELS */
   @media (max-width: 950px), screen and (max-device-width: 950px) and (orientation: landscape) {
     .rank-row { 
       display: flex !important; 
@@ -116,52 +113,60 @@
       align-items: center !important; 
       justify-content: space-between !important;
       gap: 6px !important; 
-      padding: 10px 8px !important; 
+      padding: 10px 6px !important; 
       border-radius: 16px !important; 
     }
     
-    .num { flex-basis: 25px !important; font-size: 15px !important; text-align: left; flex-shrink: 0; }
-    .p-avatar { width: 34px !important; height: 34px !important; flex-basis: 34px !important; flex-shrink: 0; }
+    .num { flex-basis: 22px !important; font-size: 14px !important; text-align: left; flex-shrink: 0; }
+    .p-avatar { width: 32px !important; height: 32px !important; flex-basis: 32px !important; flex-shrink: 0; }
     .p-name { 
       font-size: 11px !important; 
-      flex-basis: 52px !important; 
-      max-width: 52px !important;
+      flex-basis: 50px !important; 
+      max-width: 50px !important;
       overflow: hidden; 
       text-overflow: ellipsis; 
       white-space: nowrap; 
       text-align: left;
       flex-shrink: 0;
-      margin-right: 2px;
     }
     
     .data-table-block { 
       flex: 1 !important;
       display: flex !important;
-      gap: 3px !important; 
+      gap: 2px !important; 
       justify-content: space-between !important; 
       width: auto !important;
     }
     .data-col { 
       min-width: 0 !important; 
       flex: 1 !important; 
-      padding: 4px 0 !important; 
-      border-radius: 5px !important; 
+      padding: 3px 0 !important; 
+      border-radius: 4px !important; 
     }
-    .data-col label { font-size: 7px !important; margin-bottom: 2px !important; text-align: center; }
-    .data-col span { font-size: 11px !important; text-align: center; display: block; }
+    .data-col label { font-size: 6.5px !important; margin-bottom: 1px !important; text-align: center; }
+    .data-col span { font-size: 10px !important; text-align: center; display: block; }
     
-    .tier-badge { display: none !important; } 
+    /* MAINTAIN VISIBILITY TRACK WITH SCALED TEXT SIZE FOR RESPONSIVE COMPACT MODES */
+    .tier-badge { 
+      flex-basis: 62px !important; 
+      max-width: 62px !important; 
+      font-size: 9px !important; 
+      letter-spacing: 0.5px !important; 
+      flex-shrink: 0; 
+      text-align: center !important;
+      display: block !important;
+    }
+    .tier-looser { padding: 3px 4px !important; border-radius: 10px !important; }
     
     .score-box { 
-      flex-basis: 42px !important;
-      min-width: 42px !important;
-      max-width: 42px !important;
-      padding: 8px 0 !important; 
+      flex-basis: 38px !important;
+      min-width: 38px !important;
+      max-width: 38px !important;
+      padding: 6px 0 !important; 
       font-size: 14px !important; 
-      border-radius: 8px !important; 
+      border-radius: 6px !important; 
       text-align: center;
       flex-shrink: 0;
-      margin-left: 2px;
     }
   }
 </style>
