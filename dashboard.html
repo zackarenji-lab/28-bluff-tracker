@@ -35,7 +35,12 @@
 
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
-  .lineup-sub { font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .lineup-control-wrapper { display: flex; align-items: center; margin-top: 10px; gap: 8px; min-height: 24px; }
+  .lineup-sub { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+  
+  .pencil-edit-btn { background: none; border: none; color: var(--cyan); padding: 4px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; outline: none; opacity: 0.8; }
+  .pencil-edit-btn:hover { transform: scale(1.2); opacity: 1; }
 
   .top-section { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
   @media (max-width: 1100px) { .top-section { grid-template-columns: 1fr; } }
@@ -132,7 +137,10 @@
 
   <div class="panel">
     <select id="lineupFilter" onchange="renderAll()"></select>
-    <div id="lineup-names-label" class="lineup-sub"></div>
+    <div class="lineup-control-wrapper">
+        <div id="lineup-names-label" class="lineup-sub"></div>
+        <button id="btnRenameLineup" class="pencil-edit-btn" style="display:none;" onclick="triggerLineupRename()">✏️</button>
+    </div>
   </div>
 
   <div class="top-section">
@@ -169,8 +177,11 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  
   let allData = [];
+  let rawDocsMap = {}; // Maps lineup strings to their structural database targets
   let currentMode = 'UNO';
+  let anchorSelectedKey = "ALL";
 
   const getAvatarPath = (name) => {
     if(!name || name === '—') return null;
@@ -189,12 +200,55 @@
   window.setMode = (m, el) => {
     if(m === '28') { window.location.href='dash28.html'; return; }
     currentMode = m;
+    anchorSelectedKey = "ALL";
     document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
     
     document.getElementById('btnLinkLog').href = `gamelog.html?mode=${m}`;
     renderAll();
+  };
+
+  window.triggerLineupRename = async () => {
+    const lSelect = document.getElementById('lineupFilter');
+    const targetKey = lSelect.value;
+    if(!targetKey || targetKey === "ALL") return;
+
+    // Look up what label is currently being used for this targetKey combination
+    const matchingGames = allData.filter(g => g.gameType === currentMode && !g.isDeleted && (g.players ? g.players.map(p => p.name).sort().join(', ') : '') === targetKey);
+    const existingLabel = (matchingGames.length && matchingGames[0].lineupCustomName) ? matchingGames[0].lineupCustomName : "";
+
+    const newLabel = prompt(`Enter friendly name configuration map:\n[${targetKey}]`, existingLabel);
+    if(newLabel === null) return;
+    
+    const cleanLabel = newLabel.trim();
+    if(!confirm(`Apply name change to all background documents for this group?`)) return;
+
+    anchorSelectedKey = targetKey;
+
+    // Batch execute updates into verified "games" documents natively
+    try {
+        const targetDocIds = rawDocsMap[targetKey] || [];
+        if(!targetDocIds.length) {
+            alert("No matching background document references found to rename.");
+            return;
+        }
+
+        const batch = db.batch();
+        targetDocIds.forEach(id => {
+            const docRef = db.collection("games").doc(id);
+            if(cleanLabel === "") {
+                batch.update(docRef, { lineupCustomName: firebase.firestore.FieldValue.delete() });
+            } else {
+                batch.update(docRef, { lineupCustomName: cleanLabel });
+            }
+        });
+
+        await batch.commit();
+        console.log("Successfully adjusted background document layout schema records.");
+    } catch(e) {
+        console.error("Error setting configuration elements: ", e);
+    }
   };
 
   window.renderAll = () => {
@@ -206,19 +260,28 @@
     activeGames.forEach(g => {
       const pNames = g.players ? g.players.map(p => p.name).sort() : [];
       const key = pNames.join(', ');
-      if(key) lineups[key] = { count: pNames.length, names: key };
+      if(key) {
+          if(!lineups[key]) {
+              lineups[key] = { count: pNames.length, names: key, customTitle: g.lineupCustomName || "" };
+          } else if (g.lineupCustomName) {
+              lineups[key].customTitle = g.lineupCustomName; // Sync changes down seamlessly
+          }
+      }
     });
 
     const lSelect = document.getElementById('lineupFilter');
-    const saved = lSelect.value || "ALL";
+    if(lSelect.value && lSelect.value !== "") {
+        anchorSelectedKey = lSelect.value;
+    }
     
-    let dropdownHtml = `<option value="ALL" ${saved === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
+    let dropdownHtml = `<option value="ALL" ${anchorSelectedKey === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
     
     Object.keys(lineups).forEach((k, i) => {
-        // AUTOMATED DROPDOWN LABELS WITHOUT REQUIRING HARCODED CONFIGURATIONS
-        const friendlyLabel = `${lineups[k].count}P Lineup`;
-        const isSelected = (k === saved) ? 'selected' : '';
-        dropdownHtml += `<option value="${k}" ${isSelected}>${friendlyLabel} [${k}]</option>`;
+        const countP = lineups[k].count;
+        const fallbackTitle = `${countP}P Lineup`;
+        const activeDisplayTitle = lineups[k].customTitle ? lineups[k].customTitle : fallbackTitle;
+        const isSelected = (k === anchorSelectedKey) ? 'selected' : '';
+        dropdownHtml += `<option value="${k}" ${isSelected}>${activeDisplayTitle} [${k}]</option>`;
     });
     
     lSelect.innerHTML = dropdownHtml;
@@ -226,12 +289,14 @@
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? activeGames : activeGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
 
-    // Automation fallback sync for underneath subtitle label view layout
+    const renameBtn = document.getElementById('btnRenameLineup');
     if(activeKey === "ALL") {
+        renameBtn.style.display = "none";
         document.getElementById('lineup-names-label').innerText = "Global Statistics";
     } else {
-        const countP = activeKey.split(', ').length;
-        document.getElementById('lineup-names-label').innerText = `Group: ${countP}P Lineup (${activeKey})`;
+        renameBtn.style.display = "inline-flex";
+        const labelText = lineups[activeKey] && lineups[activeKey].customTitle ? lineups[activeKey].customTitle : `${lineups[activeKey].count}P Lineup`;
+        document.getElementById('lineup-names-label').innerText = `Group: ${labelText} (${activeKey})`;
     }
 
     const stats = {};
@@ -339,7 +404,22 @@
   };
 
   db.collection("games").orderBy("time").onSnapshot(snap => { 
-    allData = snap.docs.map(d => d.data()); 
+    allData = [];
+    rawDocsMap = {}; // Reset container mapping anchors cleanly
+
+    snap.docs.forEach(doc => {
+        const gameData = doc.data();
+        allData.push(gameData);
+
+        if(gameData.gameType === currentMode && !gameData.isDeleted && gameData.winner && gameData.players) {
+            const key = gameData.players.map(p => p.name).sort().join(', ');
+            if(key) {
+                if(!rawDocsMap[key]) rawDocsMap[key] = [];
+                rawDocsMap[key].push(doc.id); // Stash physical map targets
+            }
+        }
+    });
+
     renderAll(); 
   });
 </script>
