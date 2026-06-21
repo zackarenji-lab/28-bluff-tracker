@@ -36,11 +36,9 @@
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
   
-  /* Unified inline subhead alignment settings */
   .lineup-control-wrapper { display: flex; align-items: center; margin-top: 10px; gap: 8px; min-height: 24px; }
   .lineup-sub { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
   
-  /* Minimal styled pencil round trigger wrapper */
   .pencil-edit-btn { background: none; border: none; color: var(--cyan); padding: 4px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; outline: none; opacity: 0.8; }
   .pencil-edit-btn:hover { transform: scale(1.2); opacity: 1; }
 
@@ -190,7 +188,7 @@
     if(newAlias === null) return; 
 
     try {
-        const docId = btoa(playerKey).replace(/=/g, ""); 
+        const docId = btoa(playerKey).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_"); 
         
         if(newAlias.trim() === "") {
             await db.collection("lineup_names").doc(docId).delete();
@@ -218,13 +216,19 @@
     });
 
     const lSelect = document.getElementById('lineupFilter');
-    const saved = lSelect.value;
     
-    lSelect.innerHTML = `<option value="ALL">Total Combined Statistics</option>` + 
-      Object.keys(lineups).map((k, i) => {
-          const friendlyName = databaseLineupNames[k] ? databaseLineupNames[k] : `Lineup ${i+1}`;
-          return `<option value="${k}" ${k===saved?'selected':''}>${friendlyName} (${lineups[k].count}P) [${k}]</option>`;
-      }).join('');
+    // Save selection before clearing dropdown so it stays selected after database reload
+    const currentSelection = lSelect.value || "ALL";
+    
+    let dropdownHtml = `<option value="ALL" ${currentSelection === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
+    
+    Object.keys(lineups).forEach((k, i) => {
+        const friendlyName = databaseLineupNames[k] ? databaseLineupNames[k] : `Lineup ${i+1}`;
+        const isSelected = (k === currentSelection) ? 'selected' : '';
+        dropdownHtml += `<option value="${k}" ${isSelected}>${friendlyName} (${lineups[k].count}P) [${k}]</option>`;
+    });
+    
+    lSelect.innerHTML = dropdownHtml;
 
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? activeGames : activeGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
