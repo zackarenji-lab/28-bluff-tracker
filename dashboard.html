@@ -68,19 +68,10 @@
     .kpi-grid { grid-template-columns: 1fr 1fr; }
   }
 
-  .c1 { background: linear-gradient(135deg, #3d3dff, #a020f0); }
-  .c2 { background: linear-gradient(135deg, #00b4d8, #0077b6); }
-  .c3 { background: linear-gradient(135deg, #7b2cbf, #5a189a); }
-  .c4 { background: linear-gradient(135deg, #ef476f, #d00000); }
-  .c5 { background: linear-gradient(135deg, #06d6a0, #00afb9); }
-  .c6 { background: linear-gradient(135deg, #ff9f1c, #f3722c); }
-  .c7 { background: linear-gradient(135deg, #5e60ce, #480ca8); }
-  .c8 { background: linear-gradient(135deg, #212529, #343a40); }
-  .c9 { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
-
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
+  /* FIXED GLOBAL TRACK MATRIX GRID FOR FIXED LINE ALIGNMENTS */
   .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 16px; padding: 20px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 140px 1fr 140px 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); }
   
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
@@ -103,18 +94,51 @@
 
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); justify-self: end; }
 
+  /* STRICT IMMUTABLE PERCENTAGE GRID ASSIGNMENTS FOR PHONE LAYOUTS */
   @media (max-width: 900px) {
-    .rank-row { grid-template-columns: 30px 45px 65px 1fr auto auto; gap: 8px; padding: 12px 6px; border-radius: 16px; }
-    .num { font-size: 18px !important; }
-    .p-avatar { width: 42px !important; height: 42px !important; }
-    .p-name { font-size: 12px !important; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .data-table-block { gap: 4px !important; }
-    .data-col { min-width: 32px !important; padding: 4px 1px !important; border-radius: 6px; }
-    .data-col label { font-size: 7.5px !important; margin-bottom: 2px !important; }
-    .data-col span { font-size: 12px !important; }
-    .tier-badge { font-size: 9px !important; letter-spacing: 0.5px !important; }
-    .tier-looser { padding: 4px 6px !important; }
-    .score-box { padding: 10px 12px !important; font-size: 16px !important; min-width: 38px; border-radius: 10px; }
+    .rank-row { 
+      grid-template-columns: 8% 12% 18% 44% 18% !important; 
+      gap: 6px !important; 
+      padding: 12px 6px !important; 
+      border-radius: 16px !important; 
+    }
+    .num { font-size: 16px !important; text-align: center; }
+    .p-avatar { width: 36px !important; height: 36px !important; justify-self: center; }
+    
+    /* Strict boundaries stop text pushing neighboring structural tracks */
+    .p-name { 
+      font-size: 12px !important; 
+      max-width: 100% !important; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      white-space: nowrap; 
+      text-align: left;
+    }
+    
+    .data-table-block { 
+      gap: 3px !important; 
+      justify-content: space-between !important; 
+      width: 100% !important;
+    }
+    .data-col { 
+      min-width: 0 !important; 
+      flex: 1 !important; 
+      padding: 4px 0 !important; 
+      border-radius: 4px !important; 
+    }
+    .data-col label { font-size: 7px !important; margin-bottom: 1px !important; }
+    .data-col span { font-size: 11px !important; }
+    
+    /* Shield and Score items map explicitly onto final tracks */
+    .tier-badge { display: none !important; } /* Hidden on mobile view layouts to maximize stat space */
+    .score-box { 
+      padding: 8px 0 !important; 
+      font-size: 15px !important; 
+      width: 100% !important; 
+      min-width: 0 !important; 
+      border-radius: 8px !important; 
+      justify-self: center;
+    }
   }
 </style>
 </head>
@@ -179,7 +203,7 @@
   const db = firebase.firestore();
   
   let allData = [];
-  let rawDocsMap = {}; // Maps lineup strings to their structural database targets
+  let rawDocsMap = {}; 
   let currentMode = 'UNO';
   let anchorSelectedKey = "ALL";
 
@@ -214,7 +238,6 @@
     const targetKey = lSelect.value;
     if(!targetKey || targetKey === "ALL") return;
 
-    // Look up what label is currently being used for this targetKey combination
     const matchingGames = allData.filter(g => g.gameType === currentMode && !g.isDeleted && (g.players ? g.players.map(p => p.name).sort().join(', ') : '') === targetKey);
     const existingLabel = (matchingGames.length && matchingGames[0].lineupCustomName) ? matchingGames[0].lineupCustomName : "";
 
@@ -226,7 +249,6 @@
 
     anchorSelectedKey = targetKey;
 
-    // Batch execute updates into verified "games" documents natively
     try {
         const targetDocIds = rawDocsMap[targetKey] || [];
         if(!targetDocIds.length) {
@@ -245,7 +267,6 @@
         });
 
         await batch.commit();
-        console.log("Successfully adjusted background document layout schema records.");
     } catch(e) {
         console.error("Error setting configuration elements: ", e);
     }
@@ -264,7 +285,7 @@
           if(!lineups[key]) {
               lineups[key] = { count: pNames.length, names: key, customTitle: g.lineupCustomName || "" };
           } else if (g.lineupCustomName) {
-              lineups[key].customTitle = g.lineupCustomName; // Sync changes down seamlessly
+              lineups[key].customTitle = g.lineupCustomName; 
           }
       }
     });
@@ -405,7 +426,7 @@
 
   db.collection("games").orderBy("time").onSnapshot(snap => { 
     allData = [];
-    rawDocsMap = {}; // Reset container mapping anchors cleanly
+    rawDocsMap = {}; 
 
     snap.docs.forEach(doc => {
         const gameData = doc.data();
@@ -415,7 +436,7 @@
             const key = gameData.players.map(p => p.name).sort().join(', ');
             if(key) {
                 if(!rawDocsMap[key]) rawDocsMap[key] = [];
-                rawDocsMap[key].push(doc.id); // Stash physical map targets
+                rawDocsMap[key].push(doc.id); 
             }
         }
     });
