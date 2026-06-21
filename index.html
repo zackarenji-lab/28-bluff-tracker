@@ -128,8 +128,8 @@
   const db = firebase.firestore();
   let allG = [];
   let globalMultiplier = {};
-  let activeMode = ''; // Restored standard global definition
-  let isSavingIndiv = false; // Simple tap lock toggle
+  let activeMode = ''; 
+  let isSavingIndiv = false; 
 
   window.switchView = (v) => {
     ['HOME','28','INDIV','OVERALL'].forEach(x => { if(document.getElementById('view-'+x)) document.getElementById('view-'+x).style.display = (x===v?'block':'none'); });
@@ -170,19 +170,21 @@
     }
   };
 
+  // 4th PLACE OPTION GENERATES DYNAMICALLY IF PLAYERS >= 5. 5th FINISHERS JUST CHOOSE "OTHER".
   window.goScoring = () => {
     const cnt = parseInt(document.getElementById('pCnt').value);
     const body = document.getElementById('table-score-body'); body.innerHTML = "";
     for(let i=0; i<cnt; i++) {
         const sel = document.getElementById(`ps-${i}`).value;
         const name = (sel === 'C' ? document.getElementById(`pc-${i}`).value : sel);
-        body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}"><option value="99" selected>Other (1 Pt)</option><option value="1">1st (10 Pts)</option><option value="2">2nd (5 Pts)</option>${cnt > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}<option value="0">Last (0 Pts)</option></select></td></tr>`;
+        body.innerHTML += `<tr><td><b>${name}</b></td><td><select class="rank-sel" data-player="${name}"><option value="99" selected>Other (1 Pt)</option><option value="1">1st (10 Pts)</option><option value="2">2nd (5 Pts)</option>${cnt > 3 ? '<option value="3">3rd (3 Pts)</option>' : ''}${cnt >= 5 ? '<option value="4">4th (2 Pts)</option>' : ''}<option value="0">Last (0 Pts)</option></select></td></tr>`;
     }
     document.getElementById('pane-setup').style.display="none"; document.getElementById('pane-play').style.display="block";
   };
 
+  // SAVES 4th PLACE AT 2 PTS. 5th PLACE SELECTIONS DEFAULT NATIVELY TO 1 PT.
   window.saveWeightedResult = async () => {
-    if (isSavingIndiv) return; // Instantly exit if tap lock is active
+    if (isSavingIndiv) return; 
     
     const results = [];
     let win = '', lost = '';
@@ -190,7 +192,14 @@
     document.querySelectorAll('.rank-sel').forEach(sel => {
         const rank = parseInt(sel.value);
         const name = sel.getAttribute('data-player');
-        let pts = (rank === 1 ? 10 : rank === 2 ? 5 : rank === 3 ? 3 : rank === 0 ? 0 : 1);
+        
+        let pts = 1; 
+        if (rank === 1) pts = 10;
+        else if (rank === 2) pts = 5;
+        else if (rank === 3) pts = 3;
+        else if (rank === 4) pts = 2; 
+        else if (rank === 0) pts = 0; 
+
         if(rank === 1) win = name; if(rank === 0) lost = name;
         results.push({ name, rank, pts });
     });
@@ -198,7 +207,7 @@
     if (!win) return alert("Please select a 1st place winner.");
 
     try {
-        isSavingIndiv = true; // Set tap lock
+        isSavingIndiv = true; 
         
         await db.collection("games").add({ 
             gameType: activeMode, 
@@ -220,7 +229,7 @@
         console.error(error);
         alert("Failed to save match. Please try again.");
     } finally {
-        isSavingIndiv = false; // Unset lock safely
+        isSavingIndiv = false; 
     }
   };
 
