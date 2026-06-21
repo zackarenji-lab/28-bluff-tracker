@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+<title>GZ - Historical Game Log</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    --bg-gradient: radial-gradient(circle at 0% 0%, #0d0d1a 0%, #101026 40%, #05050d 100%);
+    --glass: rgba(255, 255, 255, 0.03);
+    --violet: #7b2cbf; --blue: #3a86ff; --cyan: #00f5ff;
+    --neon-green: #3fff3f; --accent: #ffd36d; --text: #e6edf3; --muted: #8b949e;
+    --danger: #ff6b6b;
+  }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-gradient); background-attachment: fixed; color: var(--text); min-height: 100vh; }
+  .wrap { max-width: 800px; margin: auto; padding: 20px; }
+  header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
+  .back-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid rgba(255, 211, 109, 0.3); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
+  
+  .game-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+  .g-tab { padding: 14px; border-radius: 12px; text-align: center; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; border: 1px solid rgba(255,255,255,0.05); font-size: 12px; background: rgba(255, 255, 255, 0.05); color: var(--muted); transition: 0.3s; }
+  .g-tab.active { background: linear-gradient(135deg, #3d3dff 0%, #a020f0 100%); color: white; border-color: rgba(255,255,255,0.4); box-shadow: 0 10px 20px rgba(61, 61, 255, 0.3); }
+
+  .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
+  .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
+
+  .log-card { background: rgba(255, 255, 255, 0.02); border-radius: 16px; padding: 15px 20px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .log-card.striked { text-decoration: line-through; color: var(--muted); opacity: 0.35; border-color: rgba(255,107,107,0.15); }
+  .log-time { font-size: 10px; color: var(--cyan); font-weight: 700; margin-bottom: 3px; font-family: monospace; }
+  .log-details { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px; }
+  .log-badge { background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .log-badge.win { background: rgba(63, 255, 63, 0.15); color: var(--neon-green); }
+  .log-del-btn { background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.3); color: var(--danger); padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+  .log-del-btn:hover { background: var(--danger); color: black; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <a href="dashboard.html" class="back-link">⬅️ Back to Dashboard</a>
+  </header>
+
+  <div class="game-tabs">
+    <div id="tab-UNO" class="g-tab active" onclick="setMode('UNO')">Uno Cards</div>
+    <div id="tab-Bluff" class="g-tab" onclick="setMode('Bluff')">Bluff Game</div>
+  </div>
+
+  <div class="ranking-header" id="log-title">Uno Cards Activity Stream</div>
+  <div id="history-log-container"></div>
+</div>
+
+<script>
+  const firebaseConfig = { 
+    apiKey: "AIzaSyBdAIdEDwfoalevfadgixPTLIoLoEqi8kc", 
+    authDomain: "bluff-tracker-7542e.firebaseapp.com", 
+    projectId: "bluff-tracker-7542e", 
+    storageBucket: "bluff-tracker-7542e.appspot.com", 
+    messagingSenderId: "280965687037", 
+    appId: "1:280965687037:web:be0b05da36ef653ab68094" 
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  let allData = [];
+  let currentMode = 'UNO';
+  const PASS = "zachariahrenji";
+
+  // Read URL query parameter if navigated from a specific tab
+  const urlParams = new URLSearchParams(window.location.search);
+  const modeParam = urlParams.get('mode');
+  if (modeParam === 'Bluff' || modeParam === 'UNO') {
+      currentMode = modeParam;
+  }
+
+  function updateTabUI() {
+      document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${currentMode}`).classList.add('active');
+      document.getElementById('log-title').innerText = `${currentMode === 'UNO' ? 'Uno Cards' : 'Bluff Game'} Activity Stream`;
+  }
+
+  window.setMode = (m) => {
+    currentMode = m;
+    updateTabUI();
+    renderLog();
+  };
+
+  window.deleteLoggedGame = async (docId) => {
+    if(prompt("Enter Admin Password to Delete Game:") !== PASS) return alert("Access Denied");
+    try {
+        await db.collection("games").doc(docId).update({ isDeleted: true });
+        alert("Game marked as deleted!");
+    } catch(e) {
+        console.error(e);
+        alert("Error updating record thread.");
+    }
+  };
+
+  function renderLog() {
+    const container = document.getElementById('history-log-container');
+    if(!allData.length) { container.innerHTML = "<p style='color:var(--muted); text-align:center;'>No data records synced yet.</p>"; return; }
+    
+    const filteredDisplay = allData.filter(g => g.gameType === currentMode && g.winner);
+    const sortedDisplay = [...filteredDisplay].sort((a,b) => new Date(b.time || 0) - new Date(a.time || 0));
+    
+    if(!sortedDisplay.length) { container.innerHTML = "<p style='color:var(--muted); text-align:center;'>No historical rounds found for this mode.</p>"; return; }
+
+    container.innerHTML = sortedDisplay.map(g => {
+        const dObj = new Date(g.time);
+        const displayTime = dObj.toLocaleDateString([], {day:'2-digit', month:'short', year:'numeric'}) + ' @ ' + dObj.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        
+        const playerBreakdown = (g.players || []).map(p => {
+            const rankLabel = p.rank === 1 ? '1st' : p.rank === 2 ? '2nd' : p.rank === 3 ? '3rd' : p.rank === 4 ? '4th' : p.rank === 0 ? 'Last' : 'Other';
+            return `<span class="log-badge ${p.rank===1?'win':''}">${p.name}: ${rankLabel} (${p.pts}pt)</span>`;
+        }).join('');
+
+        const delButton = g.isDeleted 
+            ? `<span style="color:var(--danger); font-weight:800; font-size:11px; text-transform:uppercase;">[DELETED]</span>` 
+            : `<button class="log-del-btn" onclick="deleteLoggedGame('${g.id}')">🗑️ Delete</button>`;
+
+        return `
+        <div class="log-card ${g.isDeleted ? 'striked' : ''}">
+            <div>
+                <div class="log-time">${displayTime}</div>
+                <div><b>Winner:</b> <span style="color:var(--accent)">${g.winner}</span> | <b>Last Place:</b> <span>${g.last || '—'}</span></div>
+                <div class="log-details">${playerBreakdown}</div>
+            </div>
+            <div>${delButton}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // Real-time engine listener connection
+  db.collection("games").orderBy("time").onSnapshot(snap => { 
+    allData = snap.docs.map(d => {
+        const obj = d.data();
+        obj.id = d.id;
+        return obj;
+    }); 
+    updateTabUI();
+    renderLog(); 
+  });
+</script>
+</body>
+</html>
