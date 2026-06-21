@@ -35,12 +35,7 @@
 
   .panel { background: var(--glass); border-radius: 20px; padding: 25px; margin-bottom: 10px; border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); }
   select { background: #0d1117; color: white; border: 1px solid #30363d; padding: 14px; width: 100%; border-radius: 12px; font-weight: 600; font-size: 14px; outline: none; }
-  
-  .lineup-control-wrapper { display: flex; align-items: center; margin-top: 10px; gap: 8px; min-height: 24px; }
-  .lineup-sub { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
-  
-  .pencil-edit-btn { background: none; border: none; color: var(--cyan); padding: 4px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s; outline: none; opacity: 0.8; }
-  .pencil-edit-btn:hover { transform: scale(1.2); opacity: 1; }
+  .lineup-sub { font-size: 11px; color: var(--muted); margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
   .top-section { display: grid; grid-template-columns: 380px 1fr; gap: 25px; margin-bottom: 40px; }
   @media (max-width: 1100px) { .top-section { grid-template-columns: 1fr; } }
@@ -60,6 +55,9 @@
   .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; z-index: 2; }
+  
+  /* Top Right corner metrics absolute placement handling */
+  .tile-stat-num { position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: 900; color: rgba(255, 255, 255, 0.9); z-index: 2; font-family: monospace; }
   .tile-avatar { position: absolute; bottom: 10px; right: 10px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; z-index: 1; }
 
   .c1 { background: linear-gradient(135deg, #3d3dff, #a020f0); }
@@ -108,10 +106,7 @@
 
   <div class="panel">
     <select id="lineupFilter" onchange="renderAll()"></select>
-    <div class="lineup-control-wrapper">
-        <div id="lineup-names-label" class="lineup-sub"></div>
-        <button id="btnRenameLineup" class="pencil-edit-btn" style="display:none;" onclick="triggerLineupRename()">✏️</button>
-    </div>
+    <div id="lineup-names-label" class="lineup-sub"></div>
   </div>
 
   <div class="top-section">
@@ -149,9 +144,15 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   let allData = [];
-  let databaseLineupNames = {}; 
   let currentMode = 'UNO';
-  let targetSelectionKey = "ALL"; // State anchor variable
+
+  const HARDCODED_LINEUP_NAMES = {
+    "Annu, Megha, Rikku, Rohan, Roopa, Zach": "Weekend Crew",
+    "Annu, Megha, Rikku, Rohan, Zach": "Core 5 Elite",
+    "Megha, Rikku, Rohan, Zach": "Late Night Squad",
+    "Annu, Megha, Rohan, Zach": "Casual Four",
+    "Annu, Rohan, Zach": "OG Trio"
+  };
 
   const getAvatarPath = (name) => {
     if(!name || name === '—') return null;
@@ -170,43 +171,12 @@
   window.setMode = (m, el) => {
     if(m === '28') { window.location.href='dash28.html'; return; }
     currentMode = m;
-    targetSelectionKey = "ALL"; // Revert filter selection smoothly
     document.querySelectorAll('.g-tab').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
     document.getElementById('hof-title').innerText = m.toUpperCase() + " ELITE HALL";
     
     document.getElementById('btnLinkLog').href = `gamelog.html?mode=${m}`;
     renderAll();
-  };
-
-  window.triggerLineupRename = async () => {
-    const lSelect = document.getElementById('lineupFilter');
-    const playerKey = lSelect.value;
-    if(!playerKey || playerKey === "ALL") return;
-
-    const currentAlias = databaseLineupNames[playerKey] || "";
-    const newAlias = prompt(`Enter custom friendly name for this lineup:\n[${playerKey}]`, currentAlias);
-    
-    if(newAlias === null) return; 
-    if(!confirm(`Confirm saving name change to "${newAlias || playerKey}"?`)) return;
-
-    // Anchor active choice state explicitly so snapshot loops don't clear selections
-    targetSelectionKey = playerKey;
-
-    try {
-        const docId = btoa(playerKey).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_"); 
-        
-        if(newAlias.trim() === "") {
-            await db.collection("lineup_names").doc(docId).delete();
-        } else {
-            await db.collection("lineup_names").doc(docId).set({
-                playerString: playerKey,
-                customName: newAlias.trim()
-            });
-        }
-    } catch(e) {
-        console.error("Error committing lineup changes: ", e);
-    }
   };
 
   window.renderAll = () => {
@@ -222,35 +192,23 @@
     });
 
     const lSelect = document.getElementById('lineupFilter');
+    const saved = lSelect.value || "ALL";
     
-    // Sync current UI changes directly back to our layout state parameter anchor
-    if(lSelect.value && lSelect.value !== "") {
-        targetSelectionKey = lSelect.value;
-    }
-    
-    let dropdownHtml = `<option value="ALL" ${targetSelectionKey === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
+    let dropdownHtml = `<option value="ALL" ${saved === 'ALL' ? 'selected' : ''}>Total Combined Statistics</option>`;
     
     Object.keys(lineups).forEach((k, i) => {
-        const friendlyName = databaseLineupNames[k] ? databaseLineupNames[k] : `Lineup ${i+1}`;
-        const isSelected = (k === targetSelectionKey) ? 'selected' : '';
+        const friendlyName = HARDCODED_LINEUP_NAMES[k] ? HARDCODED_LINEUP_NAMES[k] : `Lineup ${i+1}`;
+        const isSelected = (k === saved) ? 'selected' : '';
         dropdownHtml += `<option value="${k}" ${isSelected}>${friendlyName} (${lineups[k].count}P) [${k}]</option>`;
     });
     
     lSelect.innerHTML = dropdownHtml;
 
-    // Direct match protection fallback check
     const activeKey = lSelect.value || "ALL";
     const filtered = activeKey === 'ALL' ? activeGames : activeGames.filter(g => (g.players?g.players.map(p=>p.name).sort().join(', '):'') === activeKey);
 
-    const renameBtn = document.getElementById('btnRenameLineup');
-    if(activeKey === "ALL") {
-        renameBtn.style.display = "none";
-        document.getElementById('lineup-names-label').innerText = "Global Statistics";
-    } else {
-        renameBtn.style.display = "inline-flex";
-        const currentDisplayLabel = databaseLineupNames[activeKey] ? databaseLineupNames[activeKey] : activeKey;
-        document.getElementById('lineup-names-label').innerText = `Group: ${currentDisplayLabel}`;
-    }
+    const currentDisplayLabel = HARDCODED_LINEUP_NAMES[activeKey] ? HARDCODED_LINEUP_NAMES[activeKey] : activeKey;
+    document.getElementById('lineup-names-label').innerText = activeKey === "ALL" ? "Global Statistics" : `Group: ${currentDisplayLabel}`;
 
     const stats = {};
     filtered.forEach(g => {
@@ -282,10 +240,12 @@
       document.getElementById('predictions-list').innerHTML = predHtml;
     }
 
-    const mkT = (lbl, val, c) => {
+    // Extended helper to insert absolute stats numbers inside the cards cleanly
+    const mkT = (lbl, val, c, scoreVal) => {
       const path = getAvatarPath(val);
       const img = path ? `<img class="tile-avatar" src="${path}" onerror="this.style.display='none'">` : '';
-      return `<div class="k-tile ${c}"><small>${lbl}</small><div class="val">${val}</div>${img}</div>`;
+      const numLabel = (scoreVal !== undefined && val !== '—') ? `<div class="tile-stat-num">${scoreVal}</div>` : '';
+      return `<div class="k-tile ${c}"><small>${lbl}</small><div class="val">${val}</div>${img}${numLabel}</div>`;
     };
 
     const king = sorted[0] || '—';
@@ -294,12 +254,22 @@
     const cbK = Object.keys(stats).sort((a,b)=>(stats[b].r1/stats[b].t)-(stats[a].r1/stats[a].t))[0] || '—';
     const consP = Object.keys(stats).sort((a,b)=>(stats[b].r2+stats[b].r3)-(stats[a].r2+stats[a].r3))[0] || '—';
 
+    // Extract raw numerical values safely for top right corner injectors
+    const kingPts = stats[king] ? stats[king].pts : 0;
+    const lossCount = stats[lastK] ? stats[lastK].rl : 0;
+    const winCount = stats[finisher] ? stats[finisher].r1 : 0;
+    const cbWins = stats[cbK] ? stats[cbK].r1 : 0;
+    const consRounds = stats[consP] ? (stats[consP].r2 + stats[consP].r3) : 0;
+
     document.getElementById('kpi-container').innerHTML = 
       `<div class="k-tile c1"><small>Total Rounds</small><div class="val">${filtered.length}</div></div>` +
-      mkT('Points King', king, 'c2') + mkT('Top Loss', lastK, 'c3') +
-      mkT('Most Wins', finisher, 'c4') + mkT('Comeback Pro', cbK, 'c5') +
-      mkT('Consistent Pro', consP, 'c6') + 
-      mkT('Hat-Trick', '—', 'c7') + mkT('Wooden Spoon', '—', 'c8') +
+      mkT('Points King', king, 'c2', kingPts) + 
+      mkT('Top Loss', lastK, 'c3', lossCount) + // Corrected label parameter to match layout image
+      mkT('Most Wins', finisher, 'c4', winCount) + 
+      mkT('Comeback Pro', cbK, 'c5', cbWins) +
+      mkT('Consistent Pro', consP, 'c6', consRounds) + 
+      mkT('Hat-Trick', '—', 'c7') + 
+      mkT('Wooden Spoon', '—', 'c8') +
       `<div class="k-tile c9"><small>Peak Rate</small><div class="val">${sorted.length ? ((stats[king].r1/stats[king].t)*100).toFixed(0)+'%' : '0%'}</div></div>`;
 
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
@@ -323,17 +293,6 @@
       </div>`;
     }).join('');
   };
-
-  db.collection("lineup_names").onSnapshot(snap => {
-      databaseLineupNames = {};
-      snap.forEach(doc => {
-          const data = doc.data();
-          if(data.playerString && data.customName) {
-              databaseLineupNames[data.playerString] = data.customName;
-          }
-      });
-      renderAll();
-  });
 
   db.collection("games").orderBy("time").onSnapshot(snap => { 
     allData = snap.docs.map(d => d.data()); 
