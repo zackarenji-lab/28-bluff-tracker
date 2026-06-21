@@ -24,7 +24,7 @@
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
   .header-actions { display: flex; align-items: center; gap: 10px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid var(--gold-border); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
-  .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+  .share-btn { pointer: cursor; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
   
   .log-link-btn { text-decoration: none; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
   .log-link-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--cyan); color: var(--cyan); }
@@ -52,11 +52,11 @@
   .pred-line { font-size: 13px; color: #fff; margin-bottom: 8px; line-height: 1.4; font-style: italic; display: block; }
 
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative !important; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; z-index: 2; }
   
-  .tile-stat-num { position: absolute !important; top: 12px !important; right: 16px !important; font-size: 22px !important; font-weight: 900; color: rgba(255, 255, 255, 0.85); z-index: 5; font-family: monospace; }
+  .tile-stat-num { position: absolute; top: 12px; right: 16px; font-size: 22px; font-weight: 900; color: rgba(255, 255, 255, 0.85); z-index: 5; font-family: monospace; }
   .tile-avatar { position: absolute; bottom: 10px; right: 10px; width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--cyan); object-fit: cover; z-index: 1; }
 
   @media (max-width: 768px) {
@@ -76,33 +76,32 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
-  /* REDESIGNED CONTAINER GRID - EXCLUDED GRAPH WRAPPERS FOR DIRECT DOCKING */
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 14px; padding: 18px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 160px 1fr 110px; align-items: center; gap: 20px; border: 1px solid rgba(255, 255, 255, 0.06); }
+  /* FIXED ALIGNMENT GRID FOR DESKTOP - FORCES ALIGNED START LINES */
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 14px; padding: 18px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 180px 1fr 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); }
   
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
   .p-name { font-weight: 800; font-size: 18px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
   
-  /* HIGHLY ENHANCED ATTRIBUTE GRID LAYOUT SYSTEM */
-  .data-table-block { display: flex; gap: 16px; justify-content: flex-end; width: 100%; }
-  .data-col { text-align: center; min-width: 55px; background: rgba(255, 255, 255, 0.02); padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.04); }
+  .data-table-block { display: flex; gap: 14px; justify-content: flex-start; width: 100%; }
+  .data-col { text-align: center; min-width: 58px; background: rgba(255, 255, 255, 0.02); padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.04); }
   .data-col label { display: block; font-size: 10px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
   .data-col label.lbl-yellow { color: var(--accent) !important; }
   .data-col span { font-size: 16px; font-weight: 900; color: #fff; font-family: monospace; }
   
-  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); }
+  .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); justify-self: end; }
 
-  /* ULTRA-CLEAN MOBILE ADAPTIVITY BREAKPOINTS */
+  /* FIXED ALIGNMENT GRID FOR MOBILE PHONE LAYOUTS */
   @media (max-width: 900px) {
-    .rank-row { grid-template-columns: 32px 45px 85px 1fr auto; gap: 10px; padding: 12px 14px; border-radius: 16px; }
+    .rank-row { grid-template-columns: 30px 45px 75px 1fr auto; gap: 10px; padding: 12px 10px; border-radius: 16px; }
     .num { font-size: 18px !important; }
     .p-avatar { width: 45px !important; height: 45px !important; }
-    .p-name { font-size: 14px !important; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .data-table-block { gap: 4px !important; }
+    .p-name { font-size: 13px !important; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .data-table-block { gap: 4px !important; justify-content: center !important; }
     .data-col { min-width: 36px !important; padding: 4px 2px !important; border-radius: 6px; }
     .data-col label { font-size: 8px !important; margin-bottom: 2px !important; }
     .data-col span { font-size: 13px !important; }
-    .score-box { padding: 10px 14px !important; font-size: 18px !important; min-width: 40px; border-radius: 10px; }
+    .score-box { padding: 10px 12px !important; font-size: 18px !important; min-width: 42px; border-radius: 10px; }
   }
 </style>
 </head>
