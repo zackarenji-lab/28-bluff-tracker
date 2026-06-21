@@ -129,6 +129,7 @@
   let allG = [];
   let globalMultiplier = {};
   window.activeMode = '';
+  let isSavingIndiv = false; // State toggle to protect individual match updates
 
   window.switchView = (v) => {
     ['HOME','28','INDIV','OVERALL'].forEach(x => { if(document.getElementById('view-'+x)) document.getElementById('view-'+x).style.display = (x===v?'block':'none'); });
@@ -181,6 +182,8 @@
   };
 
   window.saveWeightedResult = async () => {
+    if (isSavingIndiv) return; // Drop submission if save is already in progress
+    
     const results = [];
     let win = '', lost = '';
 
@@ -192,15 +195,33 @@
         results.push({ name, rank, pts });
     });
 
-    await db.collection("games").add({ gameType: activeMode, players: results, winner: win, last: lost, time: new Date().toISOString(), secret: PASS });
-    
-    // Rematch prompt loop logic implementation
-    if(confirm(`Play another round of ${activeMode} with the same players?`)) {
-        document.querySelectorAll('.rank-sel').forEach(sel => {
-            sel.value = "99";
+    if (!win) return alert("Please select at least a 1st place winner.");
+
+    try {
+        isSavingIndiv = true; // Lock execution thread
+        
+        await db.collection("games").add({ 
+            gameType: activeMode, 
+            players: results, 
+            winner: win, 
+            last: lost, 
+            time: new Date().toISOString(), 
+            secret: PASS 
         });
-    } else {
-        resetSetup();
+        
+        // Rematch confirmation loop implementation
+        if(confirm(`Play another round of ${activeMode} with the same players?`)) {
+            document.querySelectorAll('.rank-sel').forEach(sel => {
+                sel.value = "99"; // Revert picks to default option safely
+            });
+        } else {
+            resetSetup();
+        }
+    } catch (error) {
+        console.error("Database save transaction aborted: ", error);
+        alert("Failed to sync match parameters. Please try again.");
+    } finally {
+        isSavingIndiv = false; // Release lock toggle
     }
   };
 
@@ -246,174 +267,4 @@
   };
 
   window.adj = (id, val) => {
-      const el = document.getElementById(id);
-      let cur = parseInt(el.innerText);
-      if(cur + val >= 0) el.innerText = cur + val;
-  };
-
-  window.saveBacklogSession = async () => {
-      const t1 = document.getElementById('histT1').value, t2 = document.getElementById('histT2').value;
-      const w1 = parseInt(document.getElementById('score1').value), w2 = parseInt(document.getElementById('score2').value);
-      const s1_24_2 = parseInt(document.getElementById('s1_24_2').innerText), s1_28_2 = parseInt(document.getElementById('s1_28_2').innerText), s1_28_3 = parseInt(document.getElementById('s1_28_3').innerText);
-      const s2_24_2 = parseInt(document.getElementById('s2_24_2').innerText), s2_28_2 = parseInt(document.getElementById('s2_28_2').innerText), s2_28_3 = parseInt(document.getElementById('s2_28_3').innerText);
-      const date = document.getElementById('histDate').value;
-
-      if(!t1 || !t2 || !date) return alert("Fill Teams and Date");
-      if(t1 === t2) return alert("Different teams required");
-      
-      if((s1_24_2 + s1_28_2 + s1_28_3) > w1 || (s2_24_2 + s2_28_2 + s2_28_3) > w2) return alert("Streaks exceed total wins!");
-      if(prompt("Password:") !== PASS) return alert("Denied");
-
-      const batch = db.batch();
-      const seriesId = "manual_" + Date.now();
-      const baseTime = new Date(date).getTime();
-
-      const pushMatch = (winner, loser, count, pts, offset) => {
-          for(let i=0; i<count; i++) {
-              const ref = db.collection("games").doc();
-              batch.set(ref, { seriesId, winner, loser, points: pts, time: new Date(baseTime + offset + i).toISOString(), gameType: '28', manualEntry: true, secret: PASS });
-          }
-      };
-
-      pushMatch(t1, t2, s1_24_2, 2, 100);
-      pushMatch(t1, t2, s1_28_2, 2, 200);
-      pushMatch(t1, t2, s1_28_3, 3, 300);
-      pushMatch(t1, t2, (w1 - (s1_24_2 + s1_28_2 + s1_28_3)), 1, 400);
-
-      pushMatch(t2, t1, s2_24_2, 2, 500);
-      pushMatch(t2, t1, s2_28_2, 2, 600);
-      pushMatch(t2, t1, s2_28_3, 3, 700);
-      pushMatch(t2, t1, (w2 - (s2_24_2 + s2_28_2 + s2_28_3)), 1, 800);
-
-      const finalRef = db.collection("games").doc();
-      batch.set(finalRef, { seriesId, manualEnd: true, finalized: true, tourneyType: Math.max(w1, w2) >= 10 ? 10 : 5, time: new Date(baseTime + 2000).toISOString(), gameType: '28', secret: PASS });
-
-      await batch.commit();
-      alert("Session Added!"); closeM();
-  };
-
-  window.filterTMS = () => {
-    const t1 = document.getElementById('mT1').value;
-    Array.from(document.getElementById('mT2').options).forEach(o => { if(o.value) o.disabled = t1.split(' & ').some(m => o.value.includes(m)); });
-  };
-
-  window.conf28 = async () => {
-    const t1 = document.getElementById('mT1').value, t2 = document.getElementById('mT2').value, target = document.getElementById('mTarget').value;
-    if(!t1 || !t2) return alert("Select Teams");
-    await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: t1, teamB: t2, seriesTarget: parseInt(target), time: new Date().toISOString(), secret: PASS, gameType: '28' });
-    closeM();
-  };
-
-  window.setGlobalMulti = (sid, val, btn) => {
-    if(globalMultiplier[sid] === val) { delete globalMultiplier[sid]; btn.classList.remove('active'); }
-    else { globalMultiplier[sid] = val; btn.parentElement.querySelectorAll('.btn-streak-lg').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-  };
-
-  window.editScore = async (sid, team, cur) => {
-    if(prompt("Password:") !== PASS) return alert("Denied");
-    const val = prompt(`Set total wins for ${team}:`, cur);
-    if(val === null || isNaN(val)) return;
-    const diff = parseInt(val) - cur;
-    if(diff !== 0) await db.collection("games").add({ seriesId: sid, winner: team, loser: "Manual Edit", points: diff, time: new Date().toISOString(), secret: PASS, gameType: '28' });
-  };
-
-  window.render28 = () => {
-    const seriesMap = {};
-    allG.filter(g => !g.gameType || g.gameType === '28').forEach(g => {
-        if (g.seriesId) {
-            if (!seriesMap[g.seriesId]) {
-                seriesMap[g.seriesId] = { id: g.seriesId, target: 5, wins: {}, teamA: '', teamB: '', isFinalized: false, isReplay: false, start: null, last: null };
-            }
-            const s = seriesMap[g.seriesId];
-            if (g.isInit) { s.teamA = g.teamA; s.teamB = g.teamB; s.target = g.seriesTarget; s.start = g.time; }
-            if (g.finalized || g.manualEnd) { s.isFinalized = true; }
-            if (g.isReplay) s.isReplay = true;
-            if (g.winner && !g.manualEnd) { s.wins[g.winner] = (s.wins[g.winner] || 0) + (g.points || 1); s.last = g.time; }
-        }
-    });
-
-    const list = document.getElementById('list-28'); if(!list) return; list.innerHTML = "";
-    Object.values(seriesMap).filter(s => s.teamA && !s.isFinalized).forEach(s => {
-        const wA = s.wins[s.teamA] || 0, wB = s.wins[s.teamB] || 0;
-        const reachedTarget = (wA >= s.target || wB >= s.target);
-        const tourneyWinner = wA >= s.target ? s.teamA : s.teamB;
-
-        const startTime = s.start ? new Date(s.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '---';
-        const lastTime = s.last ? new Date(s.last).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : startTime;
-        const startDate = s.start ? new Date(s.start).toLocaleDateString([], { day: '2-digit', month: 'short' }) : '';
-        const replayBadge = s.isReplay ? `<span style="background:var(--danger); font-size:9px; padding:2px 6px; border-radius:4px; margin-left:8px; vertical-align:middle;">FINAL RE-PLAY</span>` : '';
-
-        let actionContent = '';
-        if (reachedTarget) {
-            actionContent = `<div class="conclusion-card"><div style="font-weight:800; color:var(--accent); margin-bottom:10px;">🏆 ${tourneyWinner} won!</div><div style="display:flex; gap:8px;"><button class="neu-btn primary small" style="flex:1" onclick="finalize28('${s.id}', ${wA}, ${wB}, '${s.teamA}', '${s.teamB}')">Confirm Closure</button><button class="neu-btn danger small" style="flex:1" onclick="editScore('${s.id}','${tourneyWinner}', ${s.wins[tourneyWinner]})">Mistake? Edit</button></div></div>`;
-        } else {
-            actionContent = `<div class="streak-row-shared"><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">24(+2)</button><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 2, this)">28(+2)</button><button class="neu-btn btn-streak-lg" onclick="setGlobalMulti('${s.id}', 3, this)">28(+3)</button></div><div style="display:flex; gap:8px;"><button class="neu-btn primary" style="flex:1" onclick="score28('${s.id}','${s.teamA}','${s.teamB}')">Win ${s.teamA.split(' ')[0]}</button><button class="neu-btn primary" style="flex:1; background:var(--gold)" onclick="score28('${s.id}','${s.teamB}','${s.teamA}')">Win ${s.teamB.split(' ')[0]}</button><button class="neu-btn danger" onclick="finalize28('${s.id}', ${wA}, ${wB})">STOP</button></div>`;
-        }
-
-        list.innerHTML += `<div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
-                <div style="text-align:left;"><span style="font-size:10px; color:var(--cyan); font-weight:800; letter-spacing:1px;">STARTED</span> ${replayBadge}<div class="time-stamp">${startDate} @ ${startTime}</div></div>
-                <div style="text-align:right;"><span style="font-size:10px; color:var(--accent); font-weight:800; letter-spacing:1px;">LAST ACTIVE</span><div class="time-stamp">${lastTime}</div></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="text-align:center; flex:1"><div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamA}</div><span class="score-val">${wA}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamA}', ${wA})">✏️</span></div>
-                <div style="font-weight:900; color:var(--muted); margin: 0 15px;">VS</div>
-                <div style="text-align:center; flex:1"><div style="font-size:10px; margin-bottom:5px; height:24px; display:flex; align-items:center; justify-content:center;">${s.teamB}</div><span class="score-val">${wB}</span><span style="cursor:pointer;opacity:0.5;margin-left:5px" onclick="editScore('${s.id}','${s.teamB}', ${wB})">✏️</span></div>
-            </div>
-            ${actionContent}
-        </div>`;
-    });
-  };
-
-  window.score28 = async (id, w, l) => { 
-    const pts = globalMultiplier[id] || 1;
-    if(pts > 1) {
-        const players = [...w.split(' & '), ...l.split(' & ')];
-        const h = `<div class="modal-box"><h3 style="color:var(--gold); margin-top:0;">Who was the Bidder?</h3>
-            <div class="bidder-grid">${players.map(p => `<button class="btn-bidder" onclick="saveWithBidder('${id}','${w}','${l}',${pts},'${p}')">${p}</button>`).join('')}</div>
-            <button class="neu-btn small" style="width:100%; margin-top:15px; border-color:var(--danger); color:var(--danger)" onclick="closeM()">Cancel</button></div>`;
-        document.getElementById('modal-container').innerHTML = `<div class="overlay">${h}</div>`;
-    } else {
-        await db.collection("games").add({ seriesId: id, winner: w, loser: l, points: 1, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
-        render28();
-    }
-  };
-
-  window.saveWithBidder = async (sid, w, l, pts, bidder) => {
-    await db.collection("games").add({ seriesId: sid, winner: w, loser: l, points: pts, bidder: bidder, time: new Date().toISOString(), secret: PASS, gameType: '28' }); 
-    delete globalMultiplier[sid]; closeM(); render28();
-  };
-
-  window.finalize28 = async (id, wA, wB, tA = '', tB = '') => {
-    if(!confirm("Confirm tournament closure?")) return;
-    const tType = Math.max(wA, wB) >= 10 ? 10 : 5;
-    await db.collection("games").add({ seriesId: id, manualEnd: true, finalized: true, isReplay: false, tourneyType: tType, time: new Date().toISOString(), secret: PASS, gameType: '28' });
-    if(tA && tB && confirm(`Play again with same opponents?`)) {
-        const nextTarget = prompt("Target (5 or 10):", tType);
-        if(nextTarget == "5" || nextTarget == "10") {
-            await db.collection("games").add({ seriesId: "s_"+Date.now(), isInit: true, teamA: tA, teamB: tB, seriesTarget: parseInt(nextTarget), time: new Date().toISOString(), secret: PASS, gameType: '28' });
-        }
-    }
-  };
-
-  window.renderGlobalTiles = () => {
-    const f = (m) => allG.filter(g => (m === '28' ? (!g.gameType || g.gameType === '28') : g.gameType === m) && g.winner).length;
-    document.getElementById('summary-tiles').innerHTML = `<div class="card" onclick="window.location.href='dash28.html'">🏏 <b>28</b> - ${f('28')} Series</div><div class="card" onclick="window.location.href='dashboard.html?mode=Bluff'">🃏 <b>Bluff</b> - ${f('Bluff')} Rounds</div><div class="card" onclick="window.location.href='dashboard.html'">🌈 <b>UNO</b> - ${f('UNO')} Rounds</div>`;
-  };
-
-  window.resetSystem = async (type, id) => {
-    if(prompt(`Enter Admin Password:`) !== PASS) return;
-    const snap = await db.collection("games").where(type === 'ALL' ? "secret" : "seriesId", "==", type === 'ALL' ? PASS : id).get();
-    const ops = []; snap.forEach(d => ops.push(d.ref.delete())); await Promise.all(ops);
-    location.reload();
-  };
-
-  window.closeM = () => document.getElementById('modal-container').innerHTML = "";
-
-  db.collection("games").orderBy("time").onSnapshot(snap => {
-    allG = snap.docs.map(d => d.data());
-    render28();
-  });
-</script>
-</body>
-</html>
+      const
