@@ -24,7 +24,7 @@
   header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; gap: 10px; }
   .header-actions { display: flex; align-items: center; gap: 10px; }
   .home-link { text-decoration: none; color: var(--accent); font-weight: 900; font-size: 11px; border: 1px solid var(--gold-border); padding: 10px 20px; border-radius: 30px; background: rgba(255,211,109,0.05); text-transform: uppercase; }
-  .share-btn { pointer: cursor; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+  .share-btn { cursor: pointer; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
   
   .log-link-btn { text-decoration: none; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 10px 18px; border-radius: 30px; font-weight: 900; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
   .log-link-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--cyan); color: var(--cyan); }
@@ -52,7 +52,7 @@
   .pred-line { font-size: 13px; color: #fff; margin-bottom: 8px; line-height: 1.4; font-style: italic; display: block; }
 
   .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+  .k-tile { padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); min-height: 115px; position: relative !important; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .k-tile small { font-size: 10px; font-weight: 900; color: #fff; margin-bottom: 8px; text-transform: uppercase; opacity: 0.9; }
   .k-tile .val { font-size: 18px; font-weight: 900; color: #fff; text-transform: uppercase; max-width: 65%; z-index: 2; }
   
@@ -76,32 +76,43 @@
   .ranking-header { font-weight: 900; font-size: 18px; color: #fff; margin: 30px 0 20px 0; text-transform: uppercase; display: flex; align-items: center; gap: 15px; }
   .ranking-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(to right, var(--violet), transparent); }
   
-  /* FIXED ALIGNMENT GRID FOR DESKTOP - FORCES ALIGNED START LINES */
-  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 14px; padding: 18px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 180px 1fr 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); }
+  /* EXPANDED COLUMNS MAPPED SPECIFICALLY FOR THE TIER TAG INNER ELEMENT */
+  .rank-row { background: rgba(255, 255, 255, 0.03); margin-bottom: 14px; padding: 18px 24px; border-radius: 22px; display: grid; grid-template-columns: 50px 65px 150px 1fr 150px 110px; align-items: center; gap: 15px; border: 1px solid rgba(255, 255, 255, 0.06); }
   
   .num { font-weight: 900; color: var(--cyan); font-size: 24px; }
   .p-avatar { width: 55px; height: 55px; border-radius: 50%; border: 2px solid var(--cyan); background: #161b22; object-fit: cover; }
   .p-name { font-weight: 800; font-size: 18px; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
   
-  .data-table-block { display: flex; gap: 14px; justify-content: flex-start; width: 100%; }
-  .data-col { text-align: center; min-width: 58px; background: rgba(255, 255, 255, 0.02); padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.04); }
+  .data-table-block { display: flex; gap: 10px; justify-content: flex-start; width: 100%; }
+  .data-col { text-align: center; min-width: 52px; background: rgba(255, 255, 255, 0.02); padding: 6px 4px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.04); }
   .data-col label { display: block; font-size: 10px; font-weight: 900; color: var(--neon-green); text-transform: uppercase; margin-bottom: 4px; letter-spacing: 0.5px; }
   .data-col label.lbl-yellow { color: var(--accent) !important; }
   .data-col span { font-size: 16px; font-weight: 900; color: #fff; font-family: monospace; }
   
+  /* CUSTOM STYLISH SHIELDS FOR RANKS */
+  .tier-badge { font-weight: 900; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; width: 100%; }
+  .tier-champ { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+  .tier-runner { color: #00f5ff; text-shadow: 0 0 10px rgba(0, 245, 255, 0.3); }
+  .tier-fighter { color: #ff9f1c; text-shadow: 0 0 10px rgba(255, 159, 28, 0.3); }
+  .tier-lucky { color: #3fff3f; text-shadow: 0 0 10px rgba(63, 255, 63, 0.3); }
+  .tier-relief { color: var(--muted); opacity: 0.7; }
+  .tier-looser { color: #ff4d4d; background: rgba(255, 77, 77, 0.1); padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(255, 77, 77, 0.25); display: inline-block; width: auto !important; margin: 0 auto; text-shadow: 0 0 8px rgba(255, 77, 77, 0.2); }
+
   .score-box { background: linear-gradient(135deg, #ff4d4d, #b30000); color: white; padding: 14px 22px; border-radius: 14px; font-weight: 900; font-size: 24px; text-align: center; box-shadow: 0 4px 15px rgba(212, 0, 0, 0.2); justify-self: end; }
 
-  /* FIXED ALIGNMENT GRID FOR MOBILE PHONE LAYOUTS */
+  /* COMPACT BREAKPOINTS MAP TO PREVENT TEXT CLIPPING */
   @media (max-width: 900px) {
-    .rank-row { grid-template-columns: 30px 45px 75px 1fr auto; gap: 10px; padding: 12px 10px; border-radius: 16px; }
+    .rank-row { grid-template-columns: 30px 45px 70px 1fr auto auto; gap: 8px; padding: 12px 8px; border-radius: 16px; }
     .num { font-size: 18px !important; }
-    .p-avatar { width: 45px !important; height: 45px !important; }
-    .p-name { font-size: 13px !important; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .data-table-block { gap: 4px !important; justify-content: center !important; }
-    .data-col { min-width: 36px !important; padding: 4px 2px !important; border-radius: 6px; }
-    .data-col label { font-size: 8px !important; margin-bottom: 2px !important; }
-    .data-col span { font-size: 13px !important; }
-    .score-box { padding: 10px 12px !important; font-size: 18px !important; min-width: 42px; border-radius: 10px; }
+    .p-avatar { width: 42px !important; height: 42px !important; }
+    .p-name { font-size: 12px !important; max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .data-table-block { gap: 3px !important; }
+    .data-col { min-width: 32px !important; padding: 4px 1px !important; border-radius: 6px; }
+    .data-col label { font-size: 7.5px !important; margin-bottom: 2px !important; }
+    .data-col span { font-size: 12px !important; }
+    .tier-badge { font-size: 9px !important; letter-spacing: 0.5px !important; }
+    .tier-looser { padding: 4px 8px !important; }
+    .score-box { padding: 10px 12px !important; font-size: 16px !important; min-width: 38px; border-radius: 10px; }
   }
 </style>
 </head>
@@ -290,6 +301,31 @@
 
     document.getElementById('leaderboard-container').innerHTML = sorted.map((n, i) => {
       const d = stats[n];
+      
+      // RUNTIME TIER ASSIGNMENT CHECK LOGIC
+      let tierClass = "tier-relief";
+      let tierLabel = "RELIEF";
+
+      if (i === 0) {
+          tierClass = "tier-champ";
+          tierLabel = "CHAMPION";
+      } else if (i === 1) {
+          tierClass = "tier-runner";
+          tierLabel = "RUNNERUP";
+      } else if (i === 2) {
+          tierClass = "tier-fighter";
+          tierLabel = "FIGHTER";
+      } else if (i === 3) {
+          tierClass = "tier-lucky";
+          tierLabel = "LUCKY";
+      }
+
+      // Explicitly override to LOOSER tag if row represents the absolute bottom index
+      if (i === sorted.length - 1 && sorted.length > 1) {
+          tierClass = "tier-looser";
+          tierLabel = "LOOSER";
+      }
+
       return `
       <div class="rank-row">
         <div class="num">#${i+1}</div>
@@ -303,6 +339,7 @@
           <div class="data-col"><label class="lbl-yellow">4th</label><span>${d.r4.toString().padStart(2,'0')}</span></div>
           <div class="data-col"><label>Lost</label><span>${d.rl.toString().padStart(2,'0')}</span></div>
         </div>
+        <div class="tier-badge ${tierClass}">${tierLabel}</div>
         <div class="score-box">${d.pts}</div>
       </div>`;
     }).join('');
